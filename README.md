@@ -4,6 +4,7 @@
 使用方法：
 将ergetDmx/bin下的3个文件拷贝到项目libs/dmx/目录下
 然后egretProperties.json添加引用：
+
     {
       "name": "dmx",
       "path": "./libs/dmx"
