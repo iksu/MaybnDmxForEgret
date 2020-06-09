@@ -1,0 +1,39 @@
+{
+  "engineVersion": "5.2.33",
+  "compilerVersion": "5.2.33",
+  "template": {},
+  "target": {
+    "current": "web"
+  },
+  "modules": [
+    {
+      "name": "egret"
+    },
+    {
+      "name": "assetsmanager"
+    },
+    {
+      "name": "socket"
+    },
+    {
+      "name": "eui"
+    },
+    {
+      "name": "promise"
+    },
+    {
+      "name": "dmx",
+      "path": "./libs/dmx"
+    },
+    {
+      "name": "zlib",
+      "path": "./libs/zlib"
+    }
+  ],
+  "targets": {
+    "android": {
+      "appname": "绝龙三国",
+      "packagename": "com.mb.jlsg"
+    }
+  }
+}

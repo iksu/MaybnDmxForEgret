@@ -1,0 +1,229 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>DM:bc</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="full-screen" content="true" />
+    <meta name="screen-orientation" content="auto" />
+    <meta name="x5-fullscreen" content="true" />
+    <meta name="360-fullscreen" content="true" />
+    <meta name="full-screen" content="yes">
+    <meta name="browsermode" content="application">
+    <style>
+        html, body {
+            -ms-touch-action: none;
+            background: #000000;
+            padding: 0;
+            border: 0;
+            margin: 0;
+            height: 100%;
+            color: #ffffff;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="gameMain">
+        <div id="game" style="margin: auto;width: 100%;height: 100%;" class="egret-player" data-entry-class="Main" data-orientation="landscape" data-scale-mode="fixedWidth" data-resolution-mode="retina"
+data-frame-rate="30" data-content-width="960" data-content-height="640" data-multi-fingered="2" data-show-fps="false" data-show-log="true"
+data-show-fps-style="x:0,y:0,size:12,textColor:0xffffff,bgAlpha:0.5">
+<div style="text-align: center; margin:auto; height: 100px; width: 200px; position: absolute;left: 50%; top: 50%; transform: translate(-50%,-50%);" id="loading"> 载入中...
+</div>
+</div>
+</div>
+<script>
+    function LoadGame() {
+        var loadScript = function (list, callback) {
+            var loaded = 0;
+            var loadNext = function () {
+                loadSingleScript(list[loaded], function () {
+                    loaded++;
+                    if (loaded >= list.length) {
+                        callback();
+                    }
+                    else {
+                        loadNext();
+                    }
+                })
+            };
+            loadNext();
+        };
+
+        var loadSingleScript = function (src, callback) {
+            var s = document.createElement('script');
+            s.async = false;
+            s.src = src;
+            s.addEventListener('load', function () {
+                s.parentNode.removeChild(s);
+                s.removeEventListener('load', arguments.callee, false);
+                callback();
+            }, false);
+            document.body.appendChild(s);
+        };
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', './manifest.json?v=' + Math.random(), true);
+        xhr.addEventListener("load", function () {
+            var manifest = JSON.parse(xhr.response);
+            var list = manifest.initial.concat(manifest.game);
+            loadScript(list, function () {
+                /**
+                 * {
+                 * "renderMode":, //Engine rendering mode, "canvas" or "webgl"
+                 * "audioType": 0 //Use the audio type, 0: default, 2: web audio, 3: audio
+                 * "antialias": //Whether the anti-aliasing is enabled in WebGL mode, true: on, false: off, defaults to false
+                 * "calculateCanvasScaleFactor": //a function return canvas scale factor
+                 * }
+                 **/
+                egret.runEgret({
+                    renderMode: "webgl", audioType: 0, calculateCanvasScaleFactor: function (context) {
+                        var backingStore = context.backingStorePixelRatio ||
+                            context.webkitBackingStorePixelRatio ||
+                            context.mozBackingStorePixelRatio ||
+                            context.msBackingStorePixelRatio ||
+                            context.oBackingStorePixelRatio ||
+                            context.backingStorePixelRatio || 1;
+                        return (window.devicePixelRatio || 1) / backingStore;
+                    }
+                });
+                document.getElementById("loading").style.display = "none";
+            });
+
+        });
+        xhr.send(null);
+    }
+</script>
+
+<script type="text/javascript">
+    var browser = {
+        versions: function () {
+            var u = navigator.userAgent;
+            return {
+                trident: u.indexOf('Trident') > -1,
+                presto: u.indexOf('Presto') > -1,
+                webKit: u.indexOf('AppleWebKit') > -1,
+                gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1,
+                mobile: !!u.match(/AppleWebKit.*Mobile.*/) || !!u.match(/AppleWebKit/) && u.indexOf('QIHU') && u.indexOf('QIHU') > -1 && u.indexOf('Chrome') < 0,
+                ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/),
+                android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1,
+                iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1,
+                iPad: u.indexOf('iPad') > -1,
+                webApp: u.indexOf('Safari') == -1
+            }
+        } (),
+        language: (navigator.browserLanguage || navigator.language).toLowerCase()
+    };
+</script>
+<script type="text/javascript">
+    function Load() {
+        var gameMain = document.getElementById("gameMain");
+        var windowW = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        var windowH = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        // if (!browser.versions.mobile) {
+        //     gameMain.style.width = (windowH * 640 / 960) + "px";
+        //     gameMain.style.height = windowH + "px";
+        //     gameMain.style.position = "absolute";
+        //     gameMain.style.left = "50%";
+        //     gameMain.style.top = "50%";
+        //     //gameMain.style.transform = "translate(-50%,-50%)";
+        //     gameMain.style.marginLeft = (-(windowH * 640 / 960) / 2) + "px";
+        //     gameMain.style.marginTop = (-windowH / 2) + "px";
+        // }
+        // else {
+        //     var maxWh = 0.61;//ipad 0.61
+        //     var minWh = 0.56;//iphonex
+        //     var wh = windowW / windowH;
+        //     if (wh >= maxWh) {
+        //         gameMain.style.width = (windowH * maxWh) + "px";
+        //         gameMain.style.height = windowH + "px";
+        //         gameMain.style.position = "absolute";
+        //         gameMain.style.left = "50%";
+        //         gameMain.style.top = "50%";
+        //         gameMain.style.transform = "translate(-50%,-50%)";
+        //     } else if (wh <= minWh) {
+        //         gameMain.style.width = windowW + "px";
+        //         gameMain.style.height = (windowW / minWh) + "px";
+        //         gameMain.style.position = "absolute";
+        //         gameMain.style.left = "50%";
+        //         gameMain.style.top = "50%";
+        //         gameMain.style.transform = "translate(-50%,-50%)";
+        //     } else {
+        //     }
+        // }
+    }
+    window.addEventListener("resize", function () {
+        Load();
+    });
+
+    function RequestFullScreen() {
+        // let element = document.body;
+        // if (element.requestFullscreen) {
+        //     element.requestFullscreen();
+        // } else if (element.webkitRequestFullScreen) {
+        //     element.webkitRequestFullScreen();
+        // } else if (element.mozRequestFullScreen) {
+        //     element.mozRequestFullScreen();
+        // } else if (element.msRequestFullscreen) {
+        //     element.msRequestFullscreen();
+        // }
+
+        // if (document.documentElement.scrollHeight <= document.documentElement.clientHeight) {
+        //     bodyTag = document.getElementsByTagName('body')[0];
+        //     bodyTag.style.height = document.documentElement.clientWidth / screen.width * screen.height + 'px';
+        // }
+        // window.scrollTo(0, 100);
+    }
+
+    // window.requestAnimationFrame = function (func) {
+    //     window.setTimeout(func, 1);
+    // };
+
+    window.addEventListener("load", function () {
+        let func = () => {
+            Load();
+            LoadGame();
+            RequestFullScreen();
+        };
+
+        var sdk = GetParmUrl("sdk");
+        if (sdk == "quick") {
+            var s = document.createElement('script');
+            s.async = false;
+            s.src = src;
+            s.addEventListener('load', () => {
+                func();
+            }, false);
+            document.body.appendChild(s);
+        } else {
+            func();
+        }
+    });
+
+    function GetParmUrl(method) {
+        try {
+            var url = document.location.toString();
+            var urls = url.split("?");
+            if (urls.length > 1) {
+                var parm = urls[1];
+                var parms = parm.split("&");
+                for (var i = 0, len = parms.length; i < len; i++) {
+                    if (parms[i].split("=")[0] == method) {
+                        let rv = parms[i].split("=")[1];
+                        rv = rv.replace(/\'/g, "&#39;").replace(/"/g, "&#34;").replace(/%22/g, "&#34;").replace(/\</g, "&#60;").replace(/%3C/g, "&#60;").replace(/\>/g, "&#62;").replace(/%3E/g, "&#62;");
+                        return rv;
+                    }
+                }
+            }
+        } catch (ex) {
+        }
+        return "";
+    };
+
+</script>
+</body>
+
+</html>

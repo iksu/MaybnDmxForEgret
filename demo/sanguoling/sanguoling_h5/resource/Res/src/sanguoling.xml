@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:6bb234633b00abe620b665edaedf72e7:1/1$ -->
+<TextureAtlas imagePath="sanguoling.png">
+    <SubTexture name="begingame" x="232" y="44" width="304" height="40" frameX="-50" frameY="-88" frameWidth="400" frameHeight="226"/>
+    <SubTexture name="ling0" x="852" y="364" width="56" height="100"/>
+    <SubTexture name="ling1" x="824" y="262" width="56" height="100"/>
+    <SubTexture name="ling2" x="882" y="260" width="46" height="88" frameX="-4" frameY="-8" frameWidth="56" frameHeight="100"/>
+    <SubTexture name="ling3" x="794" y="376" width="56" height="100"/>
+    <SubTexture name="ling4" x="416" y="334" width="56" height="100"/>
+    <SubTexture name="me_5" x="398" y="212" width="100" height="120" frameX="-217" frameY="-142" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="me_6" x="702" y="376" width="90" height="120" frameX="-216" frameY="-142" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="me_7" x="826" y="138" width="90" height="120" frameX="-216" frameY="-143" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="me_8" x="734" y="140" width="90" height="120" frameX="-216" frameY="-142" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="playagain" x="232" y="2" width="304" height="40" frameX="-50" frameY="-88" frameWidth="400" frameHeight="226"/>
+    <SubTexture name="role0_10" x="2" y="264" width="116" height="154" frameX="-202" frameY="-127" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="role0_11" x="680" y="2" width="126" height="136" frameX="-167" frameY="-126" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="role0_12" x="214" y="264" width="88" height="136" frameX="-198" frameY="-126" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="role0_9" x="120" y="264" width="92" height="156" frameX="-198" frameY="-130" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="role1_10" x="808" y="2" width="124" height="134" frameX="-228" frameY="-133" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="role1_11" x="2" y="128" width="172" height="134" frameX="-158" frameY="-133" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="role1_12" x="282" y="86" width="110" height="152" frameX="-228" frameY="-115" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="role1_9" x="176" y="128" width="104" height="134" frameX="-222" frameY="-132" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="role2_10" x="2" y="2" width="228" height="124" frameX="-215" frameY="-145" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="role2_11" x="724" y="262" width="98" height="112" frameX="-213" frameY="-150" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="role2_12" x="620" y="254" width="102" height="118" frameX="-263" frameY="-102" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="role2_9" x="608" y="374" width="92" height="116" frameX="-215" frameY="-147" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="role3_10" x="304" y="240" width="92" height="124" frameX="-233" frameY="-137" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="role3_11" x="538" y="2" width="140" height="122" frameX="-167" frameY="-139" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="role3_12" x="394" y="86" width="110" height="124" frameX="-211" frameY="-137" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="role3_9" x="334" y="366" width="80" height="130" frameX="-228" frameY="-139" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="role4_10" x="506" y="126" width="118" height="114" frameX="-207" frameY="-149" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="role4_11" x="214" y="402" width="118" height="96" frameX="-213" frameY="-170" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="role4_12" x="626" y="140" width="106" height="112" frameX="-218" frameY="-138" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="role4_9" x="500" y="242" width="118" height="112" frameX="-207" frameY="-151" frameWidth="550" frameHeight="400"/>
+    <SubTexture name="score" x="474" y="356" width="132" height="59" frameX="-27" frameY="-25" frameWidth="200" frameHeight="107"/>
+    <SubTexture name="v0" x="852" y="466" width="29" height="32"/>
+    <SubTexture name="v1" x="304" y="366" width="21" height="34"/>
+    <SubTexture name="v2" x="67" y="420" width="28" height="35"/>
+    <SubTexture name="v3" x="450" y="436" width="24" height="35"/>
+    <SubTexture name="v4" x="2" y="420" width="32" height="36"/>
+    <SubTexture name="v5" x="476" y="417" width="25" height="35"/>
+    <SubTexture name="v6" x="416" y="436" width="32" height="35"/>
+    <SubTexture name="v7" x="36" y="420" width="29" height="35"/>
+    <SubTexture name="v8" x="232" y="86" width="32" height="35"/>
+    <SubTexture name="v9" x="506" y="86" width="29" height="35"/>
+    <SubTexture name="vi" x="883" y="466" width="29" height="29"/>
+    <SubTexture name="vj" x="626" y="126" width="15" height="11" frameX="-5" frameY="-12" frameWidth="25" frameHeight="35"/>
+    <SubTexture name="vp" x="2" y="458" width="27" height="39"/>
+    <SubTexture name="w0" x="918" y="159" width="14" height="18"/>
+    <SubTexture name="w1" x="918" y="179" width="12" height="19"/>
+    <SubTexture name="w2" x="398" y="334" width="16" height="19"/>
+    <SubTexture name="w3" x="918" y="138" width="14" height="19"/>
+    <SubTexture name="w4" x="282" y="240" width="19" height="19"/>
+    <SubTexture name="w5" x="435" y="473" width="15" height="19"/>
+    <SubTexture name="w6" x="503" y="417" width="17" height="19"/>
+    <SubTexture name="w7" x="97" y="420" width="17" height="19"/>
+    <SubTexture name="w8" x="416" y="473" width="17" height="19"/>
+    <SubTexture name="w9" x="474" y="334" width="17" height="19"/>
+    <SubTexture name="wi" x="794" y="478" width="16" height="16"/>
+    <SubTexture name="wj" x="824" y="364" width="11" height="8" frameX="0" frameY="-3" frameWidth="11" frameHeight="14"/>
+    <SubTexture name="wp" x="266" y="86" width="14" height="18"/>
+</TextureAtlas>

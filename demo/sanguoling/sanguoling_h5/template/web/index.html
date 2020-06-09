@@ -1,0 +1,189 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>jl</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="full-screen" content="true" />
+    <meta name="screen-orientation" content="landscape" />
+    <meta name="x5-fullscreen" content="true" />
+    <meta name="360-fullscreen" content="true" />
+    <style>
+        html, body {
+            -ms-touch-action: none;
+            background: #000000;
+            padding: 0;
+            border: 0;
+            margin: 0;
+            height: 100%;
+            color: #ffffff;
+            font-size: 20px;
+        }
+    </style>
+<script type="text/javascript" src="jszip.min.js"></script>
+</head>
+
+<body>
+    <div id="gameMain">
+        <div style="margin: auto; width: 100%;height: 100%;" class="egret-player" data-entry-class="Main" data-orientation="landscape" data-scale-mode="fixedWidth" data-frame-rate="30"
+data-content-width="1050" data-content-height="640" data-show-paint-rect="false" data-multi-fingered="2" data-show-fps="false"
+data-show-log="false" data-show-fps-style="x:0,y:0,size:8,textColor:0xffffff,bgAlpha:0.9">
+<div style="text-align: center; margin:auto; height: 100px; width: 200px; position: absolute;left: 50%; top: 50%; transform: translate(-50%,-50%);" id="loading">载入中...</div>
+</div>
+</div>
+<script>
+    function LoadGame() {
+        var loadScript = function (list, callback) {
+            loadZip("js/js.zip", function (zip) {
+                var loaded = 0;
+                var loadNext = function () {
+                    loadSingleScript(zip, list[loaded], function () {
+                        loaded++;
+                        if (loaded >= list.length) {
+                            callback();
+                        }
+                        else {
+                            loadNext();
+                        }
+                    })
+                };
+                loadNext();
+            });
+        };
+
+        var loadSingleScript = function (zip, src, callback) {
+            src = src.replace("js/", "");
+            var file = zip.file(src).async("string");
+            file.then(function (text) {
+                var script = document.createElement("script");
+                script.setAttribute("type", "text/javascript");
+                script.text = text;
+                document.body.appendChild(script);
+                document.body.removeChild(script);
+                callback();
+            });
+        };
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', './manifest.json?v=' + Math.random(), true);
+        xhr.addEventListener("load", function () {
+            var manifest = JSON.parse(xhr.response);
+            var list = manifest.initial.concat(manifest.game);
+            loadScript(list, function () {
+                /**
+                 * {
+                 * "renderMode":, //Engine rendering mode, "canvas" or "webgl"
+                 * "audioType": 0 //Use the audio type, 0: default, 2: web audio, 3: audio
+                 * "antialias": //Whether the anti-aliasing is enabled in WebGL mode, true: on, false: off, defaults to false
+                 * "calculateCanvasScaleFactor": //a function return canvas scale factor
+                 * }
+                 **/
+                egret.runEgret({
+                    renderMode: "webgl", audioType: 0, calculateCanvasScaleFactor: function (context) {
+                        var backingStore = context.backingStorePixelRatio ||
+                            context.webkitBackingStorePixelRatio ||
+                            context.mozBackingStorePixelRatio ||
+                            context.msBackingStorePixelRatio ||
+                            context.oBackingStorePixelRatio ||
+                            context.backingStorePixelRatio || 1;
+                        return (window.devicePixelRatio || 1) / backingStore;
+                    }
+                });
+                document.getElementById("loading").style.display = "none";
+            });
+        });
+        xhr.send(null);
+    }
+</script>
+<script type="text/javascript">
+    function loadZip(url, callBack) {
+        var xhrZip = new XMLHttpRequest();
+        xhrZip.open("GET", url, true);
+        xhrZip.responseType = "arraybuffer";
+        xhrZip.addEventListener("load", function (oEvent) {
+            var arrayBuffer = xhrZip.response;
+            if (!arrayBuffer) {
+                throw new Error("zip error");
+            }
+            var file = new JSZip();
+            file.loadAsync(arrayBuffer).then(function (zip) {
+                callBack(zip);
+            });
+        });
+        xhrZip.send(null);
+    }
+</script>
+<script type="text/javascript">
+    var browser = {
+        versions: function () {
+            var u = navigator.userAgent;
+            return {
+                trident: u.indexOf('Trident') > -1,
+                presto: u.indexOf('Presto') > -1,
+                webKit: u.indexOf('AppleWebKit') > -1,
+                gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1,
+                mobile: !!u.match(/AppleWebKit.*Mobile.*/) || !!u.match(/AppleWebKit/) && u.indexOf('QIHU') && u.indexOf('QIHU') > -1 && u.indexOf('Chrome') < 0,
+                ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/),
+                android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1,
+                iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1,
+                iPad: u.indexOf('iPad') > -1,
+                webApp: u.indexOf('Safari') == -1
+            }
+        } (),
+        language: (navigator.browserLanguage || navigator.language).toLowerCase()
+    };
+</script>
+<script type="text/javascript">
+    function Load() {
+        var gameMain = document.getElementById("gameMain");
+        var windowW = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        var windowH = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        // if (!browser.versions.mobile) {
+        //     gameMain.style.width = (windowH * 700 / 1136) + "px";
+        //     gameMain.style.height = windowH + "px";
+        //     gameMain.style.position = "absolute";
+        //     gameMain.style.left = "50%";
+        //     gameMain.style.top = "50%";
+        //     //gameMain.style.transform = "translate(-50%,-50%)";
+        //     gameMain.style.marginLeft = (-(windowH * 700 / 1136)  / 2)+"px";
+        //     gameMain.style.marginTop = (-windowH  / 2)+"px";
+        // }
+        // else {
+        //     var maxWh = 0.61;//ipad 0.61
+        //     var minWh = 0.56;//iphonex
+        //     var wh = windowW / windowH;
+        //     if (wh >= maxWh) {
+        //         gameMain.style.width = (windowH * maxWh) + "px";
+        //         gameMain.style.height = windowH + "px";
+        //         gameMain.style.position = "absolute";
+        //         gameMain.style.left = "50%";
+        //         gameMain.style.top = "50%";
+        //         gameMain.style.transform = "translate(-50%,-50%)";
+        //     } else if (wh <= minWh) {
+        //         gameMain.style.width = windowW + "px";
+        //         gameMain.style.height = (windowW / minWh) + "px";
+        //         gameMain.style.position = "absolute";
+        //         gameMain.style.left = "50%";
+        //         gameMain.style.top = "50%";
+        //         gameMain.style.transform = "translate(-50%,-50%)";
+        //     } else {
+        //     }
+        // }
+    }
+    window.addEventListener("load", function () {
+        Load();
+        LoadGame();
+    });
+    window.addEventListener("resize", function () {
+        Load();
+    });
+
+    function RequestFullScreen() {
+    }
+    
+</script>
+</body>
+
+</html>

@@ -1,0 +1,25 @@
+{
+	"groups": [
+		{
+			"keys": "gamebg_jpg,sanguoling_png,sanguoling_xml",
+			"name": "preload"
+		}
+	],
+	"resources": [
+		{
+			"url": "Res/src/gamebg.jpg",
+			"type": "image",
+			"name": "gamebg_jpg"
+		},
+		{
+			"url": "Res/src/sanguoling.png",
+			"type": "image",
+			"name": "sanguoling_png"
+		},
+		{
+			"url": "Res/src/sanguoling.xml",
+			"type": "text",
+			"name": "sanguoling_xml"
+		}
+	]
+}
