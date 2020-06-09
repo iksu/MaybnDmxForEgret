@@ -1,3 +1,5 @@
+//A星寻路类
+///<reference path="Vector2.ts" />
 class AStar {
     private static BLOCK_WAY: number = 1;
     private static AROUND_POINTS: any = [new Vector2(1, 0),

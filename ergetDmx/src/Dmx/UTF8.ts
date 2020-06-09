@@ -1,3 +1,7 @@
+//UTF8编码类
+//使用方法：
+// let buffer = UTF8.encode("xxxxx");
+// let bufferText = egret.Base64Util.encode(buffer);
 class UTF8 {
     static encode(str: string) {
         return new UTF8().encode(str);

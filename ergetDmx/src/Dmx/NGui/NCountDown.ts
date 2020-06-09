@@ -1,3 +1,10 @@
+//倒计时类
+//使用方法：
+// let time = new NCountDown(true, "", 15, 0xffff00, (val) => {
+//     return "剩余时间：" + val;
+// });
+// time.align = 1;//居中显示
+// this.Add(time, 480, 400);
 class NCountDown extends Sx {
     private func: Function;
     private isTime: boolean;

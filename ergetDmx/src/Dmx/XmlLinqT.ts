@@ -1,3 +1,6 @@
+//Listx的集合类
+//一般可用于策划表载入后放置在这个类中
+//可与NGridList绑定使用，成为NGridList的数据源
 class XmlLinqT extends Observer {
     private OnListAddList: Arr<Function>;
     private OnRemoveList: Arr<Function>;

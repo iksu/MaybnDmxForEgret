@@ -1,3 +1,4 @@
+//高性能的瓷片图片，由很多小图拼合而成，一般用户大地图
 // class NTileMap extends Sx {
 //     private tileWidth: number = 200;
 //     private tileHeight: number = 200;

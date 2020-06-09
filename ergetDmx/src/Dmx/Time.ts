@@ -1,3 +1,4 @@
+//时间类
 class Time {
     public constructor() {
     }

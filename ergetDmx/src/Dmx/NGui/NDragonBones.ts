@@ -1,3 +1,5 @@
+//龙骨类，如果需要的话将该类直接放到解除注释，拷贝到游戏中
+//需要引用白鹭龙骨底层
 // class NDragonBones extends Sx {
 //     private factory: dragonBones.EgretFactory;
 //     public ani: dragonBones.EgretArmatureDisplay;

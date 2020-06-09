@@ -1,3 +1,4 @@
+//滚动面板框
 class NScrollPanel extends Sx {
     public view: Sx;
     public scroller: eui.Scroller;

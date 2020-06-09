@@ -1,3 +1,13 @@
+//简易高效缓动类
+//一般直接调用Sx的方法
+//使用方法：
+//     let p = new Sx();
+//     this.Add(p); 
+//     p.To({ x: 100, y:100 }, time, () => {
+//         p.To({ alpha: 0 }, 500, () => {
+//             p.RemoveMe();
+//         });
+//     });
 class ActLite {
     public static To(sx: any, stateTo: any, time: number = 1000, onEndFunc: Function = null, parseHandle: Function = null): any {
         let frameCount = time / 30;

@@ -1,3 +1,4 @@
+//底层动画类
 class NAniBase extends Sx {
     private overAndRemove: boolean;
     private arr: Arr<any>;

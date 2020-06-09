@@ -1,3 +1,9 @@
+//图片按钮类
+//使用方法
+// let b = new NSButton("xxxx");//这里的参数可以使用图片索引，也可以是Sx精灵
+// this.Add(b, 100, 100);
+// b.Click(() => {
+// });
 class NSButton extends Sx {
     public obj: any;
     public music: string = null;

@@ -1,3 +1,7 @@
+//NGridList手动分页类
+//使用方法：
+// let pager = new NNoPage(this.g);
+// pager.Set(0, 100, ()=>{}));
 class NNoPage {
     public _val: number;
     private func: Function;

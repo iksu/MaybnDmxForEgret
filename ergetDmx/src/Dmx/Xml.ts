@@ -1,3 +1,4 @@
+//高效的简易xml解析类
 class Xml {
     public nodes = [];
     public keys = {};

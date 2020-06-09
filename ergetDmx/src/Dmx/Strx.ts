@@ -1,3 +1,4 @@
+//文本处理类
 interface String {
     IsFull(): boolean;
     IsEmpty(): boolean;

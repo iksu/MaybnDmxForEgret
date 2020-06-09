@@ -1,3 +1,8 @@
+//图片文字渲染类
+//使用方法：
+// var l: NNum = new NNum("123", "w");
+// l.align = 1;
+// this.Add(l, 48, 79);
 class NNum extends Sx {
     public static extraOffset: number = 0;
     public offset: number;

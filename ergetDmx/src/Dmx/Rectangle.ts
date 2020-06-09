@@ -1,3 +1,4 @@
+//普通的Rectangle类
 class Rectangle extends egret.Rectangle {
 	public constructor(x:number,y:number,width:number,height:number) {
     	super(x,y,width,height);

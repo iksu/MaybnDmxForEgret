@@ -1,3 +1,7 @@
+//单选框类
+//使用方法：
+// let usec = new NCheck("使用体力", 80, 80, null);
+// this.Add(usec);
 class NCheck extends Sx {
     public static offStyle: Function;
     public static onStyle: Function;

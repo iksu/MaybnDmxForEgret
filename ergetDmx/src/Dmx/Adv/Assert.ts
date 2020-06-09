@@ -1,3 +1,7 @@
+//资源载入类
+//游戏初始化的时候需要调用Assert.Load(null,()=>{
+    //继续逻辑代码
+//});
 class Assert {
     public static assertList = new Listx();
     public static aniAssertList = new Listx();

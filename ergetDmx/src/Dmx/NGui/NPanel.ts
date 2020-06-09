@@ -1,3 +1,21 @@
+//普通Panel类，
+//可以带背景，需要载入的时候初始化
+//初始化：
+// public static Setup(): void {
+//     NPanel.bgFunc =  (bgType: number)=> {
+//         if (bgType <= -1) {
+//             return null;
+//         }
+//         var bg: any = new N9("winp" + bgType);
+//         if (bg instanceof N9) {
+//             bg.base = true;
+//         }
+//         return bg;
+//     };
+// }
+//使用方法：
+// let p = new NPanel(100, 100, 1);
+// this.Add(p);
 class NPanel extends Sx {
     public static bgFunc: Function;
 

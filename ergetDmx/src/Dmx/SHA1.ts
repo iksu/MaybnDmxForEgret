@@ -1,3 +1,5 @@
+//ts SHA1实现类
+//直接使用网上的代码
 class SHA1{
     public constructor(){}
     private static _instance:SHA1;

@@ -1,3 +1,8 @@
+//基础数据类型
+//使用方法：
+// var list = new Listx();
+// list["id"] = "1;
+// list["index"] = "1";
 ///<reference path="Strx.ts" />
 ///<reference path="Observer.ts" />
 

@@ -1,3 +1,4 @@
+//普通扩展类
 class Prototype {
 }
 Array.prototype["Each"] = function(func) {

@@ -1,3 +1,9 @@
+//九宫格图片类
+//使用方法：
+// let bg = new N9("xxx");
+// bg.width = NForm.width;
+// bg.height = NForm.height;
+// this.Add(bg);
 class N9 extends Sx {
     public img: Bx;
     public constructor(val: string, rect: Rectangle = null) {

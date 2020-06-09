@@ -1,3 +1,6 @@
+//多线程排队类
+//比如多个命令，然后需要一个一个排队执行
+//代替SingleQueue
 class TaskQueue {
     private timeout: number = 100;
     private onIdle: Function;

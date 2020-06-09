@@ -1,3 +1,8 @@
+//进度条类
+//使用方法：
+// let process = new NProcess("panelpfg", "panelpbg", null, -1, true);
+// NForm.CenterExtra(process, 0, 30);//居中显示
+// this.Add(process);
 class NProcess extends Sx {
     public static textStyle: number = 201;
     private _fg: Bx;

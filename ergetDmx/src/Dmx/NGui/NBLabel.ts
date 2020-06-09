@@ -1,3 +1,12 @@
+//文字绑定类
+///<reference path="NLabel.ts" />
+//使用方法
+//let list = new Listx();
+//list["att"] = "1";
+//let l = new NBLabel(list, "att", 17, 0x83fb1f);
+//this.Add(l);
+//list["att"] = "2";
+
 ///<reference path="NLabel.ts" />
 
 class NBLabel extends NLabel {

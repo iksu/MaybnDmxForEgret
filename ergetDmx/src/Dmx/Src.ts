@@ -1,3 +1,4 @@
+//文件读取类
 class Src {
     public static ReadByte(path: string, urlLoaded: Function, errorFunc: Function = null) {
         // let loader: egret.URLLoader = new egret.URLLoader();

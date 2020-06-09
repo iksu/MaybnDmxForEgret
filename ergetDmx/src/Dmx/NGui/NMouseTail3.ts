@@ -1,3 +1,6 @@
+//鼠标拖尾类
+//需要tail.png置入图片库
+//一般不建议用
 class NMouseTail3 extends Sx {
     public frameRage = 25;
     public maxLen = 16;

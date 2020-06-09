@@ -1,3 +1,8 @@
+//WebSocket长链接
+//使用方法：
+// this.socket = new SocketWs(this.Handle.bind(this), Config.serverIp, Config.port);
+// private Handle(text: String): void {
+// ｝
 class SocketWs extends egret.EventDispatcher implements ISocket {
     public static net: any;
     private sender: Function;

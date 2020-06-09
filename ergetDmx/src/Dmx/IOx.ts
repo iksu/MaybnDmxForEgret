@@ -1,3 +1,13 @@
+//IO类
+//这里实现了读取网络IO
+//使用方法
+// IOx.ReadURL(Config.urls[0], (res: string) => {
+//     if (Strx.IsEmpty(res)) {
+//         return;
+//     }
+// }, (ev) => {
+//     Form.Alert("网络错误，请重试");
+// }, "dataText");
 class IOx {
     public static ReadURL(path: string, urlLoaded: Function, urlError: Function = null, data: string = "", method: string = egret.HttpMethod.POST) {
         var req = new egret.HttpRequest();

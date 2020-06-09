@@ -1,3 +1,4 @@
+//NGridList简易的左右翻页类
 class NGridListPageSide extends Sx {
     public g: NGridList;
     public column: number = 1;

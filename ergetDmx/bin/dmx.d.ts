@@ -1,34 +1,3 @@
-declare class Dictionary extends egret.HashObject {
-    private static systemKeys;
-    _xml: any;
-    private _gsKey;
-    private _risingChanged;
-    constructor();
-    CreateGSS(keys: any): void;
-    CreateGS(key: string): void;
-    s(key: string, val: any): void;
-    Set(key: any, val: any): void;
-    g(key: string): any;
-    Get(key: string): any;
-    Remove(key: string): void;
-    Clear(): void;
-    Exists(key: string): boolean;
-    GetOrAdd(key: string, func: Function): any;
-    GetName(index: number): string;
-    GetValue(index: number): any;
-    GetIndex(key: string): number;
-    EachKey(func: Function): void;
-    Each(func: Function): void;
-    ResetLength(): void;
-    private _length;
-    readonly length: number;
-    readonly Length: number;
-    readonly keys: Array<string>;
-    Dispose(): void;
-    _changedFuncList: Arr<Function>;
-    readonly changedFuncList: Arr<Function>;
-    Changed(key: string, oldValue: any, newValue: any): void;
-}
 declare class Sx extends eui.Group implements Ix {
     that: this;
     showTop50: boolean;
@@ -160,6 +129,37 @@ declare class Sx extends eui.Group implements Ix {
     static RegisterGuideFunc: any;
     RegisterGuide(guide: string, step?: number): void;
 }
+declare class Dictionary extends egret.HashObject {
+    private static systemKeys;
+    _xml: any;
+    private _gsKey;
+    private _risingChanged;
+    constructor();
+    CreateGSS(keys: any): void;
+    CreateGS(key: string): void;
+    s(key: string, val: any): void;
+    Set(key: any, val: any): void;
+    g(key: string): any;
+    Get(key: string): any;
+    Remove(key: string): void;
+    Clear(): void;
+    Exists(key: string): boolean;
+    GetOrAdd(key: string, func: Function): any;
+    GetName(index: number): string;
+    GetValue(index: number): any;
+    GetIndex(key: string): number;
+    EachKey(func: Function): void;
+    Each(func: Function): void;
+    ResetLength(): void;
+    private _length;
+    readonly length: number;
+    readonly Length: number;
+    readonly keys: Array<string>;
+    Dispose(): void;
+    _changedFuncList: Arr<Function>;
+    readonly changedFuncList: Arr<Function>;
+    Changed(key: string, oldValue: any, newValue: any): void;
+}
 declare class Observer extends Dictionary {
     constructor();
     g(key: any): any;
@@ -214,50 +214,6 @@ declare class NLabel extends Sx {
     private faces;
     SetFaceVal(value: string): void;
     static HtmlAlignCenter(text: string, w: number, fontSize: number): string;
-}
-declare class Vector2 {
-    x: number;
-    y: number;
-    constructor(x?: number, y?: number);
-    toString(): string;
-    Equals(p: Vector2): boolean;
-    Move(x: number, y: number): Vector2;
-    Multi(val: number): Vector2;
-    Distance(p: Vector2): number;
-    static New(x: number, y: number): Vector2;
-}
-declare class NScrollPanel extends Sx {
-    view: Sx;
-    scroller: eui.Scroller;
-    bg: any;
-    private onScrollerEndList;
-    w: number;
-    h: number;
-    updateInterval: number;
-    private scrollerEnd;
-    constructor(w?: number, h?: number, updateInterval?: number);
-    private scrollerEndIndex;
-    private ScrollerEnd(ev);
-    OnScrollerEnd(func: any): void;
-    private ScrollerTouchEnd(ev);
-    Add(s1: any, x?: number, y?: number): boolean;
-    RemoveAll(): void;
-    BaseAdd(s: any, x?: number, y?: number): boolean;
-    Resize(w: number, h: number): void;
-    _disableScroll: boolean;
-    DisableScroll(): void;
-    DisableScrollX(): void;
-    DisableScrollY(): void;
-    EnableScroll(): void;
-    EnableScrollX(): void;
-    EnableScrollY(): void;
-    _disableMask: boolean;
-    DisableMask(): void;
-    tween: boolean;
-    bounces: boolean;
-    visibleInScrollV(p: Sx, cellHeight: number): boolean;
-    visibleInScrollH(p: Sx, cellWidth: number): boolean;
-    Dispose(): void;
 }
 declare class Bx extends eui.Image implements Ix {
     this: this;
@@ -328,6 +284,54 @@ declare class Bx extends eui.Image implements Ix {
     private _textures;
     textures: Textures;
 }
+interface String {
+    ArrList(): Array<Listx>;
+    Xqt(): any;
+}
+declare class Listx extends Observer {
+    _staticData: boolean;
+    _parent: XmlLinqT;
+    constructor();
+    static _listenCount: number;
+    private static listenCount;
+    static listenTraced: boolean;
+    private static TraceListen();
+    Listen(act: Function, key: string, sx: Ix): void;
+    ListenArray(act: Function, keys: Array<any>, sx: Ix): void;
+    static GetArrList(text: string): Array<Listx>;
+    static GetXmlLinqT(text: string): XmlLinqT;
+    static Arr(text: string): Listx;
+    static ArrSmart(text: string): Listx;
+    static GetArr(text: string): Listx;
+    static GetArrSmart(text: string): Listx;
+    Text(): string;
+    static GetArrText(arr: Array<Listx>): string;
+    CopyTo(list: Listx): void;
+    GetPageSize(pageSize: number): number;
+    Take(size: number, skip?: number): Listx;
+    Where(func: Function): Listx;
+    Copy(): Listx;
+    Count(func?: Function): number;
+    Any(func: Function): boolean;
+    All(func: Function): boolean;
+    FirstOrDefault(func: Function): any;
+    Max(func: Function): number;
+    Min(func: Function): number;
+    MaxItem(func: Function): any;
+    toString(): string;
+    Dispose(): void;
+}
+declare class Vector2 {
+    x: number;
+    y: number;
+    constructor(x?: number, y?: number);
+    toString(): string;
+    Equals(p: Vector2): boolean;
+    Move(x: number, y: number): Vector2;
+    Multi(val: number): Vector2;
+    Distance(p: Vector2): number;
+    static New(x: number, y: number): Vector2;
+}
 declare class LangType {
     static Chs: string;
     static Cht: string;
@@ -381,41 +385,37 @@ declare class NAniBase extends Sx {
     TimerHandler(): boolean;
     Dispose(): void;
 }
-interface String {
-    ArrList(): Array<Listx>;
-    Xqt(): any;
-}
-declare class Listx extends Observer {
-    _staticData: boolean;
-    _parent: XmlLinqT;
-    constructor();
-    static _listenCount: number;
-    private static listenCount;
-    static listenTraced: boolean;
-    private static TraceListen();
-    Listen(act: Function, key: string, sx: Ix): void;
-    ListenArray(act: Function, keys: Array<any>, sx: Ix): void;
-    static GetArrList(text: string): Array<Listx>;
-    static GetXmlLinqT(text: string): XmlLinqT;
-    static Arr(text: string): Listx;
-    static ArrSmart(text: string): Listx;
-    static GetArr(text: string): Listx;
-    static GetArrSmart(text: string): Listx;
-    Text(): string;
-    static GetArrText(arr: Array<Listx>): string;
-    CopyTo(list: Listx): void;
-    GetPageSize(pageSize: number): number;
-    Take(size: number, skip?: number): Listx;
-    Where(func: Function): Listx;
-    Copy(): Listx;
-    Count(func?: Function): number;
-    Any(func: Function): boolean;
-    All(func: Function): boolean;
-    FirstOrDefault(func: Function): any;
-    Max(func: Function): number;
-    Min(func: Function): number;
-    MaxItem(func: Function): any;
-    toString(): string;
+declare class NScrollPanel extends Sx {
+    view: Sx;
+    scroller: eui.Scroller;
+    bg: any;
+    private onScrollerEndList;
+    w: number;
+    h: number;
+    updateInterval: number;
+    private scrollerEnd;
+    constructor(w?: number, h?: number, updateInterval?: number);
+    private scrollerEndIndex;
+    private ScrollerEnd(ev);
+    OnScrollerEnd(func: any): void;
+    private ScrollerTouchEnd(ev);
+    Add(s1: any, x?: number, y?: number): boolean;
+    RemoveAll(): void;
+    BaseAdd(s: any, x?: number, y?: number): boolean;
+    Resize(w: number, h: number): void;
+    _disableScroll: boolean;
+    DisableScroll(): void;
+    DisableScrollX(): void;
+    DisableScrollY(): void;
+    EnableScroll(): void;
+    EnableScrollX(): void;
+    EnableScrollY(): void;
+    _disableMask: boolean;
+    DisableMask(): void;
+    tween: boolean;
+    bounces: boolean;
+    visibleInScrollV(p: Sx, cellHeight: number): boolean;
+    visibleInScrollH(p: Sx, cellWidth: number): boolean;
     Dispose(): void;
 }
 declare class NColorText extends NLabel {
@@ -429,34 +429,226 @@ declare class NColorText extends NLabel {
     static ExsistStyle(style: number): boolean;
     style: number;
 }
-declare class Music {
-    private id;
-    private sound;
-    private channel;
-    private loopTimes;
-    private loaded;
-    private stoped;
-    constructor(id: string, loopTimes?: number);
-    private Load(id);
-    private LoadComplete();
-    Play(): void;
-    Stop(): void;
-    private LoadError();
-    private PlayEnd();
-    static mList: Listx;
-    static Play(id: string): void;
-    static Load(id: string): void;
-    static _bg: Music;
-    static preBgId: string;
-    static bgId: string;
-    static Bg(id: string): Music;
-    static BgStop(): void;
-    static _musicBgOn: boolean;
-    static musicBgOn: boolean;
-    static _musicOn: boolean;
-    static musicOn: boolean;
+interface String {
+    format(arr: Array<any>): string;
+}
+declare class Lang {
+    static list: any;
+    static type: string;
+    static Setup(att: any): void;
+    static Get(key: string): string;
+    static Exists(key: string): string;
+    static PT(val: string): string;
+    static transList: Listx;
+    static GetLangText(val: string): string;
+    static AddTransList(val: string): void;
+    static GetPlant: Function;
+    static GetGoods: Function;
+    static GetGoodsWithQuality: Function;
+    static GetObj: Function;
+}
+declare class ColorChange {
+    private static DELTA_INDEX;
+    private static IDENTITY_MATRIX;
+    private static LENGTH;
+    data: Array<number>;
+    constructor(p_matrix?: Array<number>);
+    reset(): void;
+    adjustColor(p_brightness: number, p_contrast: number, p_saturation: number, p_hue: number): void;
+    adjustBrightness(p_val: number): void;
+    adjustContrast(p_val: number): void;
+    adjustSaturation(p_val: number): void;
+    adjustHue(p_val: number): void;
+    concat(p_matrix: Array<number>): void;
+    toString(): string;
+    toArray(): Array<number>;
+    protected copyMatrix(p_matrix: Array<number>): void;
+    protected multiplyMatrix(p_matrix: Array<number>): void;
+    protected cleanValue(p_val: number, p_limit: number): number;
+    protected fixMatrix(p_matrix?: Array<number>): Array<number>;
+}
+declare class Csv {
+    nodes: any[];
+    keys: {};
+    keyArr: any[];
+    constructor(text: string);
+}
+declare class DateTime {
+    d: Date;
+    constructor(d?: any);
+    readonly time: number;
+    readonly tick: number;
+    readonly Year: number;
+    readonly Month: number;
+    readonly DayOfWeek: number;
+    readonly Day: number;
+    readonly Hour: number;
+    readonly Minute: number;
+    readonly Second: number;
+    readonly Millisecond: number;
+    Add(t: TimeSpan): DateTime;
+    AddDays(val: number): DateTime;
+    AddHours(val: number): DateTime;
+    AddMinutes(val: number): DateTime;
+    AddSeconds(val: number): DateTime;
+    AddMilliseconds(val: number): DateTime;
+    toString(withMilliseconds?: boolean): string;
+}
+declare class Filters {
+    static readonly borderFilter: Array<any>;
+    static readonly deepBorderFilter: Array<any>;
+    static readonly tabBorderFilter: Array<any>;
+    static readonly tabBorderFilterOff: Array<any>;
+    static readonly borderFilter0: Array<any>;
+    static readonly borderFilter1: Array<any>;
+    static readonly borderFilter2: Array<any>;
+    static readonly borderFilter3: Array<any>;
+    static readonly borderFilter4: Array<any>;
+    static readonly borderFilter5: Array<any>;
+    static readonly greenBorderFilter: Array<any>;
+    static readonly borderLightFilter: Array<any>;
+    static readonly lightGlowFilter: Array<any>;
+    static readonly glowFilter: Array<any>;
+    static readonly blackLineFilter: Array<any>;
+    static readonly blackLightLineFilter: Array<any>;
+    static readonly knockoutGlowFilter: Array<any>;
+    static readonly knockoutWhiteGlowFilter: Array<any>;
+    static readonly knockoutRedGlowFilter: Array<any>;
+    static readonly knockoutGrayFilter: Array<any>;
+    static readonly blackFilter: Array<any>;
+    static readonly redFilter: Array<any>;
+    static readonly grayFilter: Array<any>;
+    static readonly lightGrayFilter: Array<any>;
+    static readonly brownGlowFilter: Array<any>;
+    static readonly greenGlowFilter: Array<any>;
+    static readonly redGlowFilter: Array<any>;
+    static readonly highLightFilter: Array<any>;
+}
+declare class IOx {
+    static ReadURL(path: string, urlLoaded: Function, urlError?: Function, data?: string, method?: string): void;
+    static ReadURLContent(path: string, urlLoaded: Function, urlError?: Function, data?: string): void;
+}
+interface Ix {
+    OnDispose(func: Function): any;
+    Dispose(): any;
+    Show(): any;
+    Hide(): any;
+    RemoveMe(): any;
+    Pos(x: number, y: number): Ix;
+    width: number;
+    height: number;
+    x: number;
+    y: number;
+    position: Vector2;
+    visible: boolean;
+    topVisible: boolean;
     disposed: boolean;
-    Dispose(): void;
+    OnPos(func: Function): any;
+}
+declare class Js extends egret.HashObject {
+    static showTrace: boolean;
+    static TraceCmd: Function;
+    static TraceCmdDmx: Function;
+    static Call(str: string): any;
+    static FullScreen(): void;
+    static Trace(str: any): void;
+    static TraceObj(obj: any): void;
+    static TraceDmx(str: any): void;
+    private static GetParm(url, method);
+    static GetUrlParm(method: string): string;
+    static OpenWindow(url: string, target?: string, features?: string): void;
+    private static GetBrowserName();
+    private static _supportWebGL;
+    static readonly SupportWebGL: boolean;
+}
+declare class Lazy<T> {
+    private val;
+    constructor(func: Function);
+}
+declare class Msg {
+    private static list;
+    static Call(name: string, val: any): void;
+    static Fun(fi: Function, val: any): void;
+    static Listen(name: string, act: Function, sx: Ix): void;
+}
+interface Number {
+    ToInt(): number;
+    Max(val1: number): number;
+    Min(val1: number): number;
+    Clamp(min: number, max: number): number;
+}
+declare class Point extends egret.Point {
+    constructor(x: number, y: number);
+}
+declare class Prototype {
+}
+declare class Rectangle extends egret.Rectangle {
+    constructor(x: number, y: number, width: number, height: number);
+}
+declare class Server {
+    static SetFile(path: string, val: string): void;
+    static GetFile(path: string): string;
+    static GetIO(path: string): string;
+    static SetIO(path: string, val: string): void;
+    static CreateClass(c: any): any;
+    static readonly Now: DateTime;
+}
+declare class SHA1 {
+    constructor();
+    private static _instance;
+    static GI(): SHA1;
+    private hexcase;
+    private b64pad;
+    hex_sha1(s: any): string;
+    b64_sha1(s: any): string;
+    any_sha1(s: any, e: any): string;
+    hex_hmac_sha1(k: any, d: any): string;
+    b64_hmac_sha1(k: any, d: any): string;
+    any_hmac_sha1(k: any, d: any, e: any): string;
+    private sha1_vm_test();
+    private rstr_sha1(s);
+    private rstr_hmac_sha1(key, data);
+    private rstr2hex(input);
+    private rstr2b64(input);
+    private rstr2any(input, encoding);
+    private str2rstr_utf8(input);
+    private str2rstr_utf16le(input);
+    private str2rstr_utf16be(input);
+    private rstr2binb(input);
+    private binb2rstr(input);
+    private binb_sha1(x, len);
+    private sha1_ft(t, b, c, d);
+    private sha1_kt(t);
+    private safe_add(x, y);
+    private bit_rol(num, cnt);
+}
+declare class SingleQueue {
+    timeout: number;
+    handleQueue: Array<any>;
+    private inHandle;
+    private index;
+    private act;
+    private continueCount;
+    constructor(act: Function, timeout?: number);
+    Push(item: any): void;
+    private Add(item);
+    private En(item);
+    private Handle(item);
+    End(): void;
+}
+declare class Sp extends Bx {
+    constructor(val: any);
+}
+declare class Src {
+    static ReadByte(path: string, urlLoaded: Function, errorFunc?: Function): void;
+    static dataCacheList: Listx;
+    static inreadingDataCacheList: Listx;
+    static Read(path: string, urlLoaded: Function): void;
+    static textCacheList: Listx;
+    static ReadTxt(path: string, urlLoaded: Function, willCache?: boolean): void;
+    static ReadXml(path: string, urlLoaded: Function, willCache?: boolean): void;
+    static modelFlexList: Listx;
+    static Load(func: Function): void;
 }
 declare class NForm {
     static NARROW: boolean;
@@ -532,265 +724,6 @@ declare class NForm {
     static AddHandleAutoHide(sx: Sx): void;
     static HandleAutoHide(): void;
 }
-declare class Filters {
-    static readonly borderFilter: Array<any>;
-    static readonly deepBorderFilter: Array<any>;
-    static readonly tabBorderFilter: Array<any>;
-    static readonly tabBorderFilterOff: Array<any>;
-    static readonly borderFilter0: Array<any>;
-    static readonly borderFilter1: Array<any>;
-    static readonly borderFilter2: Array<any>;
-    static readonly borderFilter3: Array<any>;
-    static readonly borderFilter4: Array<any>;
-    static readonly borderFilter5: Array<any>;
-    static readonly greenBorderFilter: Array<any>;
-    static readonly borderLightFilter: Array<any>;
-    static readonly lightGlowFilter: Array<any>;
-    static readonly glowFilter: Array<any>;
-    static readonly blackLineFilter: Array<any>;
-    static readonly blackLightLineFilter: Array<any>;
-    static readonly knockoutGlowFilter: Array<any>;
-    static readonly knockoutWhiteGlowFilter: Array<any>;
-    static readonly knockoutRedGlowFilter: Array<any>;
-    static readonly knockoutGrayFilter: Array<any>;
-    static readonly blackFilter: Array<any>;
-    static readonly redFilter: Array<any>;
-    static readonly grayFilter: Array<any>;
-    static readonly lightGrayFilter: Array<any>;
-    static readonly brownGlowFilter: Array<any>;
-    static readonly greenGlowFilter: Array<any>;
-    static readonly redGlowFilter: Array<any>;
-    static readonly highLightFilter: Array<any>;
-}
-declare class IOx {
-    static ReadURL(path: string, urlLoaded: Function, urlError?: Function, data?: string, method?: string): void;
-    static ReadURLContent(path: string, urlLoaded: Function, urlError?: Function, data?: string): void;
-}
-interface Ix {
-    OnDispose(func: Function): any;
-    Dispose(): any;
-    Show(): any;
-    Hide(): any;
-    RemoveMe(): any;
-    Pos(x: number, y: number): Ix;
-    width: number;
-    height: number;
-    x: number;
-    y: number;
-    position: Vector2;
-    visible: boolean;
-    topVisible: boolean;
-    disposed: boolean;
-    OnPos(func: Function): any;
-}
-declare class Js extends egret.HashObject {
-    static showTrace: boolean;
-    static TraceCmd: Function;
-    static TraceCmdDmx: Function;
-    static Call(str: string): any;
-    static FullScreen(): void;
-    static Trace(str: any): void;
-    static TraceObj(obj: any): void;
-    static TraceDmx(str: any): void;
-    private static GetParm(url, method);
-    static GetUrlParm(method: string): string;
-    static OpenWindow(url: string, target?: string, features?: string): void;
-    private static GetBrowserName();
-    private static _supportWebGL;
-    static readonly SupportWebGL: boolean;
-}
-declare class Lazy<T> {
-    private val;
-    constructor(func: Function);
-}
-declare class ActLite {
-    static To(sx: any, stateTo: any, time?: number, onEndFunc?: Function, parseHandle?: Function): any;
-    static ToTarget(sx: any, target: any, offsetx: any, offsety: any, time?: number, onEndFunc?: Function): any;
-}
-declare class AStar {
-    private static BLOCK_WAY;
-    private static AROUND_POINTS;
-    private static COST_DIAGONAL;
-    private static COST_STRAIGHT;
-    private static NOTE_OPEN;
-    private static NOTE_ID;
-    private static NOTE_CLOSED;
-    private static _instance;
-    private static blocks;
-    private static _mapWalkDataMaxX;
-    private static _mapWalkDataMaxY;
-    private static _fatherList;
-    private static _noteMap;
-    private static _openId;
-    private static _nodeList;
-    private static _openCount;
-    private static _openList;
-    private static _pathScoreList;
-    private static _movementCostList;
-    static maxTry: number;
-    static Init(dataList: Vector2Hash): void;
-    static Find(p_start: Vector2, p_end: Vector2, isOptimize?: boolean): any;
-    private static IncisePath(path);
-    private static IsOpen(p);
-    private static AheadNote(index);
-    private static OpenNote(p, score, cost, fatherId);
-    private static Optimize(pointList, fromIndex?);
-    private static Optimize2(pointList, fromIndex?);
-    private static CloseNote(id);
-    private static GetScore(index);
-    private static GetArounds(p);
-    private static CanPass(p);
-    private static GetPath(p_start, id, isOptimize);
-    private static InitLists();
-    private static IsClosed(p);
-    private static DestroyLists();
-    private static BackNote();
-}
-declare class Msg {
-    private static list;
-    static Call(name: string, val: any): void;
-    static Fun(fi: Function, val: any): void;
-    static Listen(name: string, act: Function, sx: Ix): void;
-}
-interface Number {
-    ToInt(): number;
-    Max(val1: number): number;
-    Min(val1: number): number;
-    Clamp(min: number, max: number): number;
-}
-declare class Point extends egret.Point {
-    constructor(x: number, y: number);
-}
-declare class Prototype {
-}
-declare class Rectangle extends egret.Rectangle {
-    constructor(x: number, y: number, width: number, height: number);
-}
-declare class Server {
-    static SetFile(path: string, val: string): void;
-    static GetFile(path: string): string;
-    static GetIO(path: string): string;
-    static SetIO(path: string, val: string): void;
-    static GC(): void;
-    static CreateClass(c: any): any;
-    static readonly Now: DateTime;
-}
-declare class SHA1 {
-    constructor();
-    private static _instance;
-    static GI(): SHA1;
-    private hexcase;
-    private b64pad;
-    hex_sha1(s: any): string;
-    b64_sha1(s: any): string;
-    any_sha1(s: any, e: any): string;
-    hex_hmac_sha1(k: any, d: any): string;
-    b64_hmac_sha1(k: any, d: any): string;
-    any_hmac_sha1(k: any, d: any, e: any): string;
-    private sha1_vm_test();
-    private rstr_sha1(s);
-    private rstr_hmac_sha1(key, data);
-    private rstr2hex(input);
-    private rstr2b64(input);
-    private rstr2any(input, encoding);
-    private str2rstr_utf8(input);
-    private str2rstr_utf16le(input);
-    private str2rstr_utf16be(input);
-    private rstr2binb(input);
-    private binb2rstr(input);
-    private binb_sha1(x, len);
-    private sha1_ft(t, b, c, d);
-    private sha1_kt(t);
-    private safe_add(x, y);
-    private bit_rol(num, cnt);
-}
-declare class SingleQueue {
-    timeout: number;
-    handleQueue: Array<any>;
-    private inHandle;
-    private index;
-    private act;
-    private continueCount;
-    constructor(act: Function, timeout?: number);
-    Push(item: any): void;
-    private Add(item);
-    private En(item);
-    private Handle(item);
-    End(): void;
-}
-declare class Sp extends Bx {
-    constructor(val: any);
-}
-declare class Src {
-    static ReadByte(path: string, urlLoaded: Function, errorFunc?: Function): void;
-    static dataCacheList: Listx;
-    static inreadingDataCacheList: Listx;
-    static Read(path: string, urlLoaded: Function): void;
-    static textCacheList: Listx;
-    static ReadTxt(path: string, urlLoaded: Function, willCache?: boolean): void;
-    static ReadXml(path: string, urlLoaded: Function, willCache?: boolean): void;
-    static modelFlexList: Listx;
-    static Load(func: Function): void;
-}
-declare class Config {
-    static qq: string;
-    static qqq: string;
-    static allShopGoods: string;
-    static urls: Array<string>;
-    static gameUrl: string;
-    static payUrl: string;
-    static shareUrl: string;
-    static src: string;
-    static showTrace: string;
-    static version: number;
-    static icoPath: string;
-    static srcPath: string;
-    static game: string;
-    static isLW: boolean;
-    static cardMode: boolean;
-    static app: string;
-    static shareApp: string;
-    static serverIp: string;
-    static port: number;
-    static serverIpTls13: string;
-    static portTls13: number;
-    static portHttp: number;
-    static serverName: string;
-    static serverBegin: number;
-    static serverFrom: number;
-    static test: string;
-    static ps: boolean;
-    static closeChat: boolean;
-    static serverId: string;
-    static newServerMode: boolean;
-    static wss: number;
-    static gonggao: string;
-    static isBattleCard: boolean;
-    static isStyleCard: boolean;
-    static mainCenter: number;
-    static btServer: boolean;
-    static gameType: number;
-    static ads: string;
-    static openAds: boolean;
-    static banner: string;
-    static banner2: string;
-    static bannery: number;
-    static outAds: boolean;
-    static alert: string;
-    static alertOld: string;
-    static appMode: boolean;
-    static inExam: boolean;
-    static autoCreateRole: boolean;
-    static bbs: string;
-    static share: string;
-    static readonly shareIco: string;
-    static shareIcos: Array<string>;
-    static tujian: string;
-    static businessType: string;
-    static newServerId: string;
-    static dic: Listx;
-    static LoadConfig(xml: Xml, func: Function): void;
-}
 declare class TaskQueue {
     private timeout;
     private onIdle;
@@ -853,14 +786,6 @@ declare class UTF8 {
     private stringToCodePoints(string);
     private encode(str);
     private decode(data);
-}
-declare class Caches {
-    private static dic;
-    static GetDic(key: string): any;
-    static GetListx(key: string): Listx;
-    static GetArr(key: string): any;
-    static GetObj(key: string): any;
-    static SetObj(key: string, obj: any): void;
 }
 declare class Vector2Hash {
     v: any;
@@ -948,35 +873,69 @@ declare class Assert {
     static Trace(): void;
 }
 interface String {
-    format(arr: Array<any>): string;
+    IsFull(): boolean;
+    IsEmpty(): boolean;
+    ToInt(): number;
+    WriteLog(): void;
+    TrueLength(): number;
+    PaddingLeft(c: string, count: number): any;
+    PaddingRight(c: string, count: number): any;
+    Trim(): any;
+    StartWith(c: string): any;
 }
-declare class Lang {
-    static list: any;
-    static type: string;
-    static Setup(att: any): void;
-    static Get(key: string): string;
-    static Exists(key: string): string;
-    static PT(val: string): string;
-    static transList: Listx;
-    static GetLangText(val: string): string;
-    static AddTransList(val: string): void;
-    static GetPlant: Function;
-    static GetGoods: Function;
-    static GetGoodsWithQuality: Function;
-    static GetObj: Function;
+declare class Strx {
+    constructor();
+    static Setup(): void;
+    static NUMS: Array<string>;
+    static CHARS: Array<string>;
+    static Rnd(max: number): number;
+    static Int(text: any): number;
+    static IsEmpty(text: string): boolean;
+    static IsFull(text: string): boolean;
+    static PaddingLeft(text: string, len: number, char: string): string;
+    static PaddingRight(text: string, len: number, char: string): string;
+    static Trim(str: string): string;
+    static GetSmaNum(val: number): string;
+    static TrueLength(text: string): number;
+    static Num2Str(d: number, decimal?: number): string;
+    static Decompress(buffer: Uint8Array): Uint8Array;
+    static Encompress(buffer: Uint8Array): Uint8Array;
+    static CalulateXYAnagle(startx: number, starty: number, endx: number, endy: number): number;
+    static GetInnerText(text: string, begin: string, end: string, times?: number): string;
+    static IsString(val: any): boolean;
 }
-declare class Color {
-    color: number;
-    constructor(argb?: number);
-    Set(color?: number): void;
-    readonly a: number;
-    readonly r: number;
-    readonly g: number;
-    readonly b: number;
-    readonly rgb: string;
-    static readonly Green: number;
-    static readonly GreenGame: string;
-    static Parse(color: string): Color;
+declare class ActLite {
+    static To(sx: any, stateTo: any, time?: number, onEndFunc?: Function, parseHandle?: Function): any;
+    static ToTarget(sx: any, target: any, offsetx: any, offsety: any, time?: number, onEndFunc?: Function): any;
+}
+declare class Music {
+    private id;
+    private sound;
+    private channel;
+    private loopTimes;
+    private loaded;
+    private stoped;
+    constructor(id: string, loopTimes?: number);
+    private Load(id);
+    private LoadComplete();
+    Play(): void;
+    Stop(): void;
+    private LoadError();
+    private PlayEnd();
+    static mList: Listx;
+    static Play(id: string): void;
+    static Load(id: string): void;
+    static _bg: Music;
+    static preBgId: string;
+    static bgId: string;
+    static Bg(id: string): Music;
+    static BgStop(): void;
+    static _musicBgOn: boolean;
+    static musicBgOn: boolean;
+    static _musicOn: boolean;
+    static musicOn: boolean;
+    disposed: boolean;
+    Dispose(): void;
 }
 declare class Parms {
     static phone: boolean;
@@ -994,25 +953,64 @@ declare class N9 extends Sx {
     width: number;
     height: number;
 }
-declare class ColorChange {
-    private static DELTA_INDEX;
-    private static IDENTITY_MATRIX;
-    private static LENGTH;
-    data: Array<number>;
-    constructor(p_matrix?: Array<number>);
-    reset(): void;
-    adjustColor(p_brightness: number, p_contrast: number, p_saturation: number, p_hue: number): void;
-    adjustBrightness(p_val: number): void;
-    adjustContrast(p_val: number): void;
-    adjustSaturation(p_val: number): void;
-    adjustHue(p_val: number): void;
-    concat(p_matrix: Array<number>): void;
-    toString(): string;
-    toArray(): Array<number>;
-    protected copyMatrix(p_matrix: Array<number>): void;
-    protected multiplyMatrix(p_matrix: Array<number>): void;
-    protected cleanValue(p_val: number, p_limit: number): number;
-    protected fixMatrix(p_matrix?: Array<number>): Array<number>;
+declare class Config {
+    static qq: string;
+    static qqq: string;
+    static allShopGoods: string;
+    static urls: Array<string>;
+    static gameUrl: string;
+    static payUrl: string;
+    static shareUrl: string;
+    static src: string;
+    static showTrace: string;
+    static version: number;
+    static icoPath: string;
+    static srcPath: string;
+    static game: string;
+    static isLW: boolean;
+    static cardMode: boolean;
+    static app: string;
+    static shareApp: string;
+    static serverIp: string;
+    static port: number;
+    static serverIpTls13: string;
+    static portTls13: number;
+    static portHttp: number;
+    static serverName: string;
+    static serverBegin: number;
+    static serverFrom: number;
+    static test: string;
+    static ps: boolean;
+    static closeChat: boolean;
+    static serverId: string;
+    static newServerMode: boolean;
+    static wss: number;
+    static gonggao: string;
+    static isBattleCard: boolean;
+    static isStyleCard: boolean;
+    static mainCenter: number;
+    static btServer: boolean;
+    static gameType: number;
+    static ads: string;
+    static openAds: boolean;
+    static banner: string;
+    static banner2: string;
+    static bannery: number;
+    static outAds: boolean;
+    static alert: string;
+    static alertOld: string;
+    static appMode: boolean;
+    static inExam: boolean;
+    static autoCreateRole: boolean;
+    static bbs: string;
+    static share: string;
+    static readonly shareIco: string;
+    static shareIcos: Array<string>;
+    static tujian: string;
+    static businessType: string;
+    static newServerId: string;
+    static dic: Listx;
+    static LoadConfig(xml: Xml, func: Function): void;
 }
 declare class NAniBx extends NAniBase {
     constructor(imgs: any, overAndRemove?: boolean, frameRate?: number);
@@ -1089,32 +1087,52 @@ declare class NAniXml extends Sx {
     OnLoaded(func: Function): void;
     Dispose(): void;
 }
-declare class Csv {
-    nodes: any[];
-    keys: {};
-    keyArr: any[];
-    constructor(text: string);
+declare class AStar {
+    private static BLOCK_WAY;
+    private static AROUND_POINTS;
+    private static COST_DIAGONAL;
+    private static COST_STRAIGHT;
+    private static NOTE_OPEN;
+    private static NOTE_ID;
+    private static NOTE_CLOSED;
+    private static _instance;
+    private static blocks;
+    private static _mapWalkDataMaxX;
+    private static _mapWalkDataMaxY;
+    private static _fatherList;
+    private static _noteMap;
+    private static _openId;
+    private static _nodeList;
+    private static _openCount;
+    private static _openList;
+    private static _pathScoreList;
+    private static _movementCostList;
+    static maxTry: number;
+    static Init(dataList: Vector2Hash): void;
+    static Find(p_start: Vector2, p_end: Vector2, isOptimize?: boolean): any;
+    private static IncisePath(path);
+    private static IsOpen(p);
+    private static AheadNote(index);
+    private static OpenNote(p, score, cost, fatherId);
+    private static Optimize(pointList, fromIndex?);
+    private static Optimize2(pointList, fromIndex?);
+    private static CloseNote(id);
+    private static GetScore(index);
+    private static GetArounds(p);
+    private static CanPass(p);
+    private static GetPath(p_start, id, isOptimize);
+    private static InitLists();
+    private static IsClosed(p);
+    private static DestroyLists();
+    private static BackNote();
 }
-declare class DateTime {
-    d: Date;
-    constructor(d?: any);
-    readonly time: number;
-    readonly tick: number;
-    readonly Year: number;
-    readonly Month: number;
-    readonly DayOfWeek: number;
-    readonly Day: number;
-    readonly Hour: number;
-    readonly Minute: number;
-    readonly Second: number;
-    readonly Millisecond: number;
-    Add(t: TimeSpan): DateTime;
-    AddDays(val: number): DateTime;
-    AddHours(val: number): DateTime;
-    AddMinutes(val: number): DateTime;
-    AddSeconds(val: number): DateTime;
-    AddMilliseconds(val: number): DateTime;
-    toString(withMilliseconds?: boolean): string;
+declare class Caches {
+    private static dic;
+    static GetDic(key: string): any;
+    static GetListx(key: string): Listx;
+    static GetArr(key: string): any;
+    static GetObj(key: string): any;
+    static SetObj(key: string, obj: any): void;
 }
 declare class NBColorText extends NColorText {
     constructor(item: Listx, bindKey?: string, bold?: boolean, size?: number, style?: number, act?: Function);
@@ -1186,37 +1204,18 @@ declare class NCountDown extends Sx {
     StopAt(allTime: number): void;
     Dispose(): void;
 }
-interface String {
-    IsFull(): boolean;
-    IsEmpty(): boolean;
-    ToInt(): number;
-    WriteLog(): void;
-    TrueLength(): number;
-    PaddingLeft(c: string, count: number): any;
-    PaddingRight(c: string, count: number): any;
-    Trim(): any;
-    StartWith(c: string): any;
-}
-declare class Strx {
-    constructor();
-    static Setup(): void;
-    static NUMS: Array<string>;
-    static CHARS: Array<string>;
-    static Rnd(max: number): number;
-    static Int(text: any): number;
-    static IsEmpty(text: string): boolean;
-    static IsFull(text: string): boolean;
-    static PaddingLeft(text: string, len: number, char: string): string;
-    static PaddingRight(text: string, len: number, char: string): string;
-    static Trim(str: string): string;
-    static GetSmaNum(val: number): string;
-    static TrueLength(text: string): number;
-    static Num2Str(d: number, decimal?: number): string;
-    static Decompress(buffer: Uint8Array): Uint8Array;
-    static Encompress(buffer: Uint8Array): Uint8Array;
-    static CalulateXYAnagle(startx: number, starty: number, endx: number, endy: number): number;
-    static GetInnerText(text: string, begin: string, end: string, times?: number): string;
-    static IsString(val: any): boolean;
+declare class Color {
+    color: number;
+    constructor(argb?: number);
+    Set(color?: number): void;
+    readonly a: number;
+    readonly r: number;
+    readonly g: number;
+    readonly b: number;
+    readonly rgb: string;
+    static readonly Green: number;
+    static readonly GreenGame: string;
+    static Parse(color: string): Color;
 }
 declare class NGridList extends NScrollPanel {
     static empty: Listx;
@@ -1390,17 +1389,6 @@ declare class NProcess extends Sx {
     SetText(val: string): void;
     readonly width: number;
     readonly height: number;
-}
-declare class NPs extends Sx {
-    constructor(path: string);
-    Play(name: string, playEndFunc?: Function): void;
-    Stop(): void;
-    StopAtEnd(): void;
-    private StopAtEndWhenPlayOnEnd();
-    Continue(): void;
-    private End(ev);
-    private PlayOnEnd(ev);
-    Dispose(): void;
 }
 declare class NRadio extends Sx {
     w: number;

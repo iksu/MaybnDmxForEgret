@@ -1,3 +1,8 @@
+//临时存储类
+//使用方法：
+//Caches.SetObj("test","1");
+//Caches.GetObj("test");
+///<reference path="Listx.ts" />
 class Caches {
     private static dic = new Listx();
 

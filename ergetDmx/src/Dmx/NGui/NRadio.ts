@@ -1,3 +1,25 @@
+//单选框类，可用于创角等
+//使用方法：
+//创角头像选择
+// let arr = [];
+// let sex = new NRadio(["1", "2"], 325, 120, function (p: NPanel, val: String): void {
+//     let img = AssertImg("Ico" + val);
+//     p.Add(img, 120, 310);
+//     arr.push(img);
+// }, function (index) {
+//     sex.selectItem.Add(mx, -10, 65);//选中特效
+//     if (index == 0) {
+//         arr[0].scaleX = arr[0].scaleY = 1;
+//         arr[1].scaleX = arr[1].scaleY = 0.7;
+//     } else {
+//         arr[1].scaleX = arr[1].scaleY = 1;
+//         arr[0].scaleX = arr[0].scaleY = 0.7;
+//     }
+// }, 9999);
+// NForm.Center(sex, -255, -220);
+// sex.mouseChildren = false;
+// sex.mouseEnabled = false;
+// this.Add(sex);
 class NRadio extends Sx {
     public w: number;
     public h: number;

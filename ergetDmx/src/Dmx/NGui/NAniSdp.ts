@@ -1,4 +1,4 @@
-//sdp coco格式
+//sdp格式解析的动画库
 class NAniSdp extends Sx {
     public ani: Sx;
     public overAndRemove: boolean;

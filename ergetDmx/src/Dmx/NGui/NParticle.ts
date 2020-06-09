@@ -1,3 +1,5 @@
+//粒子类，如果需要的话将该类直接放到解除注释，拷贝到游戏中
+//需要引用白鹭粒子底层
 // class NParticle extends Sx {
 //     public ani: particle.GravityParticleSystem;
 //     public playTimes: number;

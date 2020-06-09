@@ -1,3 +1,4 @@
+//外部单个TexturePacker打包的图片
 class NAniXml extends Sx {
     public ani: Bx;
     public path: string;

@@ -1,4 +1,8 @@
 //一个对象在一个视野里面移动，如：世界地图的拖动
+//使用方法：
+// this.drag = new NMovePanel(NForm.width, NForm.height);
+// this.Add(this.drag);
+// this.drag.Add(Assert.Img("xxxx"));
 class NMovePanel extends NScrollPanel {
     private movedFunc: Function;
     private moveFunc: Function;

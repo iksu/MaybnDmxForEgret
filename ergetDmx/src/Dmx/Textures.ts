@@ -1,3 +1,10 @@
+//底层类
+//纹理管理
+//自动实现纹理资源GC
+//小游戏中需要载入以下代码
+// Msg.Listen("GC", (v) => {
+//     wx.triggerGC();
+// }, this);
 class Textures {
     public tick: number;
     private texture: egret.Texture;

@@ -1,3 +1,5 @@
+//外部图片
+//可以由Assert.Img("xxx/xxx.jpg");代替
 class NSprite extends Bx {
     public constructor(path: string, width: number = 0, height: number = 0) {
         super(null);

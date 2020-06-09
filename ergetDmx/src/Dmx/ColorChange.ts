@@ -1,3 +1,11 @@
+//颜色变换滤镜类
+//和egret.ColorMatrixFilter一起使用
+//使用方法：
+//let r = Assert.Img("xxx");
+//this.Add(r);
+//var c: ColorChange = new ColorChange();
+//c.adjustHue(this.hue);
+//r.filters = [new egret.ColorMatrixFilter(c.data)];
 class ColorChange {//extends Array<number>
     private static DELTA_INDEX: Array<number> = [
         0, 0.01, 0.02, 0.04, 0.05, 0.06, 0.07, 0.08, 0.1, 0.11,

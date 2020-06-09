@@ -1,3 +1,5 @@
+//多线程排队类
+//比如多个命令，然后需要一个一个排队执行
 class SingleQueue {
     public timeout: number;
     public handleQueue: Array<any>;

@@ -1,3 +1,4 @@
+//底层类
 ///<reference path="Arr.ts" />
 ///<reference path="Dictionary.ts" />
 class Observer extends Dictionary {

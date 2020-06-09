@@ -1,3 +1,7 @@
+//消息传送
+// Msg.Listen("ShowWin", (v: ViewUI) => {
+//  console.log(v);
+// }, this);
 class Msg {
     private static list = new Listx();
     public static Call(name: string, val: any) {

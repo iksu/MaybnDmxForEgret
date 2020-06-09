@@ -1,3 +1,6 @@
+//语言读取类
+//可以读取策划配置语言
+//还可以实现本地化功能
 ///<reference path="LangType.ts" />
 
 interface String {

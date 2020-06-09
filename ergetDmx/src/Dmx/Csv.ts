@@ -1,3 +1,5 @@
+//简单高效的csv文件解析
+//一般用于读取策划配置
 class Csv {
     public nodes = [];
     public keys = {};

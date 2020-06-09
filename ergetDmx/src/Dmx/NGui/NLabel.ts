@@ -1,3 +1,7 @@
+//文字渲染类，支持简单的HTML
+//使用方法
+// let l = new NLabel("内容<font color='#ff6666'>已回复</font>", 0xffffff, false, 17);
+// this.Add(l);
 class NLabel extends Sx {
     public static font: string = "";
     public static defaultColor: number = 0x502d17;
@@ -275,7 +279,7 @@ class NLabel extends Sx {
             val = "";
         }
         this._val = val;
-        var valText: string = val;
+        var valText: string = val.toString();
         // if (Number(this._val).toString() == this._val) {
         //     valText = Strx.GetSmaNum(Strx.Int(this._val));
         // }

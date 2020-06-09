@@ -8,433 +8,7 @@ var __extends = this && this.__extends || function __extends(t, e) {
 for (var i in e) e.hasOwnProperty(i) && (t[i] = e[i]);
 r.prototype = e.prototype, t.prototype = new r();
 };
-///<reference path="Strx.ts" />
-var Dictionary = (function (_super) {
-    __extends(Dictionary, _super);
-    function Dictionary() {
-        var _this = _super.call(this) || this;
-        _this._risingChanged = false;
-        _this._length = -1;
-        _this._gsKey = new egret.HashObject();
-        return _this;
-    }
-    Dictionary.prototype.CreateGSS = function (keys) {
-        var _this = this;
-        if (keys) {
-            for (var fi in keys) {
-                this.CreateGS(fi);
-            }
-        }
-        else {
-            this.EachKey((function (fi) {
-                _this.CreateGS(fi);
-            }).bind(this));
-        }
-    };
-    Dictionary.prototype.CreateGS = function (key) {
-        if (!this._gsKey[key]) {
-            this._gsKey[key] = true;
-            if (this._xml) {
-            }
-            else {
-                this["_" + key] = this[key];
-                delete this[key];
-            }
-            Object.defineProperty(this, key, {
-                set: function (val) {
-                    // if (key instanceof Function) {
-                    //     key = Strx.Rnd(Number.MAX_VALUE).toString();
-                    // }
-                    this._risingChanged = false;
-                    if (this._xml) {
-                        if (this.Exists(key)) {
-                            var oldVal = this._xml[key];
-                            if (oldVal != val || val == null) {
-                                this._xml[key] = val;
-                                this.Changed(key, oldVal, val);
-                                this.ResetLength();
-                            }
-                        }
-                        else {
-                            this._xml[key] = val;
-                            this.Changed(key, null, val);
-                            this.ResetLength();
-                        }
-                    }
-                    else {
-                        if (this.Exists(key)) {
-                            var oldVal = this["_" + key];
-                            if (oldVal != val || val == null) {
-                                this["_" + key] = val;
-                                this.Changed(key, oldVal, val);
-                                this.ResetLength();
-                            }
-                        }
-                        else {
-                            this["_" + key] = val;
-                            this.Changed(key, null, val);
-                            this.ResetLength();
-                        }
-                    }
-                },
-                get: function () {
-                    var val = null;
-                    if (this._xml) {
-                        val = this._xml[key];
-                        if (Strx.IsEmpty(val)) {
-                            return "";
-                        }
-                    }
-                    else {
-                        val = this["_" + key];
-                        if (val) {
-                            if (val instanceof Function) {
-                                return val;
-                            }
-                        }
-                        if (Strx.IsEmpty(val)) {
-                            return "";
-                        }
-                    }
-                    return val;
-                }
-            });
-        }
-    };
-    Dictionary.prototype.s = function (key, val) {
-        this.Set(key, val);
-    };
-    Dictionary.prototype.Set = function (key, val) {
-        this._risingChanged = false;
-        if (key instanceof Function) {
-            key = Strx.Rnd(Number.MAX_VALUE).toString();
-        }
-        if (this.Exists(key)) {
-            var oldVal = this.Get(key);
-            if (oldVal != val || val == null) {
-                this[key] = val;
-                this.Changed(key, oldVal, val);
-                this.ResetLength();
-            }
-        }
-        else {
-            this[key] = val;
-            this.Changed(key, null, val);
-            this.ResetLength();
-        }
-    };
-    Dictionary.prototype.g = function (key) {
-        return this.Get(key);
-    };
-    Dictionary.prototype.Get = function (key) {
-        if (this._xml) {
-            return this._xml[key];
-        }
-        else {
-            return this[key];
-        }
-    };
-    Dictionary.prototype.Remove = function (key) {
-        if (!Dictionary.systemKeys.hasOwnProperty(key)) {
-            delete this[key];
-            delete this["_" + key];
-            this.ResetLength();
-        }
-    };
-    Dictionary.prototype.Clear = function () {
-        var _this = this;
-        // for (let fi in this) {
-        //     Js.Trace(fi);
-        // }
-        // Js.Trace("------------------------");
-        this.EachKey((function (xi) {
-            // Js.Trace(xi);
-            delete _this[xi];
-            delete _this["_" + xi];
-        }).bind(this));
-        this.ResetLength();
-    };
-    Dictionary.prototype.Exists = function (key) {
-        if (this._xml) {
-            return this._xml.hasOwnProperty(key);
-        }
-        else {
-            return this.hasOwnProperty(key);
-            // let rv = false;
-            // if (this.keys && this.keys.length > 0) {
-            //     rv = this.keys.indexOf(key) > -1;
-            // }
-            // if (!rv) {
-            //     rv = this.hasOwnProperty(key);
-            // }
-            // return rv;
-        }
-    };
-    Dictionary.prototype.GetOrAdd = function (key, func) {
-        if (this.Exists(key)) {
-            return this.g(key);
-        }
-        else {
-            var rv = func();
-            this.s(key, rv);
-            return rv;
-        }
-    };
-    Dictionary.prototype.GetName = function (index) {
-        var rv = null;
-        var i = 0;
-        this.EachKey(function (fi) {
-            if (i == index) {
-                rv = fi;
-                return true;
-            }
-            i++;
-        });
-        return rv;
-    };
-    Dictionary.prototype.GetValue = function (index) {
-        var key = this.GetName(index);
-        return this.g(key);
-    };
-    Dictionary.prototype.GetIndex = function (key) {
-        var rv = -1;
-        var i = 0;
-        this.EachKey(function (fi) {
-            if (fi == key) {
-                rv = i;
-                return true;
-            }
-            i++;
-        });
-        return rv;
-    };
-    Dictionary.prototype.EachKey = function (func) {
-        if (this._xml) {
-            for (var fi in this._xml) {
-                if (func(fi)) {
-                    break;
-                }
-            }
-        }
-        else {
-            // if (this.keys.length > 0) {
-            //     this.keys.forEach((fi) => {
-            //         if (fi.IsFull()) {
-            //             if (fi.substr(0, 1) == "_") {
-            //                 fi = fi.substr(1, fi.length - 1);
-            //             }
-            //             if (func(fi)) {
-            //             }
-            //         }
-            //     });
-            // } else {//暂时注释了，加上后可能会出莫名的问题
-            for (var fi in this) {
-                if (fi.IsFull() && !Dictionary.systemKeys.hasOwnProperty(fi) && fi.substr(0, 1) != "_") {
-                    if (func(fi)) {
-                        break;
-                    }
-                }
-            }
-            //}
-        }
-    };
-    Dictionary.prototype.Each = function (func) {
-        if (this._xml) {
-            for (var fi in this._xml) {
-                if (fi) {
-                    if (func(this._xml[fi])) {
-                        break;
-                    }
-                }
-            }
-        }
-        else {
-            for (var fi in this) {
-                if (fi) {
-                    if (!Dictionary.systemKeys.hasOwnProperty(fi)) {
-                        if (func(this[fi])) {
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-    };
-    Dictionary.prototype.ResetLength = function () {
-        this._length = -1;
-    };
-    Object.defineProperty(Dictionary.prototype, "length", {
-        get: function () {
-            if (this._length < 0) {
-                this._length = 0;
-                if (this._xml) {
-                    for (var fi in this._xml) {
-                        this._length++;
-                    }
-                }
-                else {
-                    for (var fi in this) {
-                        if (!Dictionary.systemKeys.hasOwnProperty(fi)) {
-                            this._length++;
-                        }
-                    }
-                }
-            }
-            return this._length;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Dictionary.prototype, "Length", {
-        get: function () {
-            return this.length;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Dictionary.prototype, "keys", {
-        get: function () {
-            var keys = new Array();
-            if (this._xml) {
-                for (var fi in this._xml) {
-                    keys.push(fi);
-                }
-            }
-            else {
-                for (var fi in this) {
-                    if (!Dictionary.systemKeys.hasOwnProperty(fi)) {
-                        keys.push(fi);
-                    }
-                }
-            }
-            return keys;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Dictionary.prototype.Dispose = function () {
-        if (this._changedFuncList) {
-            this._changedFuncList.Clear();
-            this._changedFuncList = null;
-        }
-    };
-    Object.defineProperty(Dictionary.prototype, "changedFuncList", {
-        get: function () {
-            if (this._changedFuncList == null) {
-                this._changedFuncList = new Arr();
-            }
-            return this._changedFuncList;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Dictionary.prototype.Changed = function (key, oldValue, newValue) {
-        var _this = this;
-        if (this._risingChanged) {
-            return;
-        }
-        this._risingChanged = true;
-        if (this._changedFuncList && this._changedFuncList.length > 0) {
-            this._changedFuncList.Each(function (fi) {
-                try {
-                    if (fi) {
-                        fi(key, oldValue, newValue, _this);
-                    }
-                    else {
-                        Js.Trace("Error:Changed func fi empty");
-                    }
-                }
-                catch (ex) {
-                    Js.Trace(ex);
-                }
-            });
-        }
-    };
-    Dictionary.systemKeys = {
-        _xml: true,
-        $hashCode: true,
-        hashCode: true,
-        __class__: true,
-        __types__: true,
-        _gsKey: true,
-        Remove: true,
-        _length: true,
-        constructor: true,
-        CreateGS: true,
-        CreateGSS: true,
-        s: true,
-        Set: true,
-        g: true,
-        Get: true,
-        Clear: true,
-        Exists: true,
-        GetName: true,
-        GetValue: true,
-        GetIndex: true,
-        EachKey: true,
-        Each: true,
-        ResetLength: true,
-        length: true,
-        Length: true,
-        keys: true,
-        Dispose: true,
-        _changedFuncList: true,
-        changedFuncList: true,
-        Changed: true,
-        _staticData: true,
-        Listen: true,
-        ListenArray: true,
-        Text: true,
-        CopyTo: true,
-        GetPageSize: true,
-        GetPage: true,
-        Take: true,
-        Where: true,
-        Copy: true,
-        Count: true,
-        Any: true,
-        RemoveAll: true,
-        All: true,
-        FirstOrDefault: true,
-        Max: true,
-        Min: true,
-        MaxItem: true,
-        toString: true,
-        setProperty: true,
-        GetOrAdd: true,
-        _parent: true,
-        Parent: true,
-        _sortDesc: true,
-        _sortKey: true,
-        _names: true,
-        DoChanged: true,
-        ItemDoChanged: true,
-        OnAdd: true,
-        OnRemove: true,
-        OnChanged: true,
-        OnAddSplice: true,
-        OnRemoveSplice: true,
-        OnChangedSplice: true,
-        ListenEmpty: true,
-        Sum: true,
-        Select: true,
-        ToArray: true,
-        OrderBy: true,
-        GroupBy: true,
-        Add: true,
-        AddKey: true,
-        //index: true,
-        _risingChanged: true,
-        OnListAddList: true,
-        OnRemoveList: true,
-        undefined: true,
-        OnChangedList: true,
-        Reverse: true,
-    };
-    return Dictionary;
-}(egret.HashObject));
-__reflect(Dictionary.prototype, "Dictionary");
-window["Dictionary"] = Dictionary;
+//精灵类
 ///<reference path="Js.ts" />
 var Sx = (function (_super) {
     __extends(Sx, _super);
@@ -1762,6 +1336,434 @@ var Sx = (function (_super) {
 }(eui.Group));
 __reflect(Sx.prototype, "Sx", ["Ix"]);
 window["Sx"] = Sx;
+///<reference path="Strx.ts" />
+var Dictionary = (function (_super) {
+    __extends(Dictionary, _super);
+    function Dictionary() {
+        var _this = _super.call(this) || this;
+        _this._risingChanged = false;
+        _this._length = -1;
+        _this._gsKey = new egret.HashObject();
+        return _this;
+    }
+    Dictionary.prototype.CreateGSS = function (keys) {
+        var _this = this;
+        if (keys) {
+            for (var fi in keys) {
+                this.CreateGS(fi);
+            }
+        }
+        else {
+            this.EachKey((function (fi) {
+                _this.CreateGS(fi);
+            }).bind(this));
+        }
+    };
+    Dictionary.prototype.CreateGS = function (key) {
+        if (!this._gsKey[key]) {
+            this._gsKey[key] = true;
+            if (this._xml) {
+            }
+            else {
+                this["_" + key] = this[key];
+                delete this[key];
+            }
+            Object.defineProperty(this, key, {
+                set: function (val) {
+                    // if (key instanceof Function) {
+                    //     key = Strx.Rnd(Number.MAX_VALUE).toString();
+                    // }
+                    this._risingChanged = false;
+                    if (this._xml) {
+                        if (this.Exists(key)) {
+                            var oldVal = this._xml[key];
+                            if (oldVal != val || val == null) {
+                                this._xml[key] = val;
+                                this.Changed(key, oldVal, val);
+                                this.ResetLength();
+                            }
+                        }
+                        else {
+                            this._xml[key] = val;
+                            this.Changed(key, null, val);
+                            this.ResetLength();
+                        }
+                    }
+                    else {
+                        if (this.Exists(key)) {
+                            var oldVal = this["_" + key];
+                            if (oldVal != val || val == null) {
+                                this["_" + key] = val;
+                                this.Changed(key, oldVal, val);
+                                this.ResetLength();
+                            }
+                        }
+                        else {
+                            this["_" + key] = val;
+                            this.Changed(key, null, val);
+                            this.ResetLength();
+                        }
+                    }
+                },
+                get: function () {
+                    var val = null;
+                    if (this._xml) {
+                        val = this._xml[key];
+                        if (Strx.IsEmpty(val)) {
+                            return "";
+                        }
+                    }
+                    else {
+                        val = this["_" + key];
+                        if (val) {
+                            if (val instanceof Function) {
+                                return val;
+                            }
+                        }
+                        if (Strx.IsEmpty(val)) {
+                            return "";
+                        }
+                    }
+                    return val;
+                }
+            });
+        }
+    };
+    Dictionary.prototype.s = function (key, val) {
+        this.Set(key, val);
+    };
+    Dictionary.prototype.Set = function (key, val) {
+        this._risingChanged = false;
+        if (key instanceof Function) {
+            key = Strx.Rnd(Number.MAX_VALUE).toString();
+        }
+        if (this.Exists(key)) {
+            var oldVal = this.Get(key);
+            if (oldVal != val || val == null) {
+                this[key] = val;
+                this.Changed(key, oldVal, val);
+                this.ResetLength();
+            }
+        }
+        else {
+            this[key] = val;
+            this.Changed(key, null, val);
+            this.ResetLength();
+        }
+    };
+    Dictionary.prototype.g = function (key) {
+        return this.Get(key);
+    };
+    Dictionary.prototype.Get = function (key) {
+        if (this._xml) {
+            return this._xml[key];
+        }
+        else {
+            return this[key];
+        }
+    };
+    Dictionary.prototype.Remove = function (key) {
+        if (!Dictionary.systemKeys.hasOwnProperty(key)) {
+            delete this[key];
+            delete this["_" + key];
+            this.ResetLength();
+        }
+    };
+    Dictionary.prototype.Clear = function () {
+        var _this = this;
+        // for (let fi in this) {
+        //     Js.Trace(fi);
+        // }
+        // Js.Trace("------------------------");
+        this.EachKey((function (xi) {
+            // Js.Trace(xi);
+            delete _this[xi];
+            delete _this["_" + xi];
+        }).bind(this));
+        this.ResetLength();
+    };
+    Dictionary.prototype.Exists = function (key) {
+        if (this._xml) {
+            return this._xml.hasOwnProperty(key);
+        }
+        else {
+            return this.hasOwnProperty(key);
+            // let rv = false;
+            // if (this.keys && this.keys.length > 0) {
+            //     rv = this.keys.indexOf(key) > -1;
+            // }
+            // if (!rv) {
+            //     rv = this.hasOwnProperty(key);
+            // }
+            // return rv;
+        }
+    };
+    Dictionary.prototype.GetOrAdd = function (key, func) {
+        if (this.Exists(key)) {
+            return this.g(key);
+        }
+        else {
+            var rv = func();
+            this.s(key, rv);
+            return rv;
+        }
+    };
+    Dictionary.prototype.GetName = function (index) {
+        var rv = null;
+        var i = 0;
+        this.EachKey(function (fi) {
+            if (i == index) {
+                rv = fi;
+                return true;
+            }
+            i++;
+        });
+        return rv;
+    };
+    Dictionary.prototype.GetValue = function (index) {
+        var key = this.GetName(index);
+        return this.g(key);
+    };
+    Dictionary.prototype.GetIndex = function (key) {
+        var rv = -1;
+        var i = 0;
+        this.EachKey(function (fi) {
+            if (fi == key) {
+                rv = i;
+                return true;
+            }
+            i++;
+        });
+        return rv;
+    };
+    Dictionary.prototype.EachKey = function (func) {
+        if (this._xml) {
+            for (var fi in this._xml) {
+                if (func(fi)) {
+                    break;
+                }
+            }
+        }
+        else {
+            // if (this.keys.length > 0) {
+            //     this.keys.forEach((fi) => {
+            //         if (fi.IsFull()) {
+            //             if (fi.substr(0, 1) == "_") {
+            //                 fi = fi.substr(1, fi.length - 1);
+            //             }
+            //             if (func(fi)) {
+            //             }
+            //         }
+            //     });
+            // } else {//暂时注释了，加上后可能会出莫名的问题
+            for (var fi in this) {
+                if (fi.IsFull() && !Dictionary.systemKeys.hasOwnProperty(fi) && fi.substr(0, 1) != "_") {
+                    if (func(fi)) {
+                        break;
+                    }
+                }
+            }
+            //}
+        }
+    };
+    Dictionary.prototype.Each = function (func) {
+        if (this._xml) {
+            for (var fi in this._xml) {
+                if (fi) {
+                    if (func(this._xml[fi])) {
+                        break;
+                    }
+                }
+            }
+        }
+        else {
+            for (var fi in this) {
+                if (fi) {
+                    if (!Dictionary.systemKeys.hasOwnProperty(fi)) {
+                        if (func(this[fi])) {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    };
+    Dictionary.prototype.ResetLength = function () {
+        this._length = -1;
+    };
+    Object.defineProperty(Dictionary.prototype, "length", {
+        get: function () {
+            if (this._length < 0) {
+                this._length = 0;
+                if (this._xml) {
+                    for (var fi in this._xml) {
+                        this._length++;
+                    }
+                }
+                else {
+                    for (var fi in this) {
+                        if (!Dictionary.systemKeys.hasOwnProperty(fi)) {
+                            this._length++;
+                        }
+                    }
+                }
+            }
+            return this._length;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Dictionary.prototype, "Length", {
+        get: function () {
+            return this.length;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Dictionary.prototype, "keys", {
+        get: function () {
+            var keys = new Array();
+            if (this._xml) {
+                for (var fi in this._xml) {
+                    keys.push(fi);
+                }
+            }
+            else {
+                for (var fi in this) {
+                    if (!Dictionary.systemKeys.hasOwnProperty(fi)) {
+                        keys.push(fi);
+                    }
+                }
+            }
+            return keys;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Dictionary.prototype.Dispose = function () {
+        if (this._changedFuncList) {
+            this._changedFuncList.Clear();
+            this._changedFuncList = null;
+        }
+    };
+    Object.defineProperty(Dictionary.prototype, "changedFuncList", {
+        get: function () {
+            if (this._changedFuncList == null) {
+                this._changedFuncList = new Arr();
+            }
+            return this._changedFuncList;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Dictionary.prototype.Changed = function (key, oldValue, newValue) {
+        var _this = this;
+        if (this._risingChanged) {
+            return;
+        }
+        this._risingChanged = true;
+        if (this._changedFuncList && this._changedFuncList.length > 0) {
+            this._changedFuncList.Each(function (fi) {
+                try {
+                    if (fi) {
+                        fi(key, oldValue, newValue, _this);
+                    }
+                    else {
+                        Js.Trace("Error:Changed func fi empty");
+                    }
+                }
+                catch (ex) {
+                    Js.Trace(ex);
+                }
+            });
+        }
+    };
+    Dictionary.systemKeys = {
+        _xml: true,
+        $hashCode: true,
+        hashCode: true,
+        __class__: true,
+        __types__: true,
+        _gsKey: true,
+        Remove: true,
+        _length: true,
+        constructor: true,
+        CreateGS: true,
+        CreateGSS: true,
+        s: true,
+        Set: true,
+        g: true,
+        Get: true,
+        Clear: true,
+        Exists: true,
+        GetName: true,
+        GetValue: true,
+        GetIndex: true,
+        EachKey: true,
+        Each: true,
+        ResetLength: true,
+        length: true,
+        Length: true,
+        keys: true,
+        Dispose: true,
+        _changedFuncList: true,
+        changedFuncList: true,
+        Changed: true,
+        _staticData: true,
+        Listen: true,
+        ListenArray: true,
+        Text: true,
+        CopyTo: true,
+        GetPageSize: true,
+        GetPage: true,
+        Take: true,
+        Where: true,
+        Copy: true,
+        Count: true,
+        Any: true,
+        RemoveAll: true,
+        All: true,
+        FirstOrDefault: true,
+        Max: true,
+        Min: true,
+        MaxItem: true,
+        toString: true,
+        setProperty: true,
+        GetOrAdd: true,
+        _parent: true,
+        Parent: true,
+        _sortDesc: true,
+        _sortKey: true,
+        _names: true,
+        DoChanged: true,
+        ItemDoChanged: true,
+        OnAdd: true,
+        OnRemove: true,
+        OnChanged: true,
+        OnAddSplice: true,
+        OnRemoveSplice: true,
+        OnChangedSplice: true,
+        ListenEmpty: true,
+        Sum: true,
+        Select: true,
+        ToArray: true,
+        OrderBy: true,
+        GroupBy: true,
+        Add: true,
+        AddKey: true,
+        //index: true,
+        _risingChanged: true,
+        OnListAddList: true,
+        OnRemoveList: true,
+        undefined: true,
+        OnChangedList: true,
+        Reverse: true,
+    };
+    return Dictionary;
+}(egret.HashObject));
+__reflect(Dictionary.prototype, "Dictionary");
+window["Dictionary"] = Dictionary;
+//底层类
 ///<reference path="Arr.ts" />
 ///<reference path="Dictionary.ts" />
 var Observer = (function (_super) {
@@ -1797,6 +1799,10 @@ var Observer = (function (_super) {
 }(Dictionary));
 __reflect(Observer.prototype, "Observer");
 window["Observer"] = Observer;
+//文字渲染类，支持简单的HTML
+//使用方法
+// let l = new NLabel("内容<font color='#ff6666'>已回复</font>", 0xffffff, false, 17);
+// this.Add(l);
 var NLabel = (function (_super) {
     __extends(NLabel, _super);
     function NLabel(val, color, bold, size, stroke, strokeColor, withBg) {
@@ -1985,7 +1991,7 @@ var NLabel = (function (_super) {
                 val = "";
             }
             this._val = val;
-            var valText = val;
+            var valText = val.toString();
             // if (Number(this._val).toString() == this._val) {
             //     valText = Strx.GetSmaNum(Strx.Int(this._val));
             // }
@@ -2334,218 +2340,10 @@ var NLabel = (function (_super) {
 }(Sx));
 __reflect(NLabel.prototype, "NLabel");
 window["NLabel"] = NLabel;
-var Vector2 = (function () {
-    function Vector2(x, y) {
-        if (x === void 0) { x = 0; }
-        if (y === void 0) { y = 0; }
-        this.x = 0;
-        this.y = 0;
-        this.x = x;
-        this.y = y;
-    }
-    Vector2.prototype.toString = function () {
-        return this.x + "_" + this.y;
-    };
-    Vector2.prototype.Equals = function (p) {
-        return this.x == p.x && this.y == p.y;
-    };
-    Vector2.prototype.Move = function (x, y) {
-        return new Vector2(this.x + x, this.y + y);
-    };
-    Vector2.prototype.Multi = function (val) {
-        return new Vector2(this.x * val, this.y * val);
-    };
-    Vector2.prototype.Distance = function (p) {
-        var dx = (p.x - this.x);
-        var dy = (p.y - this.y);
-        return Math.sqrt(((dx * dx) + (dy * dy)));
-    };
-    Vector2.New = function (x, y) {
-        return new Vector2(x, y);
-    };
-    return Vector2;
-}());
-__reflect(Vector2.prototype, "Vector2");
-window["Vector2"] = Vector2;
-var NScrollPanel = (function (_super) {
-    __extends(NScrollPanel, _super);
-    function NScrollPanel(w, h, updateInterval) {
-        if (w === void 0) { w = 1; }
-        if (h === void 0) { h = 1; }
-        if (updateInterval === void 0) { updateInterval = 50; }
-        var _this = _super.call(this) || this;
-        _this.scrollerEndIndex = 0;
-        _this._disableScroll = false;
-        _this._disableMask = false;
-        _this.view = new Sx();
-        _this.w = w;
-        _this.h = h;
-        _this.updateInterval = updateInterval;
-        _this.scroller = new eui.Scroller();
-        _this.scroller.width = w;
-        _this.scroller.height = h;
-        _this.scroller.viewport = _this.view;
-        _this.Add(_this.scroller);
-        if (updateInterval > 0) {
-            _this.scrollerEnd = _this.ScrollerEnd.bind(_this);
-            _this.scroller.addEventListener(egret.Event.CHANGE, _this.scrollerEnd, _this);
-            _this.Up(_this.scrollerEnd);
-        }
-        return _this;
-        // this.bg = new NPanel(w, h, 15);
-        // this.Add(new NSButton(this.bg));
-    }
-    NScrollPanel.prototype.ScrollerEnd = function (ev) {
-        var _this = this;
-        if (!this.disposed) {
-            this.scrollerEndIndex++;
-            var scrollerEndIndex1_1 = this.scrollerEndIndex;
-            var obj_1 = { scrollH: this.scroller.viewport.scrollH, scrollV: this.scroller.viewport.scrollV };
-            NForm.SetTimeout(this.updateInterval, (function () {
-                if (!_this.disposed) {
-                    if (_this.scrollerEndIndex == scrollerEndIndex1_1 || scrollerEndIndex1_1 % 12 == 0) {
-                        if (_this.onScrollerEndList) {
-                            _this.onScrollerEndList.forEach(function (fi) {
-                                fi(obj_1);
-                            });
-                        }
-                    }
-                }
-            }).bind(this));
-        }
-    };
-    NScrollPanel.prototype.OnScrollerEnd = function (func) {
-        if (!this.onScrollerEndList) {
-            this.onScrollerEndList = [];
-        }
-        this.onScrollerEndList.push(func);
-    };
-    NScrollPanel.prototype.ScrollerTouchEnd = function (ev) {
-    };
-    NScrollPanel.prototype.Add = function (s1, x, y) {
-        if (x === void 0) { x = 0; }
-        if (y === void 0) { y = 0; }
-        var s = null;
-        if (typeof s1 == "string") {
-            s = Assert.Img(s1);
-        }
-        else {
-            s = s1;
-        }
-        var that = this;
-        if (this.view == null || this.view == s || s instanceof eui.Scroller) {
-            return _super.prototype.Add.call(this, s, x, y);
-        }
-        else {
-            this.view.Add(s, x, y);
-        }
-        return true;
-    };
-    NScrollPanel.prototype.RemoveAll = function () {
-        if (this.view == null) {
-            return _super.prototype.RemoveAll.call(this);
-        }
-        else {
-            for (var i = this.view.numChildren - 1; i >= 0; i--) {
-                try {
-                    var child = this.view.getChildAt(i);
-                    if (child instanceof Sx) {
-                        if (!(child).disposed) {
-                            if ((child).base) {
-                                continue;
-                            }
-                        }
-                    }
-                    this.view.removeChildAt(i);
-                }
-                catch (ex) { }
-            }
-        }
-    };
-    NScrollPanel.prototype.BaseAdd = function (s, x, y) {
-        if (x === void 0) { x = 0; }
-        if (y === void 0) { y = 0; }
-        return _super.prototype.Add.call(this, s, x, y);
-    };
-    NScrollPanel.prototype.Resize = function (w, h) {
-        this.scroller.width = w;
-        this.scroller.height = h;
-    };
-    NScrollPanel.prototype.DisableScroll = function () {
-        this.scroller.scrollPolicyV = eui.ScrollPolicy.OFF;
-        this.scroller.scrollPolicyH = eui.ScrollPolicy.OFF;
-        this._disableScroll = true;
-    };
-    NScrollPanel.prototype.DisableScrollX = function () {
-        this.scroller.scrollPolicyH = eui.ScrollPolicy.OFF;
-    };
-    NScrollPanel.prototype.DisableScrollY = function () {
-        this.scroller.scrollPolicyV = eui.ScrollPolicy.OFF;
-    };
-    NScrollPanel.prototype.EnableScroll = function () {
-        this.scroller.scrollPolicyV = eui.ScrollPolicy.AUTO;
-        this.scroller.scrollPolicyH = eui.ScrollPolicy.AUTO;
-    };
-    NScrollPanel.prototype.EnableScrollX = function () {
-        this.scroller.scrollPolicyH = eui.ScrollPolicy.AUTO;
-    };
-    NScrollPanel.prototype.EnableScrollY = function () {
-        this.scroller.scrollPolicyV = eui.ScrollPolicy.AUTO;
-    };
-    NScrollPanel.prototype.DisableMask = function () {
-        this.DisableScroll();
-        this.scroller.viewport.scrollEnabled = false;
-        this._disableMask = true;
-    };
-    Object.defineProperty(NScrollPanel.prototype, "tween", {
-        set: function (val) {
-            if (val) {
-                this.scroller.throwSpeed = 1;
-            }
-            else {
-                this.scroller.throwSpeed = 0;
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(NScrollPanel.prototype, "bounces", {
-        set: function (val) {
-            this.scroller.bounces = val;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    NScrollPanel.prototype.visibleInScrollV = function (p, cellHeight) {
-        if (p.y >= this.scroller.viewport.scrollV && p.y <= this.scroller.viewport.scrollV + this.h
-            || p.y + cellHeight >= this.scroller.viewport.scrollV && p.y + cellHeight <= this.scroller.viewport.scrollV + this.h) {
-            return true;
-        }
-        return false;
-    };
-    NScrollPanel.prototype.visibleInScrollH = function (p, cellWidth) {
-        if (p.x >= this.scroller.viewport.scrollH && p.x <= this.scroller.viewport.scrollH + this.w
-            || p.x + cellWidth >= this.scroller.viewport.scrollH && p.x + cellWidth <= this.scroller.viewport.scrollH + this.w) {
-            return true;
-        }
-        return false;
-    };
-    NScrollPanel.prototype.Dispose = function () {
-        this.scroller.removeEventListener(egret.Event.CHANGE, this.scrollerEnd, this);
-        if (this.onScrollerEndList) {
-            this.onScrollerEndList.length = 0;
-        }
-        this.onScrollerEndList = null;
-        if (this.view) {
-            this.view.RemoveMe();
-            this.view.Dispose();
-        }
-        _super.prototype.Dispose.call(this);
-    };
-    return NScrollPanel;
-}(Sx));
-__reflect(NScrollPanel.prototype, "NScrollPanel");
-window["NScrollPanel"] = NScrollPanel;
+//图片底层库
+//使用方法：
+//Assert.Img("xxx")，直接得到库中的图片
+//Assert.Img("xx/xxx.png")，加载外部图片
 var Bx = (function (_super) {
     __extends(Bx, _super);
     function Bx(val) {
@@ -3210,332 +3008,11 @@ var Bx = (function (_super) {
 }(eui.Image));
 __reflect(Bx.prototype, "Bx", ["Ix"]);
 window["Bx"] = Bx;
-var LangType = (function () {
-    function LangType() {
-    }
-    LangType.Chs = "chs";
-    LangType.Cht = "cht";
-    LangType.Jp = "jp";
-    LangType.Test = "test";
-    return LangType;
-}());
-__reflect(LangType.prototype, "LangType");
-window["LangType"] = LangType;
-var Arr = (function (_super) {
-    __extends(Arr, _super);
-    function Arr(source) {
-        if (source === void 0) { source = null; }
-        return _super.call(this, source) || this;
-    }
-    Object.defineProperty(Arr.prototype, "Count", {
-        get: function () {
-            return this.length;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Arr.prototype, "Length", {
-        get: function () {
-            return this.length;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Arr.prototype.Add = function (item) {
-        this.addItem(item);
-    };
-    Arr.prototype.Remove = function (item) {
-        var index = this.getItemIndex(item);
-        if (index > -1) {
-            this.removeItemAt(index);
-        }
-    };
-    Arr.prototype.RemoveBy = function (func) {
-        var len = this.length;
-        for (var i = 0; i < len; i++) {
-            if (func(this.getItemAt(i))) {
-                this.RemoveAt(i);
-                break;
-            }
-        }
-    };
-    Arr.prototype.RemoveAt = function (index) {
-        this.removeItemAt(index);
-    };
-    Arr.prototype.InsertAt = function (item, index) {
-        this.addItemAt(item, index);
-    };
-    Arr.prototype.Contian = function (item) {
-        return this.getItemIndex(item) > -1;
-    };
-    Arr.prototype.Clear = function () {
-        this.removeAll();
-    };
-    Arr.prototype.Each = function (func) {
-        var len = this.length;
-        //for (var i = len - 1; i >= 0; i--) {
-        for (var i = 0; i < len; i++) {
-            if (func(this.getItemAt(i), i)) {
-                break;
-            }
-        }
-        // this.source.forEach((fi) => {
-        //     if (func(fi)) {
-        //         return;
-        //     }
-        // });
-    };
-    Arr.prototype.EachDesc = function (func) {
-        var len = this.length;
-        for (var i = len - 1; i >= 0; i--) {
-            if (func(this.getItemAt(i))) {
-                break;
-            }
-        }
-    };
-    return Arr;
-}(eui.ArrayCollection));
-__reflect(Arr.prototype, "Arr");
-window["Arr"] = Arr;
-var NAniBase = (function (_super) {
-    __extends(NAniBase, _super);
-    function NAniBase(overAndRemove) {
-        if (overAndRemove === void 0) { overAndRemove = true; }
-        var _this = _super.call(this) || this;
-        _this.img = null;
-        _this.stopAtEnd = false;
-        _this.load = false;
-        _this._frameRate = 12;
-        _this._stop = false;
-        _this._stopAtEnd = false;
-        _this._timerHandleIndex = 0;
-        _this.addTime = 1;
-        _this.stoped = false;
-        _this.stopFrame = -1;
-        _this.overAndRemove = overAndRemove;
-        return _this;
-    }
-    NAniBase.prototype.Load = function (arr) {
-        var _this = this;
-        if (arr == null || arr.Count == 0) {
-            return;
-        }
-        this.arr = arr;
-        if (!this.load) {
-            if (Strx.IsString(arr.getItemAt(0))) {
-                this.img = new Bx(arr.getItemAt(0));
-                this.Add(this.img);
-            }
-            else {
-                this.img = arr.getItemAt(0);
-                if (this.img != this) {
-                    this.Add(this.img);
-                }
-            }
-        }
-        this.times = 0;
-        this.frameCount = arr.Count;
-        if (!this.load) {
-            if (arr.Count > 1) {
-                NForm.LazyCall(function () {
-                    _this.TimerHandle();
-                });
-            }
-            if (!this.disposed) {
-                NForm.LazyCall(function () {
-                    if (!_this.disposed) {
-                        _this.CallLoad();
-                    }
-                });
-            }
-        }
-        this.load = true;
-    };
-    Object.defineProperty(NAniBase.prototype, "frameRate", {
-        get: function () {
-            return this._frameRate;
-        },
-        set: function (val) {
-            if (val <= 0) {
-                val = 12;
-            }
-            if (this._frameRate != val) {
-                this._frameRate = val;
-                this.TimerHandle();
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    NAniBase.prototype.TimerHandle = function () {
-        var _this = this;
-        this._timerHandleIndex++;
-        var _timerHandleIndex1 = this._timerHandleIndex;
-        NForm.SetInterval(1000 / this.frameRate, function () {
-            if (_this.disposed) {
-                return true;
-            }
-            if (_timerHandleIndex1 != _this._timerHandleIndex) {
-                return true;
-            }
-            if (!_this._stop) {
-                _this.TimerHandler();
-            }
-            return false;
-        });
-    };
-    NAniBase.prototype.LateFrame = function (per, lateCount) {
-        if (per === void 0) { per = 75; }
-        if (lateCount === void 0) { lateCount = 2; }
-        //origLateFrameList = new Tuplex<int, int>(per, lateCount);
-        //lateFrameList = new Tuplex<int, int>(per, lateCount);
-    };
-    NAniBase.prototype.ClearLateFrame = function () {
-        this.lateFrameList = null;
-    };
-    NAniBase.prototype.Stop = function (frame) {
-        if (frame === void 0) { frame = -1; }
-        this.stoped = true;
-        if (frame < 0) {
-            frame = this.times;
-        }
-        this.times = frame;
-        if (this.img && this.arr) {
-            //this.img.SetData(this.arr[frame]);//由上进行处理
-        }
-    };
-    NAniBase.prototype.Play = function (frame) {
-        if (frame === void 0) { frame = -1; }
-        this.stoped = false;
-        if (frame >= 0) {
-            this.times = frame;
-        }
-        this.stopFrame = -1;
-    };
-    NAniBase.prototype.PlayFrames = function (frames, stopFrame) {
-        if (stopFrame === void 0) { stopFrame = -1; }
-        this.stoped = false;
-        if (frames.Count == 0) {
-            frames = null;
-        }
-        this.frames = frames;
-        this.stopFrame = stopFrame;
-        if (frames) {
-            this.times = 0;
-        }
-    };
-    NAniBase.prototype.TimerHandler = function () {
-        var _this = this;
-        if (this.disposed) {
-            return true;
-        }
-        if (this.stoped) {
-            return false;
-        }
-        if (this.topVisible) {
-            if (this.frames == null) {
-                if (this.lateFrameList && this.lateFrameList.Item2 > 0) {
-                    if (this.times * 100 / this.arr.Count >= this.lateFrameList.Item1) {
-                        this.lateFrameList.Item2--;
-                        return false;
-                    }
-                }
-                if (this.times < this.arr.Count) {
-                    if (this.img) {
-                        //this.img.SetData(this.arr[this.times]);//由上进行处理
-                    }
-                    if (this.enterFrame) {
-                        this.enterFrame(this.times, this);
-                    }
-                    if (this.enterFrame1) {
-                        this.enterFrame1(this.times, this);
-                    }
-                }
-                if (this.times == this.stopFrame) {
-                    this.Stop();
-                    return false;
-                }
-                this.times += this.addTime;
-                if (this.times >= this.frameCount) {
-                    if (this.endAct) {
-                        this.endAct();
-                    }
-                }
-                if (this.times >= this.frameCount) {
-                    if (this.stopAtEnd) {
-                        this.Stop(this.frameCount - 1);
-                    }
-                    else if (this.overAndRemove) {
-                        NForm.LazyCall(function () {
-                            _this.RemoveMe();
-                        });
-                    }
-                    else if (!this.overAndRemove) {
-                        this.times = 0;
-                    }
-                }
-            }
-            else {
-                if (this.lateFrameList && this.lateFrameList.Item2 > 0) {
-                    if (this.times * 100 / this.frames.Count >= this.lateFrameList.Item1) {
-                        this.lateFrameList.Item2--;
-                        return false;
-                    }
-                }
-                if (this.times >= this.frames.Count) {
-                    if (this.endAct) {
-                        this.endAct();
-                    }
-                }
-                if (this.times >= this.frames.Count) {
-                    if (this.stopAtEnd) {
-                        this.Stop(this.frames.Count - 1);
-                    }
-                    else if (this.stopFrame >= 0) {
-                        this.Stop(this.stopFrame);
-                        //frames = null;/??
-                    }
-                    else {
-                        this.times = 0;
-                    }
-                    if (this.lateFrameList && this.origLateFrameList) {
-                        this.lateFrameList.Item1 = this.origLateFrameList.Item1;
-                        this.lateFrameList.Item2 = this.origLateFrameList.Item2;
-                    }
-                }
-                if (frames) {
-                    if (this.img) {
-                        //this.img.SetData(this.arr[frames[this.times]]);
-                    }
-                    if (this.enterFrame) {
-                        this.enterFrame(this.times);
-                    }
-                    if (this.enterFrame1) {
-                        this.enterFrame1(this.times);
-                    }
-                    this.times += this.addTime;
-                }
-            }
-        }
-        return this.disposed;
-    };
-    NAniBase.prototype.Dispose = function () {
-        _super.prototype.Dispose.call(this);
-        if (this.arr) {
-            this.arr.Clear();
-            this.arr = null;
-        }
-        this.img = null;
-        this.enterFrame = null;
-        this.enterFrame1 = null;
-        this.endAct = null;
-        this.lateFrameList = null;
-        this.origLateFrameList = null;
-    };
-    return NAniBase;
-}(Sx));
-__reflect(NAniBase.prototype, "NAniBase");
-window["NAniBase"] = NAniBase;
+//基础数据类型
+//使用方法：
+// var list = new Listx();
+// list["id"] = "1;
+// list["index"] = "1";
 ///<reference path="Strx.ts" />
 ///<reference path="Observer.ts" />
 // if (!String.prototype.Arr) {
@@ -3901,6 +3378,548 @@ var Listx = (function (_super) {
 }(Observer));
 __reflect(Listx.prototype, "Listx");
 window["Listx"] = Listx;
+//Vector2类
+var Vector2 = (function () {
+    function Vector2(x, y) {
+        if (x === void 0) { x = 0; }
+        if (y === void 0) { y = 0; }
+        this.x = 0;
+        this.y = 0;
+        this.x = x;
+        this.y = y;
+    }
+    Vector2.prototype.toString = function () {
+        return this.x + "_" + this.y;
+    };
+    Vector2.prototype.Equals = function (p) {
+        return this.x == p.x && this.y == p.y;
+    };
+    Vector2.prototype.Move = function (x, y) {
+        return new Vector2(this.x + x, this.y + y);
+    };
+    Vector2.prototype.Multi = function (val) {
+        return new Vector2(this.x * val, this.y * val);
+    };
+    Vector2.prototype.Distance = function (p) {
+        var dx = (p.x - this.x);
+        var dy = (p.y - this.y);
+        return Math.sqrt(((dx * dx) + (dy * dy)));
+    };
+    Vector2.New = function (x, y) {
+        return new Vector2(x, y);
+    };
+    return Vector2;
+}());
+__reflect(Vector2.prototype, "Vector2");
+window["Vector2"] = Vector2;
+var LangType = (function () {
+    function LangType() {
+    }
+    LangType.Chs = "chs";
+    LangType.Cht = "cht";
+    LangType.Jp = "jp";
+    LangType.Test = "test";
+    return LangType;
+}());
+__reflect(LangType.prototype, "LangType");
+window["LangType"] = LangType;
+var Arr = (function (_super) {
+    __extends(Arr, _super);
+    function Arr(source) {
+        if (source === void 0) { source = null; }
+        return _super.call(this, source) || this;
+    }
+    Object.defineProperty(Arr.prototype, "Count", {
+        get: function () {
+            return this.length;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Arr.prototype, "Length", {
+        get: function () {
+            return this.length;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Arr.prototype.Add = function (item) {
+        this.addItem(item);
+    };
+    Arr.prototype.Remove = function (item) {
+        var index = this.getItemIndex(item);
+        if (index > -1) {
+            this.removeItemAt(index);
+        }
+    };
+    Arr.prototype.RemoveBy = function (func) {
+        var len = this.length;
+        for (var i = 0; i < len; i++) {
+            if (func(this.getItemAt(i))) {
+                this.RemoveAt(i);
+                break;
+            }
+        }
+    };
+    Arr.prototype.RemoveAt = function (index) {
+        this.removeItemAt(index);
+    };
+    Arr.prototype.InsertAt = function (item, index) {
+        this.addItemAt(item, index);
+    };
+    Arr.prototype.Contian = function (item) {
+        return this.getItemIndex(item) > -1;
+    };
+    Arr.prototype.Clear = function () {
+        this.removeAll();
+    };
+    Arr.prototype.Each = function (func) {
+        var len = this.length;
+        //for (var i = len - 1; i >= 0; i--) {
+        for (var i = 0; i < len; i++) {
+            if (func(this.getItemAt(i), i)) {
+                break;
+            }
+        }
+        // this.source.forEach((fi) => {
+        //     if (func(fi)) {
+        //         return;
+        //     }
+        // });
+    };
+    Arr.prototype.EachDesc = function (func) {
+        var len = this.length;
+        for (var i = len - 1; i >= 0; i--) {
+            if (func(this.getItemAt(i))) {
+                break;
+            }
+        }
+    };
+    return Arr;
+}(eui.ArrayCollection));
+__reflect(Arr.prototype, "Arr");
+window["Arr"] = Arr;
+//底层动画类
+var NAniBase = (function (_super) {
+    __extends(NAniBase, _super);
+    function NAniBase(overAndRemove) {
+        if (overAndRemove === void 0) { overAndRemove = true; }
+        var _this = _super.call(this) || this;
+        _this.img = null;
+        _this.stopAtEnd = false;
+        _this.load = false;
+        _this._frameRate = 12;
+        _this._stop = false;
+        _this._stopAtEnd = false;
+        _this._timerHandleIndex = 0;
+        _this.addTime = 1;
+        _this.stoped = false;
+        _this.stopFrame = -1;
+        _this.overAndRemove = overAndRemove;
+        return _this;
+    }
+    NAniBase.prototype.Load = function (arr) {
+        var _this = this;
+        if (arr == null || arr.Count == 0) {
+            return;
+        }
+        this.arr = arr;
+        if (!this.load) {
+            if (Strx.IsString(arr.getItemAt(0))) {
+                this.img = new Bx(arr.getItemAt(0));
+                this.Add(this.img);
+            }
+            else {
+                this.img = arr.getItemAt(0);
+                if (this.img != this) {
+                    this.Add(this.img);
+                }
+            }
+        }
+        this.times = 0;
+        this.frameCount = arr.Count;
+        if (!this.load) {
+            if (arr.Count > 1) {
+                NForm.LazyCall(function () {
+                    _this.TimerHandle();
+                });
+            }
+            if (!this.disposed) {
+                NForm.LazyCall(function () {
+                    if (!_this.disposed) {
+                        _this.CallLoad();
+                    }
+                });
+            }
+        }
+        this.load = true;
+    };
+    Object.defineProperty(NAniBase.prototype, "frameRate", {
+        get: function () {
+            return this._frameRate;
+        },
+        set: function (val) {
+            if (val <= 0) {
+                val = 12;
+            }
+            if (this._frameRate != val) {
+                this._frameRate = val;
+                this.TimerHandle();
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    NAniBase.prototype.TimerHandle = function () {
+        var _this = this;
+        this._timerHandleIndex++;
+        var _timerHandleIndex1 = this._timerHandleIndex;
+        NForm.SetInterval(1000 / this.frameRate, function () {
+            if (_this.disposed) {
+                return true;
+            }
+            if (_timerHandleIndex1 != _this._timerHandleIndex) {
+                return true;
+            }
+            if (!_this._stop) {
+                _this.TimerHandler();
+            }
+            return false;
+        });
+    };
+    NAniBase.prototype.LateFrame = function (per, lateCount) {
+        if (per === void 0) { per = 75; }
+        if (lateCount === void 0) { lateCount = 2; }
+        //origLateFrameList = new Tuplex<int, int>(per, lateCount);
+        //lateFrameList = new Tuplex<int, int>(per, lateCount);
+    };
+    NAniBase.prototype.ClearLateFrame = function () {
+        this.lateFrameList = null;
+    };
+    NAniBase.prototype.Stop = function (frame) {
+        if (frame === void 0) { frame = -1; }
+        this.stoped = true;
+        if (frame < 0) {
+            frame = this.times;
+        }
+        this.times = frame;
+        if (this.img && this.arr) {
+            //this.img.SetData(this.arr[frame]);//由上进行处理
+        }
+    };
+    NAniBase.prototype.Play = function (frame) {
+        if (frame === void 0) { frame = -1; }
+        this.stoped = false;
+        if (frame >= 0) {
+            this.times = frame;
+        }
+        this.stopFrame = -1;
+    };
+    NAniBase.prototype.PlayFrames = function (frames, stopFrame) {
+        if (stopFrame === void 0) { stopFrame = -1; }
+        this.stoped = false;
+        if (frames.Count == 0) {
+            frames = null;
+        }
+        this.frames = frames;
+        this.stopFrame = stopFrame;
+        if (frames) {
+            this.times = 0;
+        }
+    };
+    NAniBase.prototype.TimerHandler = function () {
+        var _this = this;
+        if (this.disposed) {
+            return true;
+        }
+        if (this.stoped) {
+            return false;
+        }
+        if (this.topVisible) {
+            if (this.frames == null) {
+                if (this.lateFrameList && this.lateFrameList.Item2 > 0) {
+                    if (this.times * 100 / this.arr.Count >= this.lateFrameList.Item1) {
+                        this.lateFrameList.Item2--;
+                        return false;
+                    }
+                }
+                if (this.times < this.arr.Count) {
+                    if (this.img) {
+                        //this.img.SetData(this.arr[this.times]);//由上进行处理
+                    }
+                    if (this.enterFrame) {
+                        this.enterFrame(this.times, this);
+                    }
+                    if (this.enterFrame1) {
+                        this.enterFrame1(this.times, this);
+                    }
+                }
+                if (this.times == this.stopFrame) {
+                    this.Stop();
+                    return false;
+                }
+                this.times += this.addTime;
+                if (this.times >= this.frameCount) {
+                    if (this.endAct) {
+                        this.endAct();
+                    }
+                }
+                if (this.times >= this.frameCount) {
+                    if (this.stopAtEnd) {
+                        this.Stop(this.frameCount - 1);
+                    }
+                    else if (this.overAndRemove) {
+                        NForm.LazyCall(function () {
+                            _this.RemoveMe();
+                        });
+                    }
+                    else if (!this.overAndRemove) {
+                        this.times = 0;
+                    }
+                }
+            }
+            else {
+                if (this.lateFrameList && this.lateFrameList.Item2 > 0) {
+                    if (this.times * 100 / this.frames.Count >= this.lateFrameList.Item1) {
+                        this.lateFrameList.Item2--;
+                        return false;
+                    }
+                }
+                if (this.times >= this.frames.Count) {
+                    if (this.endAct) {
+                        this.endAct();
+                    }
+                }
+                if (this.times >= this.frames.Count) {
+                    if (this.stopAtEnd) {
+                        this.Stop(this.frames.Count - 1);
+                    }
+                    else if (this.stopFrame >= 0) {
+                        this.Stop(this.stopFrame);
+                        //frames = null;/??
+                    }
+                    else {
+                        this.times = 0;
+                    }
+                    if (this.lateFrameList && this.origLateFrameList) {
+                        this.lateFrameList.Item1 = this.origLateFrameList.Item1;
+                        this.lateFrameList.Item2 = this.origLateFrameList.Item2;
+                    }
+                }
+                if (frames) {
+                    if (this.img) {
+                        //this.img.SetData(this.arr[frames[this.times]]);
+                    }
+                    if (this.enterFrame) {
+                        this.enterFrame(this.times);
+                    }
+                    if (this.enterFrame1) {
+                        this.enterFrame1(this.times);
+                    }
+                    this.times += this.addTime;
+                }
+            }
+        }
+        return this.disposed;
+    };
+    NAniBase.prototype.Dispose = function () {
+        _super.prototype.Dispose.call(this);
+        if (this.arr) {
+            this.arr.Clear();
+            this.arr = null;
+        }
+        this.img = null;
+        this.enterFrame = null;
+        this.enterFrame1 = null;
+        this.endAct = null;
+        this.lateFrameList = null;
+        this.origLateFrameList = null;
+    };
+    return NAniBase;
+}(Sx));
+__reflect(NAniBase.prototype, "NAniBase");
+window["NAniBase"] = NAniBase;
+//滚动面板框
+var NScrollPanel = (function (_super) {
+    __extends(NScrollPanel, _super);
+    function NScrollPanel(w, h, updateInterval) {
+        if (w === void 0) { w = 1; }
+        if (h === void 0) { h = 1; }
+        if (updateInterval === void 0) { updateInterval = 50; }
+        var _this = _super.call(this) || this;
+        _this.scrollerEndIndex = 0;
+        _this._disableScroll = false;
+        _this._disableMask = false;
+        _this.view = new Sx();
+        _this.w = w;
+        _this.h = h;
+        _this.updateInterval = updateInterval;
+        _this.scroller = new eui.Scroller();
+        _this.scroller.width = w;
+        _this.scroller.height = h;
+        _this.scroller.viewport = _this.view;
+        _this.Add(_this.scroller);
+        if (updateInterval > 0) {
+            _this.scrollerEnd = _this.ScrollerEnd.bind(_this);
+            _this.scroller.addEventListener(egret.Event.CHANGE, _this.scrollerEnd, _this);
+            _this.Up(_this.scrollerEnd);
+        }
+        return _this;
+        // this.bg = new NPanel(w, h, 15);
+        // this.Add(new NSButton(this.bg));
+    }
+    NScrollPanel.prototype.ScrollerEnd = function (ev) {
+        var _this = this;
+        if (!this.disposed) {
+            this.scrollerEndIndex++;
+            var scrollerEndIndex1_1 = this.scrollerEndIndex;
+            var obj_1 = { scrollH: this.scroller.viewport.scrollH, scrollV: this.scroller.viewport.scrollV };
+            NForm.SetTimeout(this.updateInterval, (function () {
+                if (!_this.disposed) {
+                    if (_this.scrollerEndIndex == scrollerEndIndex1_1 || scrollerEndIndex1_1 % 12 == 0) {
+                        if (_this.onScrollerEndList) {
+                            _this.onScrollerEndList.forEach(function (fi) {
+                                fi(obj_1);
+                            });
+                        }
+                    }
+                }
+            }).bind(this));
+        }
+    };
+    NScrollPanel.prototype.OnScrollerEnd = function (func) {
+        if (!this.onScrollerEndList) {
+            this.onScrollerEndList = [];
+        }
+        this.onScrollerEndList.push(func);
+    };
+    NScrollPanel.prototype.ScrollerTouchEnd = function (ev) {
+    };
+    NScrollPanel.prototype.Add = function (s1, x, y) {
+        if (x === void 0) { x = 0; }
+        if (y === void 0) { y = 0; }
+        var s = null;
+        if (typeof s1 == "string") {
+            s = Assert.Img(s1);
+        }
+        else {
+            s = s1;
+        }
+        var that = this;
+        if (this.view == null || this.view == s || s instanceof eui.Scroller) {
+            return _super.prototype.Add.call(this, s, x, y);
+        }
+        else {
+            this.view.Add(s, x, y);
+        }
+        return true;
+    };
+    NScrollPanel.prototype.RemoveAll = function () {
+        if (this.view == null) {
+            return _super.prototype.RemoveAll.call(this);
+        }
+        else {
+            for (var i = this.view.numChildren - 1; i >= 0; i--) {
+                try {
+                    var child = this.view.getChildAt(i);
+                    if (child instanceof Sx) {
+                        if (!(child).disposed) {
+                            if ((child).base) {
+                                continue;
+                            }
+                        }
+                    }
+                    this.view.removeChildAt(i);
+                }
+                catch (ex) { }
+            }
+        }
+    };
+    NScrollPanel.prototype.BaseAdd = function (s, x, y) {
+        if (x === void 0) { x = 0; }
+        if (y === void 0) { y = 0; }
+        return _super.prototype.Add.call(this, s, x, y);
+    };
+    NScrollPanel.prototype.Resize = function (w, h) {
+        this.scroller.width = w;
+        this.scroller.height = h;
+    };
+    NScrollPanel.prototype.DisableScroll = function () {
+        this.scroller.scrollPolicyV = eui.ScrollPolicy.OFF;
+        this.scroller.scrollPolicyH = eui.ScrollPolicy.OFF;
+        this._disableScroll = true;
+    };
+    NScrollPanel.prototype.DisableScrollX = function () {
+        this.scroller.scrollPolicyH = eui.ScrollPolicy.OFF;
+    };
+    NScrollPanel.prototype.DisableScrollY = function () {
+        this.scroller.scrollPolicyV = eui.ScrollPolicy.OFF;
+    };
+    NScrollPanel.prototype.EnableScroll = function () {
+        this.scroller.scrollPolicyV = eui.ScrollPolicy.AUTO;
+        this.scroller.scrollPolicyH = eui.ScrollPolicy.AUTO;
+    };
+    NScrollPanel.prototype.EnableScrollX = function () {
+        this.scroller.scrollPolicyH = eui.ScrollPolicy.AUTO;
+    };
+    NScrollPanel.prototype.EnableScrollY = function () {
+        this.scroller.scrollPolicyV = eui.ScrollPolicy.AUTO;
+    };
+    NScrollPanel.prototype.DisableMask = function () {
+        this.DisableScroll();
+        this.scroller.viewport.scrollEnabled = false;
+        this._disableMask = true;
+    };
+    Object.defineProperty(NScrollPanel.prototype, "tween", {
+        set: function (val) {
+            if (val) {
+                this.scroller.throwSpeed = 1;
+            }
+            else {
+                this.scroller.throwSpeed = 0;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NScrollPanel.prototype, "bounces", {
+        set: function (val) {
+            this.scroller.bounces = val;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    NScrollPanel.prototype.visibleInScrollV = function (p, cellHeight) {
+        if (p.y >= this.scroller.viewport.scrollV && p.y <= this.scroller.viewport.scrollV + this.h
+            || p.y + cellHeight >= this.scroller.viewport.scrollV && p.y + cellHeight <= this.scroller.viewport.scrollV + this.h) {
+            return true;
+        }
+        return false;
+    };
+    NScrollPanel.prototype.visibleInScrollH = function (p, cellWidth) {
+        if (p.x >= this.scroller.viewport.scrollH && p.x <= this.scroller.viewport.scrollH + this.w
+            || p.x + cellWidth >= this.scroller.viewport.scrollH && p.x + cellWidth <= this.scroller.viewport.scrollH + this.w) {
+            return true;
+        }
+        return false;
+    };
+    NScrollPanel.prototype.Dispose = function () {
+        this.scroller.removeEventListener(egret.Event.CHANGE, this.scrollerEnd, this);
+        if (this.onScrollerEndList) {
+            this.onScrollerEndList.length = 0;
+        }
+        this.onScrollerEndList = null;
+        if (this.view) {
+            this.view.RemoveMe();
+            this.view.Dispose();
+        }
+        _super.prototype.Dispose.call(this);
+    };
+    return NScrollPanel;
+}(Sx));
+__reflect(NScrollPanel.prototype, "NScrollPanel");
+window["NScrollPanel"] = NScrollPanel;
+//由于egret无法使用图片背景文字渲染，所以暂时使用滤镜进行实现
 ///<reference path="NLabel.ts" />
 var NColorText = (function (_super) {
     __extends(NColorText, _super);
@@ -3972,196 +3991,1715 @@ var NColorText = (function (_super) {
 }(NLabel));
 __reflect(NColorText.prototype, "NColorText");
 window["NColorText"] = NColorText;
-var Music = (function () {
-    function Music(id, loopTimes) {
-        if (loopTimes === void 0) { loopTimes = 1; }
-        this.disposed = false;
-        this.loopTimes = loopTimes;
-        try {
-            this.Load(id);
-        }
-        catch (ex) {
-            Js.Trace(ex);
-        }
+//语言读取类
+//可以读取策划配置语言
+//还可以实现本地化功能
+///<reference path="LangType.ts" />
+if (!String.prototype.format) {
+    String.prototype.format = function (arr) {
+        var args = arr;
+        return this.replace(/{(\d+)}/g, function (match, number) {
+            return typeof args[number] != 'undefined'
+                ? args[number]
+                : match;
+        });
+    };
+}
+var Lang = (function () {
+    function Lang() {
     }
-    Music.prototype.Load = function (id) {
-        this.id = id;
-        try {
-            var path = Config.icoPath + "music/" + id + ".mp3";
-            this.sound = new egret.Sound();
-            this.sound.once(egret.Event.COMPLETE, this.LoadComplete, this);
-            this.sound.once(egret.IOErrorEvent.IO_ERROR, this.LoadError, this);
-            this.sound.load(path);
+    Lang.Setup = function (att) {
+        Lang.list = att;
+    };
+    Lang.Get = function (key) {
+        if (!Lang.list) {
+            return "";
         }
-        catch (ex) {
-            Js.Trace(ex);
-        }
-    };
-    Music.prototype.LoadComplete = function () {
-        this.loaded = true;
-        if (!this.stoped) {
-            this.Play();
-        }
-    };
-    Music.prototype.Play = function () {
-        this.stoped = false;
-        if (this.loaded) {
-            this.channel = this.sound.play(0, this.loopTimes);
-            this.channel.once(egret.Event.SOUND_COMPLETE, this.PlayEnd, this);
-        }
-    };
-    Music.prototype.Stop = function () {
-        this.stoped = true;
-        if (this.channel) {
-            this.channel.stop();
-        }
-    };
-    Music.prototype.LoadError = function () {
-        Js.Trace("Sound Error: " + this.id);
-    };
-    Music.prototype.PlayEnd = function () {
-        //this.Dispose();
-    };
-    Music.Play = function (id) {
-        try {
-            if (!Music.musicOn) {
-                return;
+        if (Lang.list.hasOwnProperty(key)) {
+            var text = Lang.list[key];
+            if (text.indexOf("&lt;") > -1 && text.indexOf("&gt;") > -1) {
+                text = text.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
             }
-            if (Music.mList.Exists(id)) {
-                Music.mList[id].Play();
+            if (text.indexOf(" ") > -1) {
+                text = text.replace(/ /g, " ");
+            }
+            return text;
+        }
+        return "";
+    };
+    Lang.Exists = function (key) {
+        return Lang.list.hasOwnProperty(key);
+    };
+    Lang.PT = function (val) {
+        if (val == null) {
+            val = "";
+        }
+        try {
+            var vals = val.split("|");
+            if (vals.length == 1) {
+                return Lang.GetLangText(val);
             }
             else {
-                var m = new Music(id);
-                Music.mList[id] = m;
+                var str = Lang.GetLangText(vals[0]);
+                vals.shift();
+                var text = str.format(vals);
+                return text;
             }
         }
         catch (ex) {
-            Js.Trace(ex);
+            return val;
         }
     };
-    Music.Load = function (id) {
-        try {
-            if (!Music.musicOn) {
-                return;
-            }
-            if (!Music.mList.Exists(id)) {
-                var m = new Music(id);
-                Music.mList[id] = m;
-                m.stoped = true;
+    Lang.GetLangText = function (val) {
+        if (Strx.IsEmpty(val)) {
+            return "";
+        }
+        if (Lang.Get == null) {
+            return val;
+        }
+        if (Lang.Get(val)) {
+            var val1 = Lang.Get(val);
+            if (Strx.IsFull(val1)) {
+                val = val1;
+                if (Js.showTrace) {
+                    //                    if(NColorText.willEmbedFontsFunc) {
+                    //                        Lang.AddTransList(val);
+                    //                        Lang.AddTransList(val + "：");
+                    //                        Lang.AddTransList("[" + val + "]");
+                    //                    }
+                }
             }
         }
-        catch (ex) {
-            Js.Trace(ex);
+        else {
+            if (val.indexOf(">") > -1 && val.indexOf("<") > -1) {
+                var vals = val.split("<");
+                for (var j = 0, lenj = vals.length; j < lenj; j++) {
+                    var vals1 = vals[j].split(">");
+                    for (var i = 0, len = vals1.length; i < len; i++) {
+                        vals1[i] = Lang.GetLangText(vals1[i]);
+                    }
+                    vals[j] = vals1.join(">");
+                }
+                val = vals.join("<");
+            }
+            else {
+                if (Js.showTrace) {
+                    //                    if(NColorText.willEmbedFontsFunc) {
+                    //                        if(val.indexOf("/") == -1) {
+                    //                            if(!Lang.transList.Exists(val)) {
+                    //                                Lang.AddTransList(val);
+                    //                                if(val.length < 15) {
+                    //                                    if(val.length != Strx.TrueLength(val))
+                    //                                    { }
+                    //                                }
+                    //                            }
+                    //                        }
+                    //                    }
+                }
+            }
+        }
+        return val;
+    };
+    Lang.AddTransList = function (val) {
+        if (Js.showTrace) {
+            Lang.transList[val] = true;
         }
     };
-    Music.Bg = function (id) {
-        try {
-            Js.Trace("setBgMusic: " + id);
-            if (Music.bgId == id) {
-                return;
-            }
-            Music.preBgId = Music.bgId;
-            Music.bgId = id;
-            if (Music._bg) {
-                Music._bg.Stop();
-            }
-            if (!Music.musicBgOn) {
-                return;
-            }
-            if (id.IsFull()) {
-                if (Music.mList.Exists(id)) {
-                    Music.mList[id].Play();
-                }
-                else {
-                    var m = new Music(id, -1);
-                    Music.mList[id] = m;
-                    Music._bg = m;
-                }
-                Music._bg = Music.mList[id];
-            }
-        }
-        catch (ex) {
-            Js.Trace(ex);
-        }
-        return Music._bg;
-    };
-    Music.BgStop = function () {
-        if (Music._bg) {
-            Music._bg.Stop();
-        }
-    };
-    Object.defineProperty(Music, "musicBgOn", {
-        get: function () {
-            Music._musicBgOn = Server.GetIO("musicBgOff").IsFull() ? false : true;
-            return Music._musicBgOn;
-        },
-        set: function (val) {
-            if (Music._musicBgOn != val) {
-                Music._musicBgOn = val;
-                if (val) {
-                    Server.SetIO("musicBgOff", "");
-                }
-                else {
-                    Server.SetIO("musicBgOff", "1");
-                }
-                if (val) {
-                    var bgId = Music.bgId;
-                    Music.bgId = "";
-                    Music.Bg(bgId);
-                }
-                else {
-                    Music.BgStop();
-                }
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ;
-    ;
-    Object.defineProperty(Music, "musicOn", {
-        get: function () {
-            Music._musicOn = Server.GetIO("musicOff").IsFull() ? false : true;
-            return Music._musicOn;
-        },
-        set: function (val) {
-            if (Music._musicOn != val) {
-                Music._musicOn = val;
-                if (val) {
-                    Server.SetIO("musicOff", "");
-                }
-                else {
-                    Server.SetIO("musicOff", "1");
-                }
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ;
-    ;
-    Music.prototype.Dispose = function () {
-        var that = this;
-        if (!this.disposed) {
-            this.disposed = true;
-            if (this.channel) {
-                this.channel.stop();
-                this.channel.removeEventListener(egret.Event.SOUND_COMPLETE, this.PlayEnd, this);
-                this.channel = null;
-            }
-            if (this.sound) {
-                this.sound.removeEventListener(egret.Event.COMPLETE, this.LoadComplete, this);
-                this.sound.removeEventListener(egret.IOErrorEvent.IO_ERROR, this.LoadError, this);
-                this.sound.close();
-                this.sound = null;
-            }
-        }
-    };
-    Music.mList = new Listx();
-    return Music;
+    Lang.type = LangType.Chs;
+    return Lang;
 }());
-__reflect(Music.prototype, "Music");
-window["Music"] = Music;
+__reflect(Lang.prototype, "Lang");
+window["Lang"] = Lang;
+//颜色变换滤镜类
+//和egret.ColorMatrixFilter一起使用
+//使用方法：
+//let r = Assert.Img("xxx");
+//this.Add(r);
+//var c: ColorChange = new ColorChange();
+//c.adjustHue(this.hue);
+//r.filters = [new egret.ColorMatrixFilter(c.data)];
+var ColorChange = (function () {
+    // initialization:
+    function ColorChange(p_matrix) {
+        if (p_matrix === void 0) { p_matrix = null; }
+        this.data = [];
+        //super();
+        p_matrix = this.fixMatrix(p_matrix);
+        this.copyMatrix(((p_matrix.length == ColorChange.LENGTH) ? p_matrix : ColorChange.IDENTITY_MATRIX));
+    }
+    // public methods:
+    ColorChange.prototype.reset = function () {
+        for (var i = 0; i < ColorChange.LENGTH; i++) {
+            this.data[i] = ColorChange.IDENTITY_MATRIX[i];
+        }
+    };
+    ColorChange.prototype.adjustColor = function (p_brightness, p_contrast, p_saturation, p_hue) {
+        this.adjustHue(p_hue);
+        this.adjustContrast(p_contrast);
+        this.adjustBrightness(p_brightness);
+        this.adjustSaturation(p_saturation);
+    };
+    ColorChange.prototype.adjustBrightness = function (p_val) {
+        p_val = this.cleanValue(p_val, 100);
+        if (p_val == 0 || isNaN(p_val)) {
+            return;
+        }
+        this.multiplyMatrix([
+            1, 0, 0, 0, p_val,
+            0, 1, 0, 0, p_val,
+            0, 0, 1, 0, p_val,
+            0, 0, 0, 1, 0,
+            0, 0, 0, 0, 1
+        ]);
+    };
+    ColorChange.prototype.adjustContrast = function (p_val) {
+        p_val = this.cleanValue(p_val, 100);
+        if (p_val == 0 || isNaN(p_val)) {
+            return;
+        }
+        var x;
+        if (p_val < 0) {
+            x = 127 + p_val / 100 * 127;
+        }
+        else {
+            x = p_val % 1;
+            if (x == 0) {
+                x = ColorChange.DELTA_INDEX[p_val];
+            }
+            else {
+                //x = DELTA_INDEX[(p_val<<0)]; // this is how the IDE does it.
+                x = ColorChange.DELTA_INDEX[(p_val << 0)] * (1 - x) + ColorChange.DELTA_INDEX[(p_val << 0) + 1] * x; // use linear interpolation for more granularity.
+            }
+            x = x * 127 + 127;
+        }
+        this.multiplyMatrix([
+            x / 127, 0, 0, 0, 0.5 * (127 - x),
+            0, x / 127, 0, 0, 0.5 * (127 - x),
+            0, 0, x / 127, 0, 0.5 * (127 - x),
+            0, 0, 0, 1, 0,
+            0, 0, 0, 0, 1
+        ]);
+    };
+    ColorChange.prototype.adjustSaturation = function (p_val) {
+        p_val = this.cleanValue(p_val, 100);
+        if (p_val == 0 || isNaN(p_val)) {
+            return;
+        }
+        var x = 1 + ((p_val > 0) ? 3 * p_val / 100 : p_val / 100);
+        var lumR = 0.3086;
+        var lumG = 0.6094;
+        var lumB = 0.0820;
+        this.multiplyMatrix([
+            lumR * (1 - x) + x, lumG * (1 - x), lumB * (1 - x), 0, 0,
+            lumR * (1 - x), lumG * (1 - x) + x, lumB * (1 - x), 0, 0,
+            lumR * (1 - x), lumG * (1 - x), lumB * (1 - x) + x, 0, 0,
+            0, 0, 0, 1, 0,
+            0, 0, 0, 0, 1
+        ]);
+    };
+    ColorChange.prototype.adjustHue = function (p_val) {
+        p_val = this.cleanValue(p_val, 180) / 180 * Math.PI;
+        if (p_val == 0 || isNaN(p_val)) {
+            return;
+        }
+        var cosVal = Math.cos(p_val);
+        var sinVal = Math.sin(p_val);
+        var lumR = 0.213;
+        var lumG = 0.715;
+        var lumB = 0.072;
+        this.multiplyMatrix([
+            lumR + cosVal * (1 - lumR) + sinVal * (-lumR), lumG + cosVal * (-lumG) + sinVal * (-lumG), lumB + cosVal * (-lumB) + sinVal * (1 - lumB), 0, 0,
+            lumR + cosVal * (-lumR) + sinVal * (0.143), lumG + cosVal * (1 - lumG) + sinVal * (0.140), lumB + cosVal * (-lumB) + sinVal * (-0.283), 0, 0,
+            lumR + cosVal * (-lumR) + sinVal * (-(1 - lumR)), lumG + cosVal * (-lumG) + sinVal * (lumG), lumB + cosVal * (1 - lumB) + sinVal * (lumB), 0, 0,
+            0, 0, 0, 1, 0,
+            0, 0, 0, 0, 1
+        ]);
+    };
+    ColorChange.prototype.concat = function (p_matrix) {
+        p_matrix = this.fixMatrix(p_matrix);
+        if (p_matrix.length != ColorChange.LENGTH) {
+            return;
+        }
+        this.multiplyMatrix(p_matrix);
+    };
+    // public clone(): ColorChange {
+    //     return new ColorChange(this);
+    // }
+    ColorChange.prototype.toString = function () {
+        return "ColorChange [ " + this.data.join(" , ") + " ]";
+    };
+    // return a length 20 array (5x4):
+    ColorChange.prototype.toArray = function () {
+        return this.data.slice(0, 20);
+    };
+    // private methods:
+    // copy the specified matrix's values to this matrix:
+    ColorChange.prototype.copyMatrix = function (p_matrix) {
+        var l = ColorChange.LENGTH;
+        for (var i = 0; i < l; i++) {
+            this.data[i] = p_matrix[i];
+        }
+    };
+    // multiplies one matrix against another:
+    ColorChange.prototype.multiplyMatrix = function (p_matrix) {
+        var col = [];
+        for (var i = 0; i < 5; i++) {
+            for (var j = 0; j < 5; j++) {
+                col[j] = this.data[j + i * 5];
+            }
+            for (var j = 0; j < 5; j++) {
+                var val = 0;
+                for (var k = 0; k < 5; k++) {
+                    val += p_matrix[j + k * 5] * col[k];
+                }
+                this.data[j + i * 5] = val;
+            }
+        }
+    };
+    // make sure values are within the specified range, hue has a limit of 180, others are 100:
+    ColorChange.prototype.cleanValue = function (p_val, p_limit) {
+        return Math.min(p_limit, Math.max(-p_limit, p_val));
+    };
+    // makes sure matrixes are 5x5 (25 long):
+    ColorChange.prototype.fixMatrix = function (p_matrix) {
+        if (p_matrix === void 0) { p_matrix = null; }
+        if (p_matrix == null) {
+            return ColorChange.IDENTITY_MATRIX;
+        }
+        if (p_matrix instanceof ColorChange) {
+            p_matrix = p_matrix.slice(0);
+        }
+        if (p_matrix.length < ColorChange.LENGTH) {
+            p_matrix = p_matrix.slice(0, p_matrix.length).concat(ColorChange.IDENTITY_MATRIX.slice(p_matrix.length, ColorChange.LENGTH));
+        }
+        else if (p_matrix.length > ColorChange.LENGTH) {
+            p_matrix = p_matrix.slice(0, ColorChange.LENGTH);
+        }
+        return p_matrix;
+    };
+    ColorChange.DELTA_INDEX = [
+        0, 0.01, 0.02, 0.04, 0.05, 0.06, 0.07, 0.08, 0.1, 0.11,
+        0.12, 0.14, 0.15, 0.16, 0.17, 0.18, 0.20, 0.21, 0.22, 0.24,
+        0.25, 0.27, 0.28, 0.30, 0.32, 0.34, 0.36, 0.38, 0.40, 0.42,
+        0.44, 0.46, 0.48, 0.5, 0.53, 0.56, 0.59, 0.62, 0.65, 0.68,
+        0.71, 0.74, 0.77, 0.80, 0.83, 0.86, 0.89, 0.92, 0.95, 0.98,
+        1.0, 1.06, 1.12, 1.18, 1.24, 1.30, 1.36, 1.42, 1.48, 1.54,
+        1.60, 1.66, 1.72, 1.78, 1.84, 1.90, 1.96, 2.0, 2.12, 2.25,
+        2.37, 2.50, 2.62, 2.75, 2.87, 3.0, 3.2, 3.4, 3.6, 3.8,
+        4.0, 4.3, 4.7, 4.9, 5.0, 5.5, 6.0, 6.5, 6.8, 7.0,
+        7.3, 7.5, 7.8, 8.0, 8.4, 8.7, 9.0, 9.4, 9.6, 9.8,
+        10.0
+    ];
+    // identity matrix constant:
+    ColorChange.IDENTITY_MATRIX = [
+        1, 0, 0, 0, 0,
+        0, 1, 0, 0, 0,
+        0, 0, 1, 0, 0,
+        0, 0, 0, 1, 0,
+        0, 0, 0, 0, 1
+    ];
+    ColorChange.LENGTH = ColorChange.IDENTITY_MATRIX.length;
+    return ColorChange;
+}());
+__reflect(ColorChange.prototype, "ColorChange");
+window["ColorChange"] = ColorChange;
+//简单高效的csv文件解析
+//一般用于读取策划配置
+var Csv = (function () {
+    function Csv(text) {
+        var _this = this;
+        this.nodes = [];
+        this.keys = {};
+        this.keyArr = [];
+        if (text == null || text.IsEmpty()) {
+            return;
+        }
+        var row = 0;
+        var vals = [];
+        var extra = false;
+        var extraD = false;
+        var cell = [];
+        var _loop_1 = function (i, len) {
+            var c = text.charAt(i);
+            if (c == ",") {
+                if (extra) {
+                    cell.push(c);
+                }
+                else {
+                    var cellVal = cell.join("");
+                    vals.push(cellVal);
+                    cell.length = 0;
+                    extra = false;
+                }
+            }
+            else if (c == "\n" || c == "\r") {
+                if (vals.length > 0) {
+                    var cellVal = cell.join("");
+                    vals.push(cellVal);
+                    cell.length = 0;
+                    extra = false;
+                    if (row == 0) {
+                        vals.forEach(function (fi) {
+                            _this.keyArr.push(fi);
+                            _this.keys[fi] = true;
+                        });
+                    }
+                    else {
+                        var obj_2 = {};
+                        var index_2 = 0;
+                        this_1.keyArr.forEach(function (fi) {
+                            obj_2[fi] = vals[index_2];
+                            index_2++;
+                        });
+                        this_1.nodes.push(obj_2);
+                    }
+                    vals.length = 0;
+                }
+                else {
+                    cell.length = 0;
+                    extra = false;
+                }
+                row++;
+            }
+            else {
+                if (cell.length == 0 && c == "\"") {
+                    extra = true;
+                }
+                else {
+                    if (extra) {
+                        if (!extraD && c == "\\") {
+                            extraD = true;
+                        }
+                        else {
+                            if (c == "\"") {
+                                extra = false;
+                            }
+                            else {
+                                cell.push(c);
+                            }
+                            extraD = false;
+                        }
+                    }
+                    else {
+                        cell.push(c);
+                    }
+                }
+            }
+        };
+        var this_1 = this;
+        for (var i = 0, len = text.length; i < len; i++) {
+            _loop_1(i, len);
+        }
+        //Js.Trace(row);
+    }
+    return Csv;
+}());
+__reflect(Csv.prototype, "Csv");
+window["Csv"] = Csv;
+//日期时间管理类
+var DateTime = (function () {
+    function DateTime(d) {
+        if (d === void 0) { d = null; }
+        if (d == null) {
+            d = new Date();
+        }
+        else if (d instanceof Date) {
+            this.d = d;
+        }
+        else if (Strx.IsString(d)) {
+            this.d = Time.ParseTime(d.toString());
+        }
+        else {
+            d = new Date();
+        }
+    }
+    Object.defineProperty(DateTime.prototype, "time", {
+        get: function () {
+            return this.d.getTime();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DateTime.prototype, "tick", {
+        get: function () {
+            return this.time;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DateTime.prototype, "Year", {
+        get: function () {
+            return this.d.getFullYear().ToInt();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DateTime.prototype, "Month", {
+        get: function () {
+            return this.d.getMonth().ToInt();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DateTime.prototype, "DayOfWeek", {
+        // public get DayOfYear(): number {
+        //     return this.Month * 31 + this.d.getDate().ToInt();
+        // }
+        get: function () {
+            return this.d.getDay().ToInt();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DateTime.prototype, "Day", {
+        get: function () {
+            return this.d.getDate().ToInt();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DateTime.prototype, "Hour", {
+        get: function () {
+            return this.d.getHours().ToInt();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DateTime.prototype, "Minute", {
+        get: function () {
+            return this.d.getMinutes().ToInt();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DateTime.prototype, "Second", {
+        get: function () {
+            return this.d.getSeconds().ToInt();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DateTime.prototype, "Millisecond", {
+        get: function () {
+            return this.d.getMilliseconds().ToInt();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    DateTime.prototype.Add = function (t) {
+        var dt = new DateTime(new Date(this.d.getTime()));
+        dt.d.setTime(dt.d.getTime() + t.TotalMilliseconds);
+        return dt;
+    };
+    DateTime.prototype.AddDays = function (val) {
+        var dt = new DateTime(new Date(this.d.getTime()));
+        dt.d.setTime(dt.d.getTime() + val * 24 * 60 * 60 * 1000);
+        return dt;
+    };
+    DateTime.prototype.AddHours = function (val) {
+        var dt = new DateTime(new Date(this.d.getTime()));
+        dt.d.setTime(dt.d.getTime() + val * 60 * 60 * 1000);
+        return dt;
+    };
+    DateTime.prototype.AddMinutes = function (val) {
+        var dt = new DateTime(new Date(this.d.getTime()));
+        dt.d.setTime(dt.d.getTime() + val * 60 * 1000);
+        return dt;
+    };
+    DateTime.prototype.AddSeconds = function (val) {
+        var dt = new DateTime(new Date(this.d.getTime()));
+        dt.d.setTime(dt.d.getTime() + val * 1000);
+        return dt;
+    };
+    DateTime.prototype.AddMilliseconds = function (val) {
+        var dt = new DateTime(new Date(this.d.getTime()));
+        dt.d.setTime(dt.d.getTime() + val);
+        return dt;
+    };
+    DateTime.prototype.toString = function (withMilliseconds) {
+        if (withMilliseconds === void 0) { withMilliseconds = false; }
+        if (withMilliseconds) {
+            return Time.ParseStringWithMilliseconds(this.d);
+        }
+        else {
+            return Time.ParseString(this.d);
+        }
+    };
+    return DateTime;
+}());
+__reflect(DateTime.prototype, "DateTime");
+window["DateTime"] = DateTime;
+var Filters = (function () {
+    function Filters() {
+    }
+    Object.defineProperty(Filters, "borderFilter", {
+        get: function () {
+            return [new egret.GlowFilter(0x000000, 0.6, 3, 3, 5, 1), new egret.DropShadowFilter(1, 45, 0x1d0d02, 0.5, 1, 1, 10, 2)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "deepBorderFilter", {
+        get: function () {
+            return [new egret.GlowFilter(0x4d2600, 1, 4, 4, 4, 1), new egret.DropShadowFilter(2, 45, 0x4d2600, 1, 1, 1, 13, 2)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "tabBorderFilter", {
+        get: function () {
+            return [new egret.GlowFilter(0x642e0a, 1, 5, 5, 6, 1)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "tabBorderFilterOff", {
+        get: function () {
+            return [new egret.GlowFilter(0xffffff, 1, 5, 5, 6, 1)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "borderFilter0", {
+        get: function () {
+            return [new egret.GlowFilter(0x965805, 1, 3, 3, 5, 1), new egret.DropShadowFilter(1, 45, 0x1d0d02, 0.5, 1, 1, 10, 2)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "borderFilter1", {
+        get: function () {
+            return [new egret.GlowFilter(0x00295f, 1, 3, 3, 5, 1), new egret.DropShadowFilter(1, 45, 0x1d0d02, 0.5, 1, 1, 10, 2)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "borderFilter2", {
+        get: function () {
+            return [new egret.GlowFilter(0x8c2e24, 1, 3, 3, 5, 1), new egret.DropShadowFilter(1, 45, 0x1d0d02, 0.5, 1, 1, 10, 2)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "borderFilter3", {
+        get: function () {
+            return [new egret.GlowFilter(0x7c5131, 1, 3, 3, 5, 1), new egret.DropShadowFilter(1, 45, 0x1d0d02, 0.5, 1, 1, 10, 2)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "borderFilter4", {
+        get: function () {
+            return [new egret.GlowFilter(0x006e27, 1, 3, 3, 5, 1), new egret.DropShadowFilter(1, 45, 0x1d0d02, 0.5, 1, 1, 10, 2)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "borderFilter5", {
+        get: function () {
+            return [new egret.GlowFilter(0x8c613f, 1, 3, 3, 5, 1), new egret.DropShadowFilter(1, 45, 0x1d0d02, 0.5, 1, 1, 10, 2)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "greenBorderFilter", {
+        get: function () {
+            return [new egret.GlowFilter(0x003300, 0.6, 3, 3, 5, 1), new egret.DropShadowFilter(1, 45, 0x1d0d02, 0.5, 1, 1, 10, 2)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "borderLightFilter", {
+        get: function () {
+            return [new egret.GlowFilter(0x000000, 0.2, 3, 3, 5, 1), new egret.DropShadowFilter(1, 45, 0x1d0d02, 0.5, 1, 1, 10, 2)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "lightGlowFilter", {
+        get: function () {
+            return [new egret.GlowFilter(0xffffbe, 0.55, 4, 4, 5, 1)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "glowFilter", {
+        get: function () {
+            return [new egret.GlowFilter(0x140c09, 0.35, 8, 8, 3, 1)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "blackLineFilter", {
+        get: function () {
+            return [new egret.DropShadowFilter(1, 45, 0x1d0d02, 0.9, 3, 2, 20, 2)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "blackLightLineFilter", {
+        get: function () {
+            return [new egret.DropShadowFilter(1, 45, 0x000000, 0.9, 1, 1, 3, 2)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "knockoutGlowFilter", {
+        get: function () {
+            return [new egret.GlowFilter(0x88ff88, 0.75, 6, 6, 3, 1, true, true), new egret.BlurFilter(3, 3, 1)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "knockoutWhiteGlowFilter", {
+        get: function () {
+            return [new egret.GlowFilter(0xffffff, 0.8, 6, 6, 10, 1, true, true), new egret.BlurFilter(3, 3, 1)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "knockoutRedGlowFilter", {
+        get: function () {
+            return [new egret.GlowFilter(0xff0000, 0.75, 20, 20, 5, 1, true, true), new egret.BlurFilter(3, 3, 1)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "knockoutGrayFilter", {
+        get: function () {
+            return [new egret.GlowFilter(0x888888, 0.75, 20, 20, 2, 1, true, true)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "blackFilter", {
+        get: function () {
+            return [new egret.GlowFilter(0x000000, 1, 2, 2, 5, 1)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "redFilter", {
+        get: function () {
+            return [new egret.ColorMatrixFilter([
+                    0.3086, 0.6094, 0.0820, 0, 0,
+                    0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0,
+                    0, 0, 0, 1, 0
+                ])];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "grayFilter", {
+        get: function () {
+            // return [new egret.ColorMatrixFilter([
+            //     0.3086, 0.6094, 0.0820, 0, 0,
+            //     0.3086, 0.6094, 0.0820, 0, 0,
+            //     0.3086, 0.6094, 0.0820, 0, 0,
+            //     0, 0, 0, 1, 0
+            // ])];
+            return [new egret.ColorMatrixFilter([
+                    0.3, 0.6, 0, 0, 0,
+                    0.3, 0.6, 0, 0, 0,
+                    0.3, 0.6, 0, 0, 0,
+                    0, 0, 0, 1, 0
+                ])];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "lightGrayFilter", {
+        get: function () {
+            return [new egret.ColorMatrixFilter([
+                    0.4, 0.7, 0.1, 0, 0,
+                    0.4, 0.7, 0.1, 0, 0,
+                    0.4, 0.7, 0.1, 0, 0,
+                    0, 0, 0, 1, 0
+                ])];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "brownGlowFilter", {
+        get: function () {
+            return [new egret.GlowFilter(0x660000, 0.7, 10, 10, 3, 1)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "greenGlowFilter", {
+        get: function () {
+            return [new egret.GlowFilter(0x00ff00, 0.55, 4, 4, 2, 1)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "redGlowFilter", {
+        get: function () {
+            return [new egret.GlowFilter(0xff0000, 0.55, 4, 4, 2, 1)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filters, "highLightFilter", {
+        get: function () {
+            return [new egret.ColorMatrixFilter([
+                    1.5, 0, 0, 0, 0,
+                    0, 1.5, 0, 0, 0,
+                    0, 0, 1.5, 0, 0,
+                    0, 0, 0, 1, 0
+                ])];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return Filters;
+}());
+__reflect(Filters.prototype, "Filters");
+window["Filters"] = Filters;
+//IO类
+//这里实现了读取网络IO
+//使用方法
+// IOx.ReadURL(Config.urls[0], (res: string) => {
+//     if (Strx.IsEmpty(res)) {
+//         return;
+//     }
+// }, (ev) => {
+//     Form.Alert("网络错误，请重试");
+// }, "dataText");
+var IOx = (function () {
+    function IOx() {
+    }
+    IOx.ReadURL = function (path, urlLoaded, urlError, data, method) {
+        if (urlError === void 0) { urlError = null; }
+        if (data === void 0) { data = ""; }
+        if (method === void 0) { method = egret.HttpMethod.POST; }
+        var req = new egret.HttpRequest();
+        req.responseType = egret.HttpResponseType.TEXT;
+        req.open(path, method);
+        req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        req.send(data);
+        if (data.length > 50) {
+            Js.Trace(path + "?");
+        }
+        else {
+            Js.Trace(path + "?" + data);
+        }
+        req.once(egret.Event.COMPLETE, function (ev) {
+            switch (ev.type) {
+                case egret.Event.COMPLETE:
+                    var text = ev.currentTarget.response;
+                    Js.Trace(text);
+                    urlLoaded(text);
+                    break;
+                case egret.IOErrorEvent.IO_ERROR:
+                    Js.Trace("null");
+                    urlLoaded(null);
+                    break;
+            }
+        }, null);
+        req.once(egret.IOErrorEvent.IO_ERROR, function (ev) {
+            urlLoaded(null);
+            if (urlError) {
+                urlError(ev);
+            }
+        }, null);
+    };
+    IOx.ReadURLContent = function (path, urlLoaded, urlError, data) {
+        if (urlError === void 0) { urlError = null; }
+        if (data === void 0) { data = ""; }
+        var req = new egret.HttpRequest();
+        req.responseType = egret.HttpResponseType.ARRAY_BUFFER;
+        req.open(path, egret.HttpMethod.POST);
+        req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        req.send(data);
+        req.once(egret.Event.COMPLETE, function (ev) {
+            urlLoaded(req.response);
+        }, null);
+        if (urlError) {
+            req.once(egret.IOErrorEvent.IO_ERROR, urlError, null);
+        }
+    };
+    return IOx;
+}());
+__reflect(IOx.prototype, "IOx");
+window["IOx"] = IOx;
+///<reference path="Dictionary.ts" />
+var Js = (function (_super) {
+    __extends(Js, _super);
+    function Js() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Js.Call = function (str) {
+        try {
+            return eval(str);
+        }
+        catch (ex) { }
+        return null;
+    };
+    Js.FullScreen = function () {
+        Js.Call("window.RequestFullScreen();");
+    };
+    Js.Trace = function (str) {
+        if (Js.TraceCmd) {
+            Js.TraceCmd(str);
+        }
+        if (Js.showTrace) {
+            if (typeof (str) == "string" && str.indexOf("rror") > 0)
+                console.log('%c ' + str + ' ', 'color: #e40e0e');
+            console.log(str);
+            //str = "!function(){" + "var div = document.createElement('div');" + "div.style.color = '#ff0000';" + "div.innerHTML = '" + str.toString().replace(/'/g, "\'").replace(/</g, "&lt;") + "';" + "document.body.appendChild(div);" + "}();";
+            //Js.Call(str);
+        }
+    };
+    Js.TraceObj = function (obj) {
+        for (var fi in obj) {
+            Js.Trace(fi + ":" + obj[fi]);
+        }
+    };
+    Js.TraceDmx = function (str) {
+        if (Js.showTrace) {
+            if (Js.TraceCmdDmx) {
+                Js.TraceCmdDmx(str);
+            }
+        }
+    };
+    Js.GetParm = function (url, method) {
+        try {
+            var urls = url.split("?");
+            if (urls.length > 1) {
+                var parm = urls[1];
+                var parms = parm.split("&");
+                for (var i = 0, len = parms.length; i < len; i++) {
+                    if (parms[i].split("=")[0] == method) {
+                        return parms[i].split("=")[1];
+                    }
+                }
+            }
+        }
+        catch (ex) { }
+        return "";
+    };
+    Js.GetUrlParm = function (method) {
+        try {
+            var parm = Js.Call("GetParm('" + method + "')");
+            if (Strx.IsFull(parm)) {
+                return parm;
+            }
+        }
+        catch (ex) { }
+        try {
+            var url = window.location.toString();
+            return Js.GetParm(url, method);
+        }
+        catch (ex) { }
+        return "";
+    };
+    Js.OpenWindow = function (url, target, features) {
+        if (target === void 0) { target = "_blank"; }
+        if (features === void 0) { features = ""; }
+        try {
+            var browserName = Js.GetBrowserName();
+            Js.Trace(browserName);
+            window.open(url, target, features);
+        }
+        catch (ex) { }
+    };
+    Js.GetBrowserName = function () {
+        var browser;
+        try {
+            var browserAgent = navigator.userAgent;
+            Js.Trace(browserAgent);
+            if (browserAgent && browserAgent.indexOf("Firefox") >= 0) {
+                browser = "Firefox";
+            }
+            else if (browserAgent && browserAgent.indexOf("Chrome") >= 0) {
+                browser = "Chrome";
+            }
+            else if (browserAgent && browserAgent.indexOf("Safari") >= 0) {
+                browser = "Safari";
+            }
+            else if (browserAgent && browserAgent.indexOf("MSIE") >= 0) {
+                browser = "IE";
+            }
+            else if (browserAgent && browserAgent.indexOf("Opera") >= 0) {
+                browser = "Opera";
+            }
+            else {
+                browser = "Undefined";
+            }
+        }
+        catch (ex) { }
+        return browser;
+    };
+    Object.defineProperty(Js, "SupportWebGL", {
+        get: function () {
+            if (Js._supportWebGL <= 0) {
+                try {
+                    var c = document.getElementById("supportWebGLCanvas");
+                    if (!c) {
+                        c = document.createElement("canvas");
+                        c.style.display = " none";
+                        c.id = "supportWebGLCanvas";
+                    }
+                    var g = c.getContext("webgl");
+                    if (g) {
+                        Js._supportWebGL = 1;
+                        return true;
+                    }
+                    else {
+                        Js._supportWebGL = 2;
+                        return false;
+                    }
+                }
+                catch (ex) {
+                    Js.Trace(ex);
+                }
+                Js._supportWebGL = 1;
+                return true;
+            }
+            if (Js._supportWebGL == 1) {
+                return true;
+            }
+            return false;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Js._supportWebGL = 0;
+    return Js;
+}(egret.HashObject));
+__reflect(Js.prototype, "Js");
+window["Js"] = Js;
+//延迟实现类
+//暂时没用
+var Lazy = (function () {
+    function Lazy(func) {
+    }
+    return Lazy;
+}());
+__reflect(Lazy.prototype, "Lazy");
+//消息传送
+// Msg.Listen("ShowWin", (v: ViewUI) => {
+//  console.log(v);
+// }, this);
+var Msg = (function () {
+    function Msg() {
+    }
+    Msg.Call = function (name, val) {
+        try {
+            if (Msg.list.Exists(name)) {
+                var actList = Msg.list[name];
+                actList.Each(function (fi) {
+                    try {
+                        Msg.Fun(fi, val);
+                    }
+                    catch (ex) {
+                        Js.Trace(ex);
+                    }
+                });
+            }
+        }
+        catch (ex) {
+            Js.Trace(ex);
+        }
+    };
+    Msg.Fun = function (fi, val) {
+        NForm.LazyCall(function () {
+            if (fi) {
+                fi(val);
+            }
+        });
+    };
+    Msg.Listen = function (name, act, sx) {
+        // Js.Trace(name);
+        // Js.Trace(act);
+        if (!Msg.list.Exists(name)) {
+            Msg.list[name] = new Arr();
+        }
+        var arr = Msg.list[name];
+        arr.Add(act);
+        if (sx) {
+            sx.OnDispose(function () {
+                arr.Remove(act);
+            });
+        }
+    };
+    Msg.list = new Listx();
+    return Msg;
+}());
+__reflect(Msg.prototype, "Msg");
+window["Msg"] = Msg;
+// interface Object {//Object不能扩展
+//     ToInt(): number;
+// }
+// if (!Object.prototype.ToInt) {
+//     Object.prototype.ToInt = function () {
+//         return this.toString().ToInt();
+//     };
+// }
+if (!Number.prototype.ToInt) {
+    Number.prototype.ToInt = function () {
+        return parseInt(this);
+    };
+}
+if (!Number.prototype.Max) {
+    Number.prototype.Max = function (val1) {
+        return Math.max(this, val1);
+    };
+}
+if (!Number.prototype.Min) {
+    Number.prototype.Min = function (val1) {
+        return Math.min(this, val1);
+    };
+}
+if (!Number.prototype.Clamp) {
+    Number.prototype.Clamp = function (min, max) {
+        return Math.min(Math.max(this, min), max);
+    };
+}
+// egret.MovieClipData.prototype.getTextureByFrame = function (frame) {
+//     if (frame) {
+//         var frameData = this.getKeyFrameData(frame);
+//         if (frameData) {
+//             if (frameData.res) {
+//                 var outputTexture = this.getTextureByResName(frameData.res);
+//                 return outputTexture;
+//             }
+//         }
+//     }
+//     return null;
+// }; 
+//普通的Point类
+var Point = (function (_super) {
+    __extends(Point, _super);
+    function Point(x, y) {
+        return _super.call(this, x, y) || this;
+    }
+    return Point;
+}(egret.Point));
+__reflect(Point.prototype, "Point");
+window["Point"] = Point;
+//普通扩展类
+var Prototype = (function () {
+    function Prototype() {
+    }
+    return Prototype;
+}());
+__reflect(Prototype.prototype, "Prototype");
+Array.prototype["Each"] = function (func) {
+    var len = this.length;
+    for (var i = 0; i < len; i++) {
+        if (func(this[i])) {
+            break;
+        }
+    }
+};
+//普通的Rectangle类
+var Rectangle = (function (_super) {
+    __extends(Rectangle, _super);
+    function Rectangle(x, y, width, height) {
+        return _super.call(this, x, y, width, height) || this;
+    }
+    return Rectangle;
+}(egret.Rectangle));
+__reflect(Rectangle.prototype, "Rectangle");
+window["Rectangle"] = Rectangle;
+//服务器类
+//可保存、读取临时数据
+var Server = (function () {
+    function Server() {
+    }
+    Server.SetFile = function (path, val) {
+        try {
+            egret.localStorage.setItem(path, val);
+        }
+        catch (ex) {
+            Js.Trace(ex);
+        }
+    };
+    Server.GetFile = function (path) {
+        try {
+            var rv = egret.localStorage.getItem(path);
+            if (rv == null) {
+                rv = "";
+            }
+            return rv;
+        }
+        catch (ex) {
+            Js.Trace(ex);
+        }
+        return "";
+    };
+    Server.GetIO = function (path) {
+        return Server.GetFile(path);
+    };
+    Server.SetIO = function (path, val) {
+        Server.SetFile(path, val);
+    };
+    Server.CreateClass = function (c) {
+        if (Js.showTrace) {
+            var s = new c();
+            s.OnDispose(function () {
+                c.instance = null;
+            });
+            return s;
+        }
+        else {
+            try {
+                var s = new c();
+                s.OnDispose(function () {
+                    c.instance = null;
+                });
+                return s;
+            }
+            catch (ex) { }
+            return null;
+        }
+    };
+    Object.defineProperty(Server, "Now", {
+        get: function () {
+            return Time.Now;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return Server;
+}());
+__reflect(Server.prototype, "Server");
+window["Server"] = Server;
+//ts SHA1实现类
+//直接使用网上的代码
+var SHA1 = (function () {
+    function SHA1() {
+        this.hexcase = 0;
+        this.b64pad = "";
+    }
+    SHA1.GI = function () {
+        if (!SHA1._instance) {
+            SHA1._instance = new SHA1();
+        }
+        return SHA1._instance;
+    };
+    SHA1.prototype.hex_sha1 = function (s) { return this.rstr2hex(this.rstr_sha1(this.str2rstr_utf8(s))); };
+    SHA1.prototype.b64_sha1 = function (s) { return this.rstr2b64(this.rstr_sha1(this.str2rstr_utf8(s))); };
+    SHA1.prototype.any_sha1 = function (s, e) { return this.rstr2any(this.rstr_sha1(this.str2rstr_utf8(s)), e); };
+    SHA1.prototype.hex_hmac_sha1 = function (k, d) { return this.rstr2hex(this.rstr_hmac_sha1(this.str2rstr_utf8(k), this.str2rstr_utf8(d))); };
+    SHA1.prototype.b64_hmac_sha1 = function (k, d) { return this.rstr2b64(this.rstr_hmac_sha1(this.str2rstr_utf8(k), this.str2rstr_utf8(d))); };
+    SHA1.prototype.any_hmac_sha1 = function (k, d, e) { return this.rstr2any(this.rstr_hmac_sha1(this.str2rstr_utf8(k), this.str2rstr_utf8(d)), e); };
+    SHA1.prototype.sha1_vm_test = function () {
+        return this.hex_sha1("abc").toLowerCase() == "a9993e364706816aba3e25717850c26c9cd0d89d";
+    };
+    SHA1.prototype.rstr_sha1 = function (s) {
+        return this.binb2rstr(this.binb_sha1(this.rstr2binb(s), s.length * 8));
+    };
+    SHA1.prototype.rstr_hmac_sha1 = function (key, data) {
+        var bkey = this.rstr2binb(key);
+        if (bkey.length > 16)
+            bkey = this.binb_sha1(bkey, key.length * 8);
+        var ipad = Array(16), opad = Array(16);
+        for (var i = 0; i < 16; i++) {
+            ipad[i] = bkey[i] ^ 0x36363636;
+            opad[i] = bkey[i] ^ 0x5C5C5C5C;
+        }
+        var hash = this.binb_sha1(ipad.concat(this.rstr2binb(data)), 512 + data.length * 8);
+        return this.binb2rstr(this.binb_sha1(opad.concat(hash), 512 + 160));
+    };
+    SHA1.prototype.rstr2hex = function (input) {
+        try {
+            this.hexcase;
+        }
+        catch (e) {
+            this.hexcase = 0;
+        }
+        var hex_tab = this.hexcase ? "0123456789ABCDEF" : "0123456789abcdef";
+        var output = "";
+        var x;
+        for (var i = 0; i < input.length; i++) {
+            x = input.charCodeAt(i);
+            output += hex_tab.charAt((x >>> 4) & 0x0F) + hex_tab.charAt(x & 0x0F);
+        }
+        return output;
+    };
+    SHA1.prototype.rstr2b64 = function (input) {
+        try {
+            this.b64pad;
+        }
+        catch (e) {
+            this.b64pad = '';
+        }
+        var tab = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        var output = "";
+        var len = input.length;
+        for (var i = 0; i < len; i += 3) {
+            var triplet = (input.charCodeAt(i) << 16) | (i + 1 < len ? input.charCodeAt(i + 1) << 8 : 0) | (i + 2 < len ? input.charCodeAt(i + 2) : 0);
+            for (var j = 0; j < 4; j++) {
+                if (i * 8 + j * 6 > input.length * 8)
+                    output += this.b64pad;
+                else
+                    output += tab.charAt((triplet >>> 6 * (3 - j)) & 0x3F);
+            }
+        }
+        return output;
+    };
+    SHA1.prototype.rstr2any = function (input, encoding) {
+        var divisor = encoding.length;
+        var remainders = Array();
+        var i, q, x, quotient;
+        var dividend = Array(Math.ceil(input.length / 2));
+        for (i = 0; i < dividend.length; i++) {
+            dividend[i] = (input.charCodeAt(i * 2) << 8) | input.charCodeAt(i * 2 + 1);
+        }
+        while (dividend.length > 0) {
+            quotient = Array();
+            x = 0;
+            for (i = 0; i < dividend.length; i++) {
+                x = (x << 16) + dividend[i];
+                q = Math.floor(x / divisor);
+                x -= q * divisor;
+                if (quotient.length > 0 || q > 0)
+                    quotient[quotient.length] = q;
+            }
+            remainders[remainders.length] = x;
+            dividend = quotient;
+        }
+        var output = "";
+        for (i = remainders.length - 1; i >= 0; i--)
+            output += encoding.charAt(remainders[i]);
+        var full_length = Math.ceil(input.length * 8 / (Math.log(encoding.length) / Math.log(2)));
+        for (i = output.length; i < full_length; i++)
+            output = encoding[0] + output;
+        return output;
+    };
+    SHA1.prototype.str2rstr_utf8 = function (input) {
+        var output = "";
+        var i = -1;
+        var x, y;
+        while (++i < input.length) {
+            x = input.charCodeAt(i);
+            y = i + 1 < input.length ? input.charCodeAt(i + 1) : 0;
+            if (0xD800 <= x && x <= 0xDBFF && 0xDC00 <= y && y <= 0xDFFF) {
+                x = 0x10000 + ((x & 0x03FF) << 10) + (y & 0x03FF);
+                i++;
+            }
+            if (x <= 0x7F)
+                output += String.fromCharCode(x);
+            else if (x <= 0x7FF)
+                output += String.fromCharCode(0xC0 | ((x >>> 6) & 0x1F), 0x80 | (x & 0x3F));
+            else if (x <= 0xFFFF)
+                output += String.fromCharCode(0xE0 | ((x >>> 12) & 0x0F), 0x80 | ((x >>> 6) & 0x3F), 0x80 | (x & 0x3F));
+            else if (x <= 0x1FFFFF)
+                output += String.fromCharCode(0xF0 | ((x >>> 18) & 0x07), 0x80 | ((x >>> 12) & 0x3F), 0x80 | ((x >>> 6) & 0x3F), 0x80 | (x & 0x3F));
+        }
+        return output;
+    };
+    SHA1.prototype.str2rstr_utf16le = function (input) {
+        var output = "";
+        for (var i = 0; i < input.length; i++)
+            output += String.fromCharCode(input.charCodeAt(i) & 0xFF, (input.charCodeAt(i) >>> 8) & 0xFF);
+        return output;
+    };
+    SHA1.prototype.str2rstr_utf16be = function (input) {
+        var output = "";
+        for (var i = 0; i < input.length; i++)
+            output += String.fromCharCode((input.charCodeAt(i) >>> 8) & 0xFF, input.charCodeAt(i) & 0xFF);
+        return output;
+    };
+    SHA1.prototype.rstr2binb = function (input) {
+        var output = Array(input.length >> 2);
+        for (var i = 0; i < output.length; i++)
+            output[i] = 0;
+        for (var i = 0; i < input.length * 8; i += 8)
+            output[i >> 5] |= (input.charCodeAt(i / 8) & 0xFF) << (24 - i % 32);
+        return output;
+    };
+    SHA1.prototype.binb2rstr = function (input) {
+        var output = "";
+        for (var i = 0; i < input.length * 32; i += 8)
+            output += String.fromCharCode((input[i >> 5] >>> (24 - i % 32)) & 0xFF);
+        return output;
+    };
+    SHA1.prototype.binb_sha1 = function (x, len) {
+        x[len >> 5] |= 0x80 << (24 - len % 32);
+        x[((len + 64 >> 9) << 4) + 15] = len;
+        var w = Array(80);
+        var a = 1732584193;
+        var b = -271733879;
+        var c = -1732584194;
+        var d = 271733878;
+        var e = -1009589776;
+        for (var i = 0; i < x.length; i += 16) {
+            var olda = a;
+            var oldb = b;
+            var oldc = c;
+            var oldd = d;
+            var olde = e;
+            for (var j = 0; j < 80; j++) {
+                if (j < 16)
+                    w[j] = x[i + j];
+                else
+                    w[j] = this.bit_rol(w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16], 1);
+                var t = this.safe_add(this.safe_add(this.bit_rol(a, 5), this.sha1_ft(j, b, c, d)), this.safe_add(this.safe_add(e, w[j]), this.sha1_kt(j)));
+                e = d;
+                d = c;
+                c = this.bit_rol(b, 30);
+                b = a;
+                a = t;
+            }
+            a = this.safe_add(a, olda);
+            b = this.safe_add(b, oldb);
+            c = this.safe_add(c, oldc);
+            d = this.safe_add(d, oldd);
+            e = this.safe_add(e, olde);
+        }
+        return [a, b, c, d, e];
+    };
+    SHA1.prototype.sha1_ft = function (t, b, c, d) {
+        if (t < 20)
+            return (b & c) | ((~b) & d);
+        if (t < 40)
+            return b ^ c ^ d;
+        if (t < 60)
+            return (b & c) | (b & d) | (c & d);
+        return b ^ c ^ d;
+    };
+    SHA1.prototype.sha1_kt = function (t) {
+        return (t < 20) ? 1518500249 : (t < 40) ? 1859775393 :
+            (t < 60) ? -1894007588 : -899497514;
+    };
+    SHA1.prototype.safe_add = function (x, y) {
+        var lsw = (x & 0xFFFF) + (y & 0xFFFF);
+        var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
+        return (msw << 16) | (lsw & 0xFFFF);
+    };
+    SHA1.prototype.bit_rol = function (num, cnt) {
+        return (num << cnt) | (num >>> (32 - cnt));
+    };
+    return SHA1;
+}());
+__reflect(SHA1.prototype, "SHA1");
+window["SHA1"] = SHA1;
+//多线程排队类
+//比如多个命令，然后需要一个一个排队执行
+var SingleQueue = (function () {
+    function SingleQueue(act, timeout) {
+        if (timeout === void 0) { timeout = 800; }
+        this.inHandle = false;
+        this.index = 0;
+        this.continueCount = 0;
+        this.act = act;
+        this.timeout = timeout;
+        this.handleQueue = new Array();
+    }
+    SingleQueue.prototype.Push = function (item) {
+        if (!this.inHandle) {
+            try {
+                this.Add(item);
+            }
+            catch (ex) {
+                Js.Trace(ex);
+            }
+        }
+        else {
+            this.En(item);
+        }
+    };
+    SingleQueue.prototype.Add = function (item) {
+        try {
+            if (this.inHandle) {
+                this.handleQueue.push(item);
+            }
+            else {
+                this.inHandle = true;
+                this.Handle(item);
+            }
+        }
+        catch (ex) {
+            this.inHandle = false;
+            Js.Trace(ex);
+        }
+    };
+    SingleQueue.prototype.En = function (item) {
+        this.handleQueue.push(item);
+    };
+    SingleQueue.prototype.Handle = function (item) {
+        if (item == null) {
+            this.inHandle = false;
+            this.index = 0;
+            return;
+        }
+        try {
+            this.act(item);
+            this.index++;
+        }
+        catch (ex) {
+            Js.Trace(ex);
+        }
+        if (this.index >= this.continueCount) {
+            this.inHandle = false;
+            this.index = 0;
+            return;
+        }
+        else {
+            var items = this.handleQueue.splice(0, 1);
+            if (items.length > 0) {
+                this.Handle(items[0]);
+            }
+        }
+    };
+    SingleQueue.prototype.End = function () {
+        this.inHandle = true;
+        while (true) {
+            var items = this.handleQueue.splice(0, 1);
+            if (items.length == 0) {
+                return;
+            }
+            try {
+                this.act(items[0]);
+            }
+            catch (ex) {
+                Js.Trace(ex);
+            }
+        }
+    };
+    return SingleQueue;
+}());
+__reflect(SingleQueue.prototype, "SingleQueue");
+window["SingleQueue"] = SingleQueue;
+//Bx
+var Sp = (function (_super) {
+    __extends(Sp, _super);
+    function Sp(val) {
+        return _super.call(this, val) || this;
+    }
+    return Sp;
+}(Bx));
+__reflect(Sp.prototype, "Sp");
+window["Sp"] = Sp;
+//文件读取类
+var Src = (function () {
+    function Src() {
+    }
+    Src.ReadByte = function (path, urlLoaded, errorFunc) {
+        if (errorFunc === void 0) { errorFunc = null; }
+        // let loader: egret.URLLoader = new egret.URLLoader();
+        // loader.dataFormat = egret.URLLoaderDataFormat.BINARY;
+        // loader.addEventListener(egret.Event.COMPLETE, (ev: any) => {
+        //     urlLoaded(ev.target.data);
+        // }, this);
+        // if (errorFunc ) {
+        //     loader.addEventListener(egret.IOErrorEvent.IO_ERROR, errorFunc, this);
+        // }
+        // loader.load(new egret.URLRequest("resource/" + path));
+        var url = path;
+        if (!path.StartWith("http")) {
+            url = "resource/" + path;
+        }
+        var request = new egret.HttpRequest();
+        request.responseType = egret.HttpResponseType.ARRAY_BUFFER;
+        var respHandler = function (evt) {
+            switch (evt.type) {
+                case egret.Event.COMPLETE:
+                    var request_1 = evt.currentTarget;
+                    var ab = request_1.response;
+                    urlLoaded(ab);
+                    break;
+                case egret.IOErrorEvent.IO_ERROR:
+                    urlLoaded(null);
+                    break;
+            }
+        };
+        request.once(egret.Event.COMPLETE, respHandler, null);
+        request.once(egret.IOErrorEvent.IO_ERROR, respHandler, null);
+        request.open(url, egret.HttpMethod.GET);
+        request.send();
+    };
+    // public static readQueue: SingleQueue = new SingleQueue((item) => {
+    //     if (Js.showTrace) {
+    //         // ("ReadUrl:" + path).WriteLog();
+    //     }
+    //     let url = "resource/" + item.path;
+    //     let imageLoader = new egret.ImageLoader();
+    //     imageLoader.once(egret.Event.COMPLETE, onLoadComplete, null);
+    //     imageLoader.once(egret.IOErrorEvent.IO_ERROR, onError, null);
+    //     imageLoader.load(url);
+    //     function onError(event) {
+    //         item.urlLoaded(null);
+    //         Src.dataCacheList[item.path] = null;
+    //         Src.inreadingDataCacheList[item.path].forEach((fi) => {
+    //             fi(null);
+    //         });
+    //         Src.inreadingDataCacheList.Remove(item.path);
+    //         ("ReadErrorUrl:" + item.path).WriteLog();
+    //     }
+    //     function onLoadComplete(evt: egret.Event) {
+    //         let data = evt.currentTarget.data;
+    //         let texture = new egret.Texture();
+    //         texture._setBitmapData(data);
+    //         Src.dataCacheList[item.path] = texture;
+    //         Src.inreadingDataCacheList[item.path].forEach((fi) => {
+    //             fi(texture);
+    //         });
+    //         Src.inreadingDataCacheList.Remove(item.path);
+    //     }
+    // }, 800);
+    Src.Read = function (path, urlLoaded) {
+        if (path == null || path.IsEmpty()) {
+            urlLoaded(null);
+            return;
+        }
+        if (Src.dataCacheList.Exists(path)) {
+            if (Src.dataCacheList[path]) {
+                var texture = Src.dataCacheList[path];
+                // let texture = new egret.Texture();
+                // let data = Src.dataCacheList[path];
+                // Js.Trace(Src.dataCacheList[path]);
+                // texture._setBitmapData(Src.dataCacheList[path]);
+                //Form.LazyCall(() => {
+                urlLoaded(texture);
+                //});
+            }
+            else {
+                urlLoaded(null);
+            }
+            return;
+        }
+        if (Src.inreadingDataCacheList.Exists(path)) {
+            Src.inreadingDataCacheList[path].push(urlLoaded);
+            return;
+        }
+        Src.inreadingDataCacheList[path] = [];
+        Src.inreadingDataCacheList[path].push(urlLoaded);
+        //Src.readQueue.Push({ path: path, urlLoaded: urlLoaded, willCache: willCache });
+        // if (Js.showTrace) {
+        //     ("ReadUrl:" + path).WriteLog();
+        // }
+        var item = { path: path, urlLoaded: urlLoaded };
+        var url = item.path;
+        if (!item.path.StartWith("http")) {
+            url = "resource/" + item.path;
+        }
+        var imageLoader = new egret.ImageLoader();
+        imageLoader.once(egret.Event.COMPLETE, onLoadComplete, null);
+        imageLoader.once(egret.IOErrorEvent.IO_ERROR, onError, null);
+        imageLoader.load(url);
+        function onError(event) {
+            item.urlLoaded(null);
+            Src.dataCacheList[item.path] = null;
+            Src.inreadingDataCacheList[item.path].forEach(function (fi) {
+                fi(null);
+            });
+            Src.inreadingDataCacheList.Remove(item.path);
+            ("ReadErrorUrl:" + item.path).WriteLog();
+        }
+        function onLoadComplete(evt) {
+            var data = evt.currentTarget.data;
+            var texture = new egret.Texture();
+            texture._setBitmapData(data);
+            var texures = Textures.GetTextures(texture, item.path);
+            Src.dataCacheList[item.path] = texures;
+            Src.inreadingDataCacheList[item.path].forEach(function (fi) {
+                fi(texures);
+            });
+            Src.inreadingDataCacheList.Remove(item.path);
+        }
+    };
+    Src.ReadTxt = function (path, urlLoaded, willCache) {
+        if (willCache === void 0) { willCache = true; }
+        if (path == null || path.IsEmpty()) {
+            urlLoaded(null);
+            return;
+        }
+        if (willCache && Src.textCacheList.Exists(path)) {
+            urlLoaded(Src.textCacheList[path]);
+            return;
+        }
+        if (Src.inreadingDataCacheList.Exists(path)) {
+            Src.inreadingDataCacheList[path].push(urlLoaded);
+            return;
+        }
+        Src.inreadingDataCacheList[path] = [];
+        Src.inreadingDataCacheList[path].push(urlLoaded);
+        // if (Js.showTrace) {
+        //     ("ReadUrl:" + path).WriteLog();
+        // }
+        var url = path;
+        if (!path.StartWith("http")) {
+            url = "resource/" + path;
+        }
+        var request = new egret.HttpRequest();
+        var respHandler = function (evt) {
+            switch (evt.type) {
+                case egret.Event.COMPLETE:
+                    var request_2 = evt.currentTarget;
+                    Src.textCacheList[path] = request_2.response;
+                    Src.inreadingDataCacheList[path].forEach(function (fi) {
+                        fi(request_2.response);
+                    });
+                    Src.inreadingDataCacheList.Remove(path);
+                    break;
+                case egret.IOErrorEvent.IO_ERROR:
+                    Src.inreadingDataCacheList[path].forEach(function (fi) {
+                        fi("");
+                    });
+                    Src.inreadingDataCacheList.Remove(path);
+                    ("ReadErrorUrl:" + path).WriteLog();
+                    break;
+            }
+        };
+        // let progressHandler = function( evt:egret.ProgressEvent ):void{
+        //     console.log( "progress:", evt.bytesLoaded, evt.bytesTotal );
+        // }
+        request.once(egret.Event.COMPLETE, respHandler, null);
+        request.once(egret.IOErrorEvent.IO_ERROR, respHandler, null);
+        //request.once(egret.ProgressEvent.PROGRESS, progressHandler, null);
+        request.open(url, egret.HttpMethod.GET);
+        request.send();
+    };
+    Src.ReadXml = function (path, urlLoaded, willCache) {
+        if (willCache === void 0) { willCache = true; }
+        Src.ReadTxt(path, function (res) {
+            console.log(res);
+            if (res.IsEmpty()) {
+                urlLoaded(null);
+            }
+            else {
+                urlLoaded(new Xml(res));
+            }
+        }, willCache);
+    };
+    Src.Load = function (func) {
+        //if (Js.showTrace) {//这里最好能Config配置
+        var data = RES.getRes("ModelFlexAttribute_txt"); //增加载入速度
+        if (data) {
+            var buffer = Strx.Decompress(new Uint8Array(data));
+            var text = UTF8.decode(buffer);
+            Src.modelFlexList = Listx.Arr(text);
+            Src.modelFlexList.EachKey(function (fi) {
+                Js.Trace(fi + ":" + Src.modelFlexList[fi].length);
+            });
+        }
+        func();
+        // } else {
+        //     Src.ReadByte("Res/data/ModelFlexAttribute.txt", ((data: ArrayBuffer) => {//外网可能会需要热更
+        //         let buffer = Strx.Decompress(new Uint8Array(data));
+        //         let text = UTF8.decode(buffer);
+        //         Src.modelFlexList = Listx.Arr(text);
+        //         Src.modelFlexList.EachKey((fi) => {
+        //             Js.Trace(fi + ":" + Src.modelFlexList[fi].length);
+        //         });
+        //         func();
+        //     }));
+        // }
+    };
+    Src.dataCacheList = new Listx();
+    Src.inreadingDataCacheList = new Listx();
+    Src.textCacheList = new Listx();
+    return Src;
+}());
+__reflect(Src.prototype, "Src");
+window["Src"] = Src;
 ///<reference path="../Dmx/Arr.ts" />
 var NForm = (function () {
     function NForm() {
@@ -4805,7 +6343,6 @@ var NForm = (function () {
         }
         var item = [Server.Now.AddMilliseconds(time), act];
         NForm.setTimeoutList.Add(item);
-        //setTimeout(act, Math.max(time, 1));//TODO:小程序可能不支持，这里要改进，不然会卡？
     };
     NForm.SetInterval = function (time, act) {
         if (NForm.setIntervalList == null) {
@@ -4813,13 +6350,6 @@ var NForm = (function () {
         }
         var item = [Server.Now.AddMilliseconds(time), time, act];
         NForm.setIntervalList.Add(item);
-        // let num = 0;
-        // let a: Function = () => {
-        //     if (act()) {
-        //         clearInterval(num);
-        //     }
-        // };
-        // num = setInterval(a, time);//TODO:小程序可能不支持
     };
     NForm.MainThread = function (act) {
         NForm.SetTimeout(1, act);
@@ -4894,2068 +6424,9 @@ var NForm = (function () {
 }());
 __reflect(NForm.prototype, "NForm");
 window["NForm"] = NForm;
-var Filters = (function () {
-    function Filters() {
-    }
-    Object.defineProperty(Filters, "borderFilter", {
-        get: function () {
-            return [new egret.GlowFilter(0x000000, 0.6, 3, 3, 5, 1), new egret.DropShadowFilter(1, 45, 0x1d0d02, 0.5, 1, 1, 10, 2)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "deepBorderFilter", {
-        get: function () {
-            return [new egret.GlowFilter(0x4d2600, 1, 4, 4, 4, 1), new egret.DropShadowFilter(2, 45, 0x4d2600, 1, 1, 1, 13, 2)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "tabBorderFilter", {
-        get: function () {
-            return [new egret.GlowFilter(0x642e0a, 1, 5, 5, 6, 1)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "tabBorderFilterOff", {
-        get: function () {
-            return [new egret.GlowFilter(0xffffff, 1, 5, 5, 6, 1)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "borderFilter0", {
-        get: function () {
-            return [new egret.GlowFilter(0x965805, 1, 3, 3, 5, 1), new egret.DropShadowFilter(1, 45, 0x1d0d02, 0.5, 1, 1, 10, 2)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "borderFilter1", {
-        get: function () {
-            return [new egret.GlowFilter(0x00295f, 1, 3, 3, 5, 1), new egret.DropShadowFilter(1, 45, 0x1d0d02, 0.5, 1, 1, 10, 2)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "borderFilter2", {
-        get: function () {
-            return [new egret.GlowFilter(0x8c2e24, 1, 3, 3, 5, 1), new egret.DropShadowFilter(1, 45, 0x1d0d02, 0.5, 1, 1, 10, 2)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "borderFilter3", {
-        get: function () {
-            return [new egret.GlowFilter(0x7c5131, 1, 3, 3, 5, 1), new egret.DropShadowFilter(1, 45, 0x1d0d02, 0.5, 1, 1, 10, 2)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "borderFilter4", {
-        get: function () {
-            return [new egret.GlowFilter(0x006e27, 1, 3, 3, 5, 1), new egret.DropShadowFilter(1, 45, 0x1d0d02, 0.5, 1, 1, 10, 2)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "borderFilter5", {
-        get: function () {
-            return [new egret.GlowFilter(0x8c613f, 1, 3, 3, 5, 1), new egret.DropShadowFilter(1, 45, 0x1d0d02, 0.5, 1, 1, 10, 2)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "greenBorderFilter", {
-        get: function () {
-            return [new egret.GlowFilter(0x003300, 0.6, 3, 3, 5, 1), new egret.DropShadowFilter(1, 45, 0x1d0d02, 0.5, 1, 1, 10, 2)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "borderLightFilter", {
-        get: function () {
-            return [new egret.GlowFilter(0x000000, 0.2, 3, 3, 5, 1), new egret.DropShadowFilter(1, 45, 0x1d0d02, 0.5, 1, 1, 10, 2)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "lightGlowFilter", {
-        get: function () {
-            return [new egret.GlowFilter(0xffffbe, 0.55, 4, 4, 5, 1)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "glowFilter", {
-        get: function () {
-            return [new egret.GlowFilter(0x140c09, 0.35, 8, 8, 3, 1)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "blackLineFilter", {
-        get: function () {
-            return [new egret.DropShadowFilter(1, 45, 0x1d0d02, 0.9, 3, 2, 20, 2)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "blackLightLineFilter", {
-        get: function () {
-            return [new egret.DropShadowFilter(1, 45, 0x000000, 0.9, 1, 1, 3, 2)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "knockoutGlowFilter", {
-        get: function () {
-            return [new egret.GlowFilter(0x88ff88, 0.75, 6, 6, 3, 1, true, true), new egret.BlurFilter(3, 3, 1)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "knockoutWhiteGlowFilter", {
-        get: function () {
-            return [new egret.GlowFilter(0xffffff, 0.8, 6, 6, 10, 1, true, true), new egret.BlurFilter(3, 3, 1)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "knockoutRedGlowFilter", {
-        get: function () {
-            return [new egret.GlowFilter(0xff0000, 0.75, 20, 20, 5, 1, true, true), new egret.BlurFilter(3, 3, 1)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "knockoutGrayFilter", {
-        get: function () {
-            return [new egret.GlowFilter(0x888888, 0.75, 20, 20, 2, 1, true, true)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "blackFilter", {
-        get: function () {
-            return [new egret.GlowFilter(0x000000, 1, 2, 2, 5, 1)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "redFilter", {
-        get: function () {
-            return [new egret.ColorMatrixFilter([
-                    0.3086, 0.6094, 0.0820, 0, 0,
-                    0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0,
-                    0, 0, 0, 1, 0
-                ])];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "grayFilter", {
-        get: function () {
-            // return [new egret.ColorMatrixFilter([
-            //     0.3086, 0.6094, 0.0820, 0, 0,
-            //     0.3086, 0.6094, 0.0820, 0, 0,
-            //     0.3086, 0.6094, 0.0820, 0, 0,
-            //     0, 0, 0, 1, 0
-            // ])];
-            return [new egret.ColorMatrixFilter([
-                    0.3, 0.6, 0, 0, 0,
-                    0.3, 0.6, 0, 0, 0,
-                    0.3, 0.6, 0, 0, 0,
-                    0, 0, 0, 1, 0
-                ])];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "lightGrayFilter", {
-        get: function () {
-            return [new egret.ColorMatrixFilter([
-                    0.4, 0.7, 0.1, 0, 0,
-                    0.4, 0.7, 0.1, 0, 0,
-                    0.4, 0.7, 0.1, 0, 0,
-                    0, 0, 0, 1, 0
-                ])];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "brownGlowFilter", {
-        get: function () {
-            return [new egret.GlowFilter(0x660000, 0.7, 10, 10, 3, 1)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "greenGlowFilter", {
-        get: function () {
-            return [new egret.GlowFilter(0x00ff00, 0.55, 4, 4, 2, 1)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "redGlowFilter", {
-        get: function () {
-            return [new egret.GlowFilter(0xff0000, 0.55, 4, 4, 2, 1)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Filters, "highLightFilter", {
-        get: function () {
-            return [new egret.ColorMatrixFilter([
-                    1.5, 0, 0, 0, 0,
-                    0, 1.5, 0, 0, 0,
-                    0, 0, 1.5, 0, 0,
-                    0, 0, 0, 1, 0
-                ])];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return Filters;
-}());
-__reflect(Filters.prototype, "Filters");
-window["Filters"] = Filters;
-var IOx = (function () {
-    function IOx() {
-    }
-    IOx.ReadURL = function (path, urlLoaded, urlError, data, method) {
-        if (urlError === void 0) { urlError = null; }
-        if (data === void 0) { data = ""; }
-        if (method === void 0) { method = egret.HttpMethod.POST; }
-        var req = new egret.HttpRequest();
-        req.responseType = egret.HttpResponseType.TEXT;
-        req.open(path, method);
-        req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        req.send(data);
-        if (data.length > 50) {
-            Js.Trace(path + "?");
-        }
-        else {
-            Js.Trace(path + "?" + data);
-        }
-        req.once(egret.Event.COMPLETE, function (ev) {
-            switch (ev.type) {
-                case egret.Event.COMPLETE:
-                    var text = ev.currentTarget.response;
-                    Js.Trace(text);
-                    urlLoaded(text);
-                    break;
-                case egret.IOErrorEvent.IO_ERROR:
-                    Js.Trace("null");
-                    urlLoaded(null);
-                    break;
-            }
-        }, null);
-        req.once(egret.IOErrorEvent.IO_ERROR, function (ev) {
-            urlLoaded(null);
-            if (urlError) {
-                urlError(ev);
-            }
-        }, null);
-    };
-    IOx.ReadURLContent = function (path, urlLoaded, urlError, data) {
-        if (urlError === void 0) { urlError = null; }
-        if (data === void 0) { data = ""; }
-        var req = new egret.HttpRequest();
-        req.responseType = egret.HttpResponseType.ARRAY_BUFFER;
-        req.open(path, egret.HttpMethod.POST);
-        req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        req.send(data);
-        req.once(egret.Event.COMPLETE, function (ev) {
-            urlLoaded(req.response);
-        }, null);
-        if (urlError) {
-            req.once(egret.IOErrorEvent.IO_ERROR, urlError, null);
-        }
-    };
-    return IOx;
-}());
-__reflect(IOx.prototype, "IOx");
-window["IOx"] = IOx;
-///<reference path="Dictionary.ts" />
-var Js = (function (_super) {
-    __extends(Js, _super);
-    function Js() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Js.Call = function (str) {
-        try {
-            return eval(str);
-        }
-        catch (ex) { }
-        return null;
-    };
-    Js.FullScreen = function () {
-        Js.Call("window.RequestFullScreen();");
-    };
-    Js.Trace = function (str) {
-        if (Js.TraceCmd) {
-            Js.TraceCmd(str);
-        }
-        if (Js.showTrace) {
-            if (typeof (str) == "string" && str.indexOf("rror") > 0)
-                console.log('%c ' + str + ' ', 'color: #e40e0e');
-            console.log(str);
-            //str = "!function(){" + "var div = document.createElement('div');" + "div.style.color = '#ff0000';" + "div.innerHTML = '" + str.toString().replace(/'/g, "\'").replace(/</g, "&lt;") + "';" + "document.body.appendChild(div);" + "}();";
-            //Js.Call(str);
-        }
-    };
-    Js.TraceObj = function (obj) {
-        for (var fi in obj) {
-            Js.Trace(fi + ":" + obj[fi]);
-        }
-    };
-    Js.TraceDmx = function (str) {
-        if (Js.showTrace) {
-            if (Js.TraceCmdDmx) {
-                Js.TraceCmdDmx(str);
-            }
-        }
-    };
-    Js.GetParm = function (url, method) {
-        try {
-            var urls = url.split("?");
-            if (urls.length > 1) {
-                var parm = urls[1];
-                var parms = parm.split("&");
-                for (var i = 0, len = parms.length; i < len; i++) {
-                    if (parms[i].split("=")[0] == method) {
-                        return parms[i].split("=")[1];
-                    }
-                }
-            }
-        }
-        catch (ex) { }
-        return "";
-    };
-    Js.GetUrlParm = function (method) {
-        try {
-            var parm = Js.Call("GetParm('" + method + "')");
-            if (Strx.IsFull(parm)) {
-                return parm;
-            }
-        }
-        catch (ex) { }
-        try {
-            var url = window.location.toString();
-            return Js.GetParm(url, method);
-        }
-        catch (ex) { }
-        return "";
-    };
-    Js.OpenWindow = function (url, target, features) {
-        if (target === void 0) { target = "_blank"; }
-        if (features === void 0) { features = ""; }
-        try {
-            var browserName = Js.GetBrowserName();
-            Js.Trace(browserName);
-            window.open(url, target, features);
-        }
-        catch (ex) { }
-    };
-    Js.GetBrowserName = function () {
-        var browser;
-        try {
-            var browserAgent = navigator.userAgent;
-            Js.Trace(browserAgent);
-            if (browserAgent && browserAgent.indexOf("Firefox") >= 0) {
-                browser = "Firefox";
-            }
-            else if (browserAgent && browserAgent.indexOf("Chrome") >= 0) {
-                browser = "Chrome";
-            }
-            else if (browserAgent && browserAgent.indexOf("Safari") >= 0) {
-                browser = "Safari";
-            }
-            else if (browserAgent && browserAgent.indexOf("MSIE") >= 0) {
-                browser = "IE";
-            }
-            else if (browserAgent && browserAgent.indexOf("Opera") >= 0) {
-                browser = "Opera";
-            }
-            else {
-                browser = "Undefined";
-            }
-        }
-        catch (ex) { }
-        return browser;
-    };
-    Object.defineProperty(Js, "SupportWebGL", {
-        get: function () {
-            if (Js._supportWebGL <= 0) {
-                try {
-                    var c = document.getElementById("supportWebGLCanvas");
-                    if (!c) {
-                        c = document.createElement("canvas");
-                        c.style.display = " none";
-                        c.id = "supportWebGLCanvas";
-                    }
-                    var g = c.getContext("webgl");
-                    if (g) {
-                        Js._supportWebGL = 1;
-                        return true;
-                    }
-                    else {
-                        Js._supportWebGL = 2;
-                        return false;
-                    }
-                }
-                catch (ex) {
-                    Js.Trace(ex);
-                }
-                Js._supportWebGL = 1;
-                return true;
-            }
-            if (Js._supportWebGL == 1) {
-                return true;
-            }
-            return false;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Js._supportWebGL = 0;
-    return Js;
-}(egret.HashObject));
-__reflect(Js.prototype, "Js");
-window["Js"] = Js;
-var Lazy = (function () {
-    function Lazy(func) {
-    }
-    return Lazy;
-}());
-__reflect(Lazy.prototype, "Lazy");
-var ActLite = (function () {
-    function ActLite() {
-    }
-    ActLite.To = function (sx, stateTo, time, onEndFunc, parseHandle) {
-        if (time === void 0) { time = 1000; }
-        if (onEndFunc === void 0) { onEndFunc = null; }
-        if (parseHandle === void 0) { parseHandle = null; }
-        var frameCount = time / 30;
-        var stateFrom = {};
-        for (var fi in stateTo) {
-            stateFrom[fi] = sx[fi];
-        }
-        var stateInterVal = {};
-        for (var fi in stateTo) {
-            stateInterVal[fi] = (stateTo[fi] - stateFrom[fi]) / frameCount;
-        }
-        var actId = Strx.Rnd(999999);
-        sx.actId = actId;
-        var index = 0;
-        var interval = function () {
-            if (sx.actId != actId) {
-                return true;
-            }
-            if (sx instanceof Sx) {
-                if (sx.disposed) {
-                    return true;
-                }
-            }
-            else if (sx instanceof Bx) {
-                if (sx.disposed) {
-                    return true;
-                }
-            }
-            for (var fi in stateTo) {
-                if (parseHandle) {
-                    sx[fi] = parseHandle(stateInterVal[fi] * index + stateFrom[fi], sx);
-                }
-                else {
-                    sx[fi] = stateInterVal[fi] * index + stateFrom[fi];
-                }
-            }
-            // if (onChangeHandle) {
-            //     onChangeHandle(sx);
-            // }
-            if (index >= frameCount) {
-                for (var fi in stateTo) {
-                    sx[fi] = stateTo[fi];
-                }
-                if (onEndFunc) {
-                    onEndFunc();
-                }
-                return true;
-            }
-            index++;
-            return false;
-        };
-        NForm.SetInterval(30, interval);
-    };
-    //可以向移动的目标移动
-    ActLite.ToTarget = function (sx, target, offsetx, offsety, time, onEndFunc) {
-        if (time === void 0) { time = 1000; }
-        if (onEndFunc === void 0) { onEndFunc = null; }
-        var frameCount = time / 30;
-        var stateFrom = {};
-        stateFrom["x"] = sx.x;
-        stateFrom["y"] = sx.y;
-        // let stateInterVal = {};
-        // for (let fi in stateTo) {
-        //     stateInterVal[fi] = (stateTo[fi] - stateFrom[fi]) / frameCount;
-        // }
-        var actId = Strx.Rnd(999999);
-        sx.SetTemp("actId", actId);
-        var index = 0;
-        var interval = function () {
-            if (sx.GetTemp("actId") != actId) {
-                return true;
-            }
-            if (sx instanceof Sx) {
-                if (sx.disposed) {
-                    return true;
-                }
-            }
-            else if (sx instanceof Bx) {
-                if (sx.disposed) {
-                    return true;
-                }
-            }
-            var frameCount1 = frameCount - index + 1;
-            if (frameCount1 <= 0) {
-                frameCount1 = 1;
-            }
-            sx.x = sx.x + (target.x + offsetx - sx.x) / frameCount1;
-            sx.y = sx.y + (target.y + offsety - sx.y) / frameCount1;
-            if (index >= frameCount) {
-                sx.x = target.x + offsetx;
-                sx.y = target.y + offsety;
-                if (onEndFunc) {
-                    onEndFunc();
-                }
-                return true;
-            }
-            index++;
-            return false;
-        };
-        NForm.SetInterval(30, interval);
-    };
-    return ActLite;
-}());
-__reflect(ActLite.prototype, "ActLite");
-window["ActLite"] = ActLite;
-var AStar = (function () {
-    function AStar() {
-    }
-    AStar.Init = function (dataList) {
-        AStar.blocks = dataList;
-        if (AStar.blocks) {
-            AStar._mapWalkDataMaxX = AStar.blocks.width - 1;
-            AStar._mapWalkDataMaxY = AStar.blocks.length - 1;
-        }
-        ;
-    };
-    AStar.Find = function (p_start, p_end, isOptimize) {
-        if (isOptimize === void 0) { isOptimize = true; }
-        if (AStar.blocks.ExistsPoint(p_end)) {
-            //找出最近点的end
-            var expert = 36;
-            var axingOffset = 2;
-            var newEnd = null;
-            for (var i = 1; i < expert * axingOffset; i += axingOffset) {
-                var p = new Vector2(p_end.x - i, p_end.y);
-                if (p.x > 0 && p.x < AStar.blocks.width && p.y > 0 && p.y < AStar.blocks.height && !AStar.blocks.Exists(p.x, p.y)) {
-                    newEnd = p;
-                    break;
-                }
-                p = new Vector2(p_end.x + i, p_end.y);
-                if (p.x > 0 && p.x < AStar.blocks.width && p.y > 0 && p.y < AStar.blocks.height && !AStar.blocks.Exists(p.x, p.y)) {
-                    newEnd = p;
-                    break;
-                }
-                //
-                p = new Vector2(p_end.x, p_end.y - i);
-                if (p.x > 0 && p.x < AStar.blocks.width && p.y > 0 && p.y < AStar.blocks.height && !AStar.blocks.Exists(p.x, p.y)) {
-                    newEnd = p;
-                    break;
-                }
-                p = new Vector2(p_end.x, p_end.y + i);
-                if (p.x > 0 && p.x < AStar.blocks.width && p.y > 0 && p.y < AStar.blocks.height && !AStar.blocks.Exists(p.x, p.y)) {
-                    newEnd = p;
-                    break;
-                }
-                //
-                p = new Vector2(p_end.x - i, p_end.y - i);
-                if (p.x > 0 && p.x < AStar.blocks.width && p.y > 0 && p.y < AStar.blocks.height && !AStar.blocks.Exists(p.x, p.y)) {
-                    newEnd = p;
-                    break;
-                }
-                p = new Vector2(p_end.x - i, p_end.y + i);
-                if (p.x > 0 && p.x < AStar.blocks.width && p.y > 0 && p.y < AStar.blocks.height && !AStar.blocks.Exists(p.x, p.y)) {
-                    newEnd = p;
-                    break;
-                }
-                //
-                p = new Vector2(p_end.x + i, p_end.y - i);
-                if (p.x > 0 && p.x < AStar.blocks.width && p.y > 0 && p.y < AStar.blocks.height && !AStar.blocks.Exists(p.x, p.y)) {
-                    newEnd = p;
-                    break;
-                }
-                p = new Vector2(p_end.x + i, p_end.y + i);
-                if (p.x > 0 && p.x < AStar.blocks.width && p.y > 0 && p.y < AStar.blocks.height && !AStar.blocks.Exists(p.x, p.y)) {
-                    newEnd = p;
-                    break;
-                }
-            }
-            p_end = newEnd;
-            if (p_end == null) {
-                return null;
-            }
-        }
-        var aroundPoint;
-        var path;
-        var f1;
-        var f2;
-        var n;
-        var firstDataInOpen;
-        var curPoint;
-        if (AStar.blocks == null) {
-            return (null);
-        }
-        ;
-        AStar.InitLists();
-        AStar._openCount = 0;
-        AStar._openId = -1;
-        AStar.OpenNote(p_start, 0, 0, 0);
-        var tryNum;
-        while (AStar._openCount > 0) {
-            ++tryNum;
-            if (tryNum > AStar.maxTry) {
-                AStar.DestroyLists();
-                return (null);
-            }
-            ;
-            firstDataInOpen = AStar._openList[0];
-            AStar.CloseNote(firstDataInOpen);
-            curPoint = AStar._nodeList[firstDataInOpen];
-            if (p_end.Equals(curPoint)) {
-                path = AStar.GetPath(p_start, firstDataInOpen, isOptimize);
-                return (path);
-            }
-            ;
-            AStar.GetArounds(curPoint).forEach(function (aroundPoint) {
-                f1 = (AStar._movementCostList[firstDataInOpen] + ((aroundPoint.y == curPoint.y)) ? AStar.COST_STRAIGHT : AStar.COST_DIAGONAL);
-                f2 = (f1 + ((Math.abs((p_end.x - aroundPoint.x)) + Math.abs((p_end.y - aroundPoint.y))) * AStar.COST_STRAIGHT));
-                if (AStar.IsOpen(aroundPoint)) {
-                    n = AStar._noteMap[aroundPoint.y][aroundPoint.x][AStar.NOTE_ID];
-                    if (f1 < AStar._movementCostList[n]) {
-                        AStar._movementCostList[n] = f1;
-                        AStar._pathScoreList[n] = f2;
-                        AStar._fatherList[n] = firstDataInOpen;
-                        AStar.AheadNote((AStar._openList.indexOf(n) + 1));
-                    }
-                    ;
-                }
-                else {
-                    AStar.OpenNote(aroundPoint, f2, f1, firstDataInOpen);
-                }
-                ;
-            });
-        }
-        ;
-        AStar.DestroyLists();
-        return (null);
-    };
-    AStar.IncisePath = function (path) {
-        var targetPoint;
-        var distance;
-        var pointIdx = 1;
-        var startPoint = path[0];
-        while (pointIdx < path.length) {
-            targetPoint = path[pointIdx];
-            distance = startPoint.Distance(targetPoint);
-            if (distance > 8) {
-                path.splice(pointIdx, (path.length - pointIdx));
-                return;
-            }
-            ;
-            pointIdx++;
-        }
-        ;
-    };
-    AStar.IsOpen = function (p) {
-        if (AStar._noteMap[p.y] == null) {
-            return (false);
-        }
-        ;
-        if (AStar._noteMap[p.y][p.x] == null) {
-            return (false);
-        }
-        ;
-        return (AStar._noteMap[p.y][p.x][AStar.NOTE_OPEN]);
-    };
-    AStar.AheadNote = function (index) {
-        var curIdx;
-        var n;
-        while (index > 1) {
-            curIdx = index / 2;
-            if (AStar.GetScore(index) < AStar.GetScore(curIdx)) {
-                n = AStar._openList[(index - 1)];
-                AStar._openList[(index - 1)] = AStar._openList[(curIdx - 1)];
-                AStar._openList[(curIdx - 1)] = n;
-                index = curIdx;
-            }
-            else {
-                break;
-            }
-            ;
-        }
-        ;
-    };
-    AStar.OpenNote = function (p, score, cost, fatherId) {
-        AStar._openCount++;
-        AStar._openId++;
-        if (AStar._noteMap[p.y] == null) {
-            AStar._noteMap[p.y] = [];
-        }
-        ;
-        AStar._noteMap[p.y][p.x] = [];
-        AStar._noteMap[p.y][p.x][AStar.NOTE_OPEN] = true;
-        AStar._noteMap[p.y][p.x][AStar.NOTE_ID] = AStar._openId;
-        AStar._nodeList.push(p);
-        AStar._pathScoreList.push(score);
-        AStar._movementCostList.push(cost);
-        AStar._fatherList.push(fatherId);
-        AStar._openList.push(AStar._openId);
-        AStar.AheadNote(AStar._openCount);
-    };
-    AStar.Optimize = function (pointList, fromIndex) {
-        if (fromIndex === void 0) { fromIndex = 0; }
-        var curPoint;
-        var xx;
-        var yy;
-        var distance;
-        var vx;
-        var vy;
-        var mx;
-        var my;
-        var curDistance;
-        var canPassLine;
-        if (pointList == null) {
-            return;
-        }
-        ;
-        var pointCount = (pointList.length - 1);
-        if (pointCount < 2) {
-            return;
-        }
-        ;
-        var fromPoint = pointList[fromIndex];
-        var curIndex = pointCount;
-        while (curIndex > fromIndex) {
-            curPoint = pointList[curIndex];
-            xx = (curPoint.x - fromPoint.x);
-            yy = (curPoint.y - fromPoint.y);
-            distance = Math.round(Math.sqrt(((xx * xx) + (yy * yy))));
-            vx = (xx / distance);
-            vy = (yy / distance);
-            mx = vx;
-            my = vy;
-            curDistance = 1;
-            canPassLine = true;
-            while (curDistance < distance) {
-                if (AStar.CanPass(fromPoint.Move(Math.round(mx), Math.round(my))) == false) {
-                    canPassLine = false;
-                    break;
-                }
-                ;
-                mx = (mx + vx);
-                my = (my + vy);
-                curDistance++;
-            }
-            ;
-            if (canPassLine) {
-                pointList.splice((fromIndex + 1), ((curIndex - fromIndex) - 1));
-                break;
-            }
-            ;
-            curIndex--;
-        }
-        ;
-        fromIndex++;
-        if (fromIndex < (pointList.length - 1)) {
-            AStar.Optimize(pointList, fromIndex);
-        }
-        ;
-    };
-    AStar.Optimize2 = function (pointList, fromIndex) {
-        if (fromIndex === void 0) { fromIndex = 0; }
-        var curPoint;
-        var xx;
-        var yy;
-        var steps;
-        var canPassLine;
-        var i;
-        var dx;
-        var dy;
-        var mx;
-        var my;
-        if (pointList == null) {
-            return;
-        }
-        ;
-        var pointCount = (pointList.length - 1);
-        if (pointCount < 2) {
-            return;
-        }
-        ;
-        var fromPoint = pointList[fromIndex];
-        var curIndex = pointCount;
-        while (curIndex > fromIndex) {
-            curPoint = pointList[curIndex];
-            xx = Math.abs((curPoint.x - fromPoint.x));
-            yy = Math.abs((curPoint.y - fromPoint.y));
-            if (xx > yy) {
-                steps = xx;
-            }
-            else {
-                steps = yy;
-            }
-            ;
-            canPassLine = true;
-            i = 1;
-            while (i < steps) {
-                dx = (curPoint.x - fromPoint.x);
-                dy = (curPoint.y - fromPoint.y);
-                mx = Math.round(((Math.abs(dx) * i) / steps));
-                if (dx < 0) {
-                    mx = -(mx);
-                }
-                ;
-                my = Math.round(((Math.abs(dy) * i) / steps));
-                if (dy < 0) {
-                    my = -(my);
-                }
-                ;
-                if (AStar.CanPass(fromPoint.Move(mx, my)) == false) {
-                    canPassLine = false;
-                    break;
-                }
-                ;
-                i++;
-            }
-            ;
-            if (canPassLine) {
-                pointList.splice((fromIndex + 1), ((curIndex - fromIndex) - 1));
-                break;
-            }
-            ;
-            curIndex--;
-        }
-        ;
-        fromIndex++;
-        if (fromIndex < (pointList.length - 1)) {
-            AStar.Optimize2(pointList, fromIndex);
-        }
-        ;
-    };
-    AStar.CloseNote = function (id) {
-        AStar._openCount--;
-        var node = AStar._nodeList[id];
-        AStar._noteMap[node.y][node.x][AStar.NOTE_OPEN] = false;
-        AStar._noteMap[node.y][node.x][AStar.NOTE_CLOSED] = true;
-        if (AStar._openCount <= 0) {
-            AStar._openCount = 0;
-            AStar._openList.length = 0;
-            return;
-        }
-        ;
-        AStar._openList[0] = AStar._openList.pop();
-        AStar.BackNote();
-    };
-    AStar.GetScore = function (index) {
-        return (AStar._pathScoreList[AStar._openList[(index - 1)]]);
-    };
-    AStar.GetArounds = function (p) {
-        var nearPoint;
-        var point;
-        var aroundPointList = [];
-        AStar.AROUND_POINTS.forEach(function (point) {
-            nearPoint = p.Move(point.x, point.y);
-            if (AStar.CanPass(nearPoint)) {
-                if (!(AStar.IsClosed(nearPoint))) {
-                    aroundPointList.push(nearPoint);
-                }
-                ;
-            }
-            ;
-        });
-        return (aroundPointList);
-    };
-    AStar.CanPass = function (p) {
-        if ((((((((p.x < 0)) || ((p.x > AStar._mapWalkDataMaxX)))) || ((p.y < 0)))) || ((p.y > AStar._mapWalkDataMaxY)))) {
-            return (false);
-        }
-        ;
-        return !AStar.blocks.ExistsPoint(p);
-    };
-    AStar.GetPath = function (p_start, id, isOptimize) {
-        var pathNodeList = [];
-        var node = AStar._nodeList[id];
-        while (!(p_start.Equals(node))) {
-            pathNodeList.push(node);
-            id = AStar._fatherList[id];
-            node = AStar._nodeList[id];
-        }
-        ;
-        pathNodeList.push(p_start);
-        AStar.DestroyLists();
-        pathNodeList.reverse();
-        if (isOptimize) {
-            AStar.Optimize2(pathNodeList);
-        }
-        ;
-        return (pathNodeList);
-    };
-    AStar.InitLists = function () {
-        AStar._openList = [];
-        AStar._nodeList = [];
-        AStar._pathScoreList = [];
-        AStar._movementCostList = [];
-        AStar._fatherList = [];
-        AStar._noteMap = new Array();
-    };
-    AStar.IsClosed = function (p) {
-        if (AStar._noteMap[p.y] == null) {
-            return (false);
-        }
-        ;
-        if (AStar._noteMap[p.y][p.x] == null) {
-            return (false);
-        }
-        ;
-        return (AStar._noteMap[p.y][p.x][AStar.NOTE_CLOSED]);
-    };
-    AStar.DestroyLists = function () {
-        AStar._openList = null;
-        AStar._nodeList = null;
-        AStar._pathScoreList = null;
-        AStar._movementCostList = null;
-        AStar._fatherList = null;
-        AStar._noteMap = null;
-    };
-    AStar.BackNote = function () {
-        var temp;
-        var n1;
-        var n2 = 1;
-        while (true) {
-            n1 = n2;
-            if ((2 * n1) <= AStar._openCount) {
-                if (AStar.GetScore(n2) > AStar.GetScore((2 * n1))) {
-                    n2 = (2 * n1);
-                }
-                ;
-                if (((2 * n1) + 1) <= AStar._openCount) {
-                    if (AStar.GetScore(n2) > AStar.GetScore(((2 * n1) + 1))) {
-                        n2 = ((2 * n1) + 1);
-                    }
-                    ;
-                }
-                ;
-            }
-            ;
-            if (n1 == n2) {
-                break;
-            }
-            ;
-            temp = AStar._openList[(n1 - 1)];
-            AStar._openList[(n1 - 1)] = AStar._openList[(n2 - 1)];
-            AStar._openList[(n2 - 1)] = temp;
-        }
-        ;
-    };
-    AStar.BLOCK_WAY = 1;
-    AStar.AROUND_POINTS = [new Vector2(1, 0),
-        new Vector2(0, 1),
-        new Vector2(-1, 0),
-        new Vector2(0, -1),
-        new Vector2(1, 1),
-        new Vector2(-1, 1),
-        new Vector2(-1, -1),
-        new Vector2(1, -1)];
-    AStar.COST_DIAGONAL = 14;
-    AStar.COST_STRAIGHT = 10;
-    AStar.NOTE_OPEN = 1;
-    AStar.NOTE_ID = 0;
-    AStar.NOTE_CLOSED = 2;
-    AStar.maxTry = 5000;
-    return AStar;
-}());
-__reflect(AStar.prototype, "AStar");
-window["AStar"] = AStar;
-var Msg = (function () {
-    function Msg() {
-    }
-    Msg.Call = function (name, val) {
-        try {
-            if (Msg.list.Exists(name)) {
-                var actList = Msg.list[name];
-                actList.Each(function (fi) {
-                    try {
-                        Msg.Fun(fi, val);
-                    }
-                    catch (ex) {
-                        Js.Trace(ex);
-                    }
-                });
-            }
-        }
-        catch (ex) {
-            Js.Trace(ex);
-        }
-    };
-    Msg.Fun = function (fi, val) {
-        NForm.LazyCall(function () {
-            if (fi) {
-                fi(val);
-            }
-        });
-    };
-    Msg.Listen = function (name, act, sx) {
-        // Js.Trace(name);
-        // Js.Trace(act);
-        if (!Msg.list.Exists(name)) {
-            Msg.list[name] = new Arr();
-        }
-        var arr = Msg.list[name];
-        arr.Add(act);
-        if (sx) {
-            sx.OnDispose(function () {
-                arr.Remove(act);
-            });
-        }
-    };
-    Msg.list = new Listx();
-    return Msg;
-}());
-__reflect(Msg.prototype, "Msg");
-window["Msg"] = Msg;
-// interface Object {//Object不能扩展
-//     ToInt(): number;
-// }
-// if (!Object.prototype.ToInt) {
-//     Object.prototype.ToInt = function () {
-//         return this.toString().ToInt();
-//     };
-// }
-if (!Number.prototype.ToInt) {
-    Number.prototype.ToInt = function () {
-        return parseInt(this);
-    };
-}
-if (!Number.prototype.Max) {
-    Number.prototype.Max = function (val1) {
-        return Math.max(this, val1);
-    };
-}
-if (!Number.prototype.Min) {
-    Number.prototype.Min = function (val1) {
-        return Math.min(this, val1);
-    };
-}
-if (!Number.prototype.Clamp) {
-    Number.prototype.Clamp = function (min, max) {
-        return Math.min(Math.max(this, min), max);
-    };
-}
-// egret.MovieClipData.prototype.getTextureByFrame = function (frame) {
-//     if (frame) {
-//         var frameData = this.getKeyFrameData(frame);
-//         if (frameData) {
-//             if (frameData.res) {
-//                 var outputTexture = this.getTextureByResName(frameData.res);
-//                 return outputTexture;
-//             }
-//         }
-//     }
-//     return null;
-// }; 
-var Point = (function (_super) {
-    __extends(Point, _super);
-    function Point(x, y) {
-        return _super.call(this, x, y) || this;
-    }
-    return Point;
-}(egret.Point));
-__reflect(Point.prototype, "Point");
-window["Point"] = Point;
-var Prototype = (function () {
-    function Prototype() {
-    }
-    return Prototype;
-}());
-__reflect(Prototype.prototype, "Prototype");
-Array.prototype["Each"] = function (func) {
-    var len = this.length;
-    for (var i = 0; i < len; i++) {
-        if (func(this[i])) {
-            break;
-        }
-    }
-};
-var Rectangle = (function (_super) {
-    __extends(Rectangle, _super);
-    function Rectangle(x, y, width, height) {
-        return _super.call(this, x, y, width, height) || this;
-    }
-    return Rectangle;
-}(egret.Rectangle));
-__reflect(Rectangle.prototype, "Rectangle");
-window["Rectangle"] = Rectangle;
-// ///<reference path="Dictionary.ts" />
-// class SafeTimer {
-//     public static _fps: number = 0;
-//     public static fps: Listx = new Listx();
-//     public static stage: egret.Stage;
-//     public static loaded: boolean = false;
-//     public static Load(stage: egret.Stage) {
-//         if(!SafeTimer.loaded) {
-//             SafeTimer.stage = stage;
-//             stage.addEventListener(egret.Event.ENTER_FRAME,SafeTimer.EnterFrame,null);
-//             //stage.addEventListener(egret.Event.RENDER,SafeTimer.Render,null);
-//             SafeTimer.Add(1500,SafeTimer.HandleAutoHide);
-//             SafeTimer.loaded = true;
-//         }
-//     }
-//     public static Add(interval: number,func: Function) {
-//         SafeTimer.staticObjCount++;
-//         var timer: egret.Timer = new egret.Timer(interval);
-//         var act: Function =function(ev: egret.TimerEvent) {
-//             if(stop) {
-//                 return;
-//             }
-//             var stop: boolean =func();
-//             if(stop) {
-//                 timer.removeEventListener(egret.TimerEvent.TIMER,act,null);
-//                 timer.stop();
-//                 SafeTimer.staticObjCount--;
-//             }
-//         };
-//         timer.addEventListener(egret.TimerEvent.TIMER,act,null);
-//         timer.start();
-//     }
-//     public static staticObjCount: number = 0;
-//     public static staticTimerDic: Dictionary = new Dictionary();
-//     public static AddStatic(interval: number,func: Function) {
-//         if(!SafeTimer.staticTimerDic.Get(interval.toString())) {
-//             SafeTimer.staticTimerDic.Set(interval,new Array<Function>());
-//             SafeTimer.Add(interval,function(): boolean {
-//                 if(stop) {
-//                     return false;
-//                 }
-//                 var arr: Array<Function> = SafeTimer.staticTimerDic.Get(interval.toString());
-//                 for(var fi_key_a in arr) {
-//                     var fi: Function = arr[fi_key_a];
-//                     var stop: boolean = false;
-//                     SafeTimer.Try(function() {
-//                         if(fi()) {
-//                             stop = true;
-//                         }
-//                     },false);
-//                     if(stop) {
-//                         var index: number = arr.indexOf(fi);
-//                         if(index > -1) {
-//                             arr.splice(index,1);
-//                             SafeTimer.staticObjCount--;
-//                             continue;
-//                         }
-//                     }
-//                 }
-//                 return false;
-//             });
-//         }
-//         SafeTimer.staticTimerDic.Get(interval.toString()).push(func);
-//         SafeTimer.staticObjCount++;
-//     }
-//     public static AddRepeat(interval: number,repeatCount: number,func: Function,complete: Function = null) {
-//         var timer: egret.Timer = new egret.Timer(interval,repeatCount);
-//         var act1: Function =function(ev: egret.TimerEvent) {
-//             if(SafeTimer.stop) {
-//                 return;
-//             }
-//             func();
-//         };
-//         var act2: Function =function(ev: egret.TimerEvent) {
-//             complete();
-//             timer.removeEventListener(egret.TimerEvent.TIMER,act1,null);
-//             timer.removeEventListener(egret.TimerEvent.TIMER_COMPLETE,act2,null);
-//             timer.stop();
-//             SafeTimer.staticObjCount--;
-//         };
-//         timer.addEventListener(egret.TimerEvent.TIMER,act1,null);
-//         timer.addEventListener(egret.TimerEvent.TIMER_COMPLETE,act2,null);
-//         timer.start();
-//         SafeTimer.staticObjCount++;
-//     }
-//     public static SetTimeout(interval: number,func: Function) {
-//         var timer: egret.Timer = new egret.Timer(interval,1);
-//         var act: Function =function(ev: egret.TimerEvent) {
-//             if(SafeTimer.stop) {
-//                 return;
-//             }
-//             func();
-//             timer.removeEventListener(egret.TimerEvent.TIMER_COMPLETE,act,null);
-//             SafeTimer.staticObjCount--;
-//         };
-//         timer.addEventListener(egret.TimerEvent.TIMER_COMPLETE,act,null);
-//         timer.start();
-//         SafeTimer.staticObjCount++;
-//     }
-//     public static dic: Dictionary = new Dictionary();
-//     public static LazyCall(name: any,state: any = null) {
-//         if(state == null) {
-//             SafeTimer.dic.Set(name,name);
-//         }
-//         else {
-//             if(!SafeTimer.dic.Exists(name)) {
-//                 SafeTimer.dic.Set(name,state);
-//             }
-//             else {
-//                 var state1: any = SafeTimer.dic.Get(name);
-//                 for(var key in state) {
-//                     state1[key] = state[key];
-//                 }
-//             }
-//         }
-//         if(!SafeTimer.loaded) {
-//             SafeTimer.EnterFrame(null);
-//         }
-//     }
-//     public static EnterFrame(ev: egret.Event) {
-//         SafeTimer._fps++;
-//         if(SafeTimer.stop) {
-//             return;
-//         }
-//         SafeTimer.dic.EachKey((fi) => {
-//             var state: any = SafeTimer.dic.Get(fi);
-//             if(state instanceof Function) {
-//                 SafeTimer.Try(function() {
-//                     state();
-//                 });
-//             }
-//             else {
-//                 for(var key in state) {
-//                     SafeTimer.Try(function() {
-//                         fi[key] = state[key];
-//                     },false);
-//                 }
-//             }
-//             SafeTimer.dic.Set(fi,null);       
-//             SafeTimer.dic.Remove(fi);
-//         });
-//     }
-//     public static Render(ev: egret.Event) {
-//     }
-//     public static Try(func: Function,willLog: boolean = false) {
-//         if(Js.showTrace) {
-//             func();
-//             if(willLog) {
-//                 var ex: Error = new Error();
-//                 Js.Trace("-----------------------" + ex.message.replace(/\n/g,"***").replace(/ /g," "));
-//             }
-//         }
-//         else {
-//             try {
-//                 func();
-//             }
-//             catch(ex)
-//             { }
-//         }
-//     }
-//     public static AddHandleAutoHide(sx: Ix) {
-//         SafeTimer.autoHideList.push(sx);
-//     }
-//     public static autoHideList: Array<Ix>;
-//     public static HandleAutoHide(): boolean {
-//         SafeTimer.fps["fps"] = SafeTimer._fps * 2 / 3;
-//         SafeTimer._fps = 0
-//         var count: number = 0;
-//         for(var sx_key_a in SafeTimer.autoHideList) {
-//             var sx: any = SafeTimer.autoHideList[sx_key_a];
-//             if(sx.disposed) {
-//                 var index: number = SafeTimer.autoHideList.indexOf(sx);
-//                 if(index > -1) {
-//                     SafeTimer.autoHideList.splice(index,1);
-//                 }
-//             }
-//             else {
-//                 if(sx.showTop50 && count >= 50) {
-//                     sx.HandleAutoHide_Hide();
-//                 }
-//                 else {
-//                     var rv: boolean =sx.HandleAutoHide();
-//                     if(rv) {
-//                         if(sx.showTop50) {
-//                             count++;
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//         return false;
-//     }
-//     public static stop: boolean;
-//     public static StopAllSafeTimer() {
-//         SafeTimer.stop = true;
-//     }
-// }
-var Server = (function () {
-    function Server() {
-    }
-    Server.SetFile = function (path, val) {
-        // if (Config.business == "WX") {
-        //     try {
-        //         platform.setStorageSync(path, val);
-        //     } catch (ex) {
-        //         Js.Trace(ex);
-        //     }
-        // } else {
-        try {
-            egret.localStorage.setItem(path, val);
-        }
-        catch (ex) {
-            Js.Trace(ex);
-        }
-        //}
-    };
-    Server.GetFile = function (path) {
-        // if (Config.business == "WX") {
-        //     try {
-        //         platform.getStorageSync(path);
-        //     } catch (ex) {
-        //         Js.Trace(ex);
-        //     }
-        // } else {
-        try {
-            var rv = egret.localStorage.getItem(path);
-            if (rv == null) {
-                rv = "";
-            }
-            return rv;
-        }
-        catch (ex) {
-            Js.Trace(ex);
-        }
-        //}
-        return "";
-    };
-    Server.GetIO = function (path) {
-        return Server.GetFile(path);
-    };
-    Server.SetIO = function (path, val) {
-        Server.SetFile(path, val);
-    };
-    Server.GC = function () {
-        //TODO;
-    };
-    Server.CreateClass = function (c) {
-        if (Js.showTrace) {
-            var s = new c();
-            s.OnDispose(function () {
-                c.instance = null;
-            });
-            return s;
-        }
-        else {
-            try {
-                var s = new c();
-                s.OnDispose(function () {
-                    c.instance = null;
-                });
-                return s;
-            }
-            catch (ex) { }
-            return null;
-        }
-    };
-    Object.defineProperty(Server, "Now", {
-        get: function () {
-            return Time.Now;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return Server;
-}());
-__reflect(Server.prototype, "Server");
-window["Server"] = Server;
-var SHA1 = (function () {
-    function SHA1() {
-        this.hexcase = 0;
-        this.b64pad = "";
-    }
-    SHA1.GI = function () {
-        if (!SHA1._instance) {
-            SHA1._instance = new SHA1();
-        }
-        return SHA1._instance;
-    };
-    SHA1.prototype.hex_sha1 = function (s) { return this.rstr2hex(this.rstr_sha1(this.str2rstr_utf8(s))); };
-    SHA1.prototype.b64_sha1 = function (s) { return this.rstr2b64(this.rstr_sha1(this.str2rstr_utf8(s))); };
-    SHA1.prototype.any_sha1 = function (s, e) { return this.rstr2any(this.rstr_sha1(this.str2rstr_utf8(s)), e); };
-    SHA1.prototype.hex_hmac_sha1 = function (k, d) { return this.rstr2hex(this.rstr_hmac_sha1(this.str2rstr_utf8(k), this.str2rstr_utf8(d))); };
-    SHA1.prototype.b64_hmac_sha1 = function (k, d) { return this.rstr2b64(this.rstr_hmac_sha1(this.str2rstr_utf8(k), this.str2rstr_utf8(d))); };
-    SHA1.prototype.any_hmac_sha1 = function (k, d, e) { return this.rstr2any(this.rstr_hmac_sha1(this.str2rstr_utf8(k), this.str2rstr_utf8(d)), e); };
-    SHA1.prototype.sha1_vm_test = function () {
-        return this.hex_sha1("abc").toLowerCase() == "a9993e364706816aba3e25717850c26c9cd0d89d";
-    };
-    SHA1.prototype.rstr_sha1 = function (s) {
-        return this.binb2rstr(this.binb_sha1(this.rstr2binb(s), s.length * 8));
-    };
-    SHA1.prototype.rstr_hmac_sha1 = function (key, data) {
-        var bkey = this.rstr2binb(key);
-        if (bkey.length > 16)
-            bkey = this.binb_sha1(bkey, key.length * 8);
-        var ipad = Array(16), opad = Array(16);
-        for (var i = 0; i < 16; i++) {
-            ipad[i] = bkey[i] ^ 0x36363636;
-            opad[i] = bkey[i] ^ 0x5C5C5C5C;
-        }
-        var hash = this.binb_sha1(ipad.concat(this.rstr2binb(data)), 512 + data.length * 8);
-        return this.binb2rstr(this.binb_sha1(opad.concat(hash), 512 + 160));
-    };
-    SHA1.prototype.rstr2hex = function (input) {
-        try {
-            this.hexcase;
-        }
-        catch (e) {
-            this.hexcase = 0;
-        }
-        var hex_tab = this.hexcase ? "0123456789ABCDEF" : "0123456789abcdef";
-        var output = "";
-        var x;
-        for (var i = 0; i < input.length; i++) {
-            x = input.charCodeAt(i);
-            output += hex_tab.charAt((x >>> 4) & 0x0F) + hex_tab.charAt(x & 0x0F);
-        }
-        return output;
-    };
-    SHA1.prototype.rstr2b64 = function (input) {
-        try {
-            this.b64pad;
-        }
-        catch (e) {
-            this.b64pad = '';
-        }
-        var tab = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-        var output = "";
-        var len = input.length;
-        for (var i = 0; i < len; i += 3) {
-            var triplet = (input.charCodeAt(i) << 16) | (i + 1 < len ? input.charCodeAt(i + 1) << 8 : 0) | (i + 2 < len ? input.charCodeAt(i + 2) : 0);
-            for (var j = 0; j < 4; j++) {
-                if (i * 8 + j * 6 > input.length * 8)
-                    output += this.b64pad;
-                else
-                    output += tab.charAt((triplet >>> 6 * (3 - j)) & 0x3F);
-            }
-        }
-        return output;
-    };
-    SHA1.prototype.rstr2any = function (input, encoding) {
-        var divisor = encoding.length;
-        var remainders = Array();
-        var i, q, x, quotient;
-        var dividend = Array(Math.ceil(input.length / 2));
-        for (i = 0; i < dividend.length; i++) {
-            dividend[i] = (input.charCodeAt(i * 2) << 8) | input.charCodeAt(i * 2 + 1);
-        }
-        while (dividend.length > 0) {
-            quotient = Array();
-            x = 0;
-            for (i = 0; i < dividend.length; i++) {
-                x = (x << 16) + dividend[i];
-                q = Math.floor(x / divisor);
-                x -= q * divisor;
-                if (quotient.length > 0 || q > 0)
-                    quotient[quotient.length] = q;
-            }
-            remainders[remainders.length] = x;
-            dividend = quotient;
-        }
-        var output = "";
-        for (i = remainders.length - 1; i >= 0; i--)
-            output += encoding.charAt(remainders[i]);
-        var full_length = Math.ceil(input.length * 8 / (Math.log(encoding.length) / Math.log(2)));
-        for (i = output.length; i < full_length; i++)
-            output = encoding[0] + output;
-        return output;
-    };
-    SHA1.prototype.str2rstr_utf8 = function (input) {
-        var output = "";
-        var i = -1;
-        var x, y;
-        while (++i < input.length) {
-            x = input.charCodeAt(i);
-            y = i + 1 < input.length ? input.charCodeAt(i + 1) : 0;
-            if (0xD800 <= x && x <= 0xDBFF && 0xDC00 <= y && y <= 0xDFFF) {
-                x = 0x10000 + ((x & 0x03FF) << 10) + (y & 0x03FF);
-                i++;
-            }
-            if (x <= 0x7F)
-                output += String.fromCharCode(x);
-            else if (x <= 0x7FF)
-                output += String.fromCharCode(0xC0 | ((x >>> 6) & 0x1F), 0x80 | (x & 0x3F));
-            else if (x <= 0xFFFF)
-                output += String.fromCharCode(0xE0 | ((x >>> 12) & 0x0F), 0x80 | ((x >>> 6) & 0x3F), 0x80 | (x & 0x3F));
-            else if (x <= 0x1FFFFF)
-                output += String.fromCharCode(0xF0 | ((x >>> 18) & 0x07), 0x80 | ((x >>> 12) & 0x3F), 0x80 | ((x >>> 6) & 0x3F), 0x80 | (x & 0x3F));
-        }
-        return output;
-    };
-    SHA1.prototype.str2rstr_utf16le = function (input) {
-        var output = "";
-        for (var i = 0; i < input.length; i++)
-            output += String.fromCharCode(input.charCodeAt(i) & 0xFF, (input.charCodeAt(i) >>> 8) & 0xFF);
-        return output;
-    };
-    SHA1.prototype.str2rstr_utf16be = function (input) {
-        var output = "";
-        for (var i = 0; i < input.length; i++)
-            output += String.fromCharCode((input.charCodeAt(i) >>> 8) & 0xFF, input.charCodeAt(i) & 0xFF);
-        return output;
-    };
-    SHA1.prototype.rstr2binb = function (input) {
-        var output = Array(input.length >> 2);
-        for (var i = 0; i < output.length; i++)
-            output[i] = 0;
-        for (var i = 0; i < input.length * 8; i += 8)
-            output[i >> 5] |= (input.charCodeAt(i / 8) & 0xFF) << (24 - i % 32);
-        return output;
-    };
-    SHA1.prototype.binb2rstr = function (input) {
-        var output = "";
-        for (var i = 0; i < input.length * 32; i += 8)
-            output += String.fromCharCode((input[i >> 5] >>> (24 - i % 32)) & 0xFF);
-        return output;
-    };
-    SHA1.prototype.binb_sha1 = function (x, len) {
-        x[len >> 5] |= 0x80 << (24 - len % 32);
-        x[((len + 64 >> 9) << 4) + 15] = len;
-        var w = Array(80);
-        var a = 1732584193;
-        var b = -271733879;
-        var c = -1732584194;
-        var d = 271733878;
-        var e = -1009589776;
-        for (var i = 0; i < x.length; i += 16) {
-            var olda = a;
-            var oldb = b;
-            var oldc = c;
-            var oldd = d;
-            var olde = e;
-            for (var j = 0; j < 80; j++) {
-                if (j < 16)
-                    w[j] = x[i + j];
-                else
-                    w[j] = this.bit_rol(w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16], 1);
-                var t = this.safe_add(this.safe_add(this.bit_rol(a, 5), this.sha1_ft(j, b, c, d)), this.safe_add(this.safe_add(e, w[j]), this.sha1_kt(j)));
-                e = d;
-                d = c;
-                c = this.bit_rol(b, 30);
-                b = a;
-                a = t;
-            }
-            a = this.safe_add(a, olda);
-            b = this.safe_add(b, oldb);
-            c = this.safe_add(c, oldc);
-            d = this.safe_add(d, oldd);
-            e = this.safe_add(e, olde);
-        }
-        return [a, b, c, d, e];
-    };
-    SHA1.prototype.sha1_ft = function (t, b, c, d) {
-        if (t < 20)
-            return (b & c) | ((~b) & d);
-        if (t < 40)
-            return b ^ c ^ d;
-        if (t < 60)
-            return (b & c) | (b & d) | (c & d);
-        return b ^ c ^ d;
-    };
-    SHA1.prototype.sha1_kt = function (t) {
-        return (t < 20) ? 1518500249 : (t < 40) ? 1859775393 :
-            (t < 60) ? -1894007588 : -899497514;
-    };
-    SHA1.prototype.safe_add = function (x, y) {
-        var lsw = (x & 0xFFFF) + (y & 0xFFFF);
-        var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
-        return (msw << 16) | (lsw & 0xFFFF);
-    };
-    SHA1.prototype.bit_rol = function (num, cnt) {
-        return (num << cnt) | (num >>> (32 - cnt));
-    };
-    return SHA1;
-}());
-__reflect(SHA1.prototype, "SHA1");
-window["SHA1"] = SHA1;
-var SingleQueue = (function () {
-    function SingleQueue(act, timeout) {
-        if (timeout === void 0) { timeout = 800; }
-        this.inHandle = false;
-        this.index = 0;
-        this.continueCount = 0;
-        this.act = act;
-        this.timeout = timeout;
-        this.handleQueue = new Array();
-    }
-    SingleQueue.prototype.Push = function (item) {
-        if (!this.inHandle) {
-            try {
-                this.Add(item);
-            }
-            catch (ex) {
-                Js.Trace(ex);
-            }
-        }
-        else {
-            this.En(item);
-        }
-    };
-    SingleQueue.prototype.Add = function (item) {
-        try {
-            if (this.inHandle) {
-                this.handleQueue.push(item);
-            }
-            else {
-                this.inHandle = true;
-                this.Handle(item);
-            }
-        }
-        catch (ex) {
-            this.inHandle = false;
-            Js.Trace(ex);
-        }
-    };
-    SingleQueue.prototype.En = function (item) {
-        this.handleQueue.push(item);
-    };
-    SingleQueue.prototype.Handle = function (item) {
-        if (item == null) {
-            this.inHandle = false;
-            this.index = 0;
-            return;
-        }
-        try {
-            this.act(item);
-            this.index++;
-        }
-        catch (ex) {
-            Js.Trace(ex);
-        }
-        if (this.index >= this.continueCount) {
-            this.inHandle = false;
-            this.index = 0;
-            return;
-        }
-        else {
-            var items = this.handleQueue.splice(0, 1);
-            if (items.length > 0) {
-                this.Handle(items[0]);
-            }
-        }
-    };
-    SingleQueue.prototype.End = function () {
-        this.inHandle = true;
-        while (true) {
-            var items = this.handleQueue.splice(0, 1);
-            if (items.length == 0) {
-                return;
-            }
-            try {
-                this.act(items[0]);
-            }
-            catch (ex) {
-                Js.Trace(ex);
-            }
-        }
-    };
-    return SingleQueue;
-}());
-__reflect(SingleQueue.prototype, "SingleQueue");
-window["SingleQueue"] = SingleQueue;
-var Sp = (function (_super) {
-    __extends(Sp, _super);
-    function Sp(val) {
-        return _super.call(this, val) || this;
-    }
-    return Sp;
-}(Bx));
-__reflect(Sp.prototype, "Sp");
-window["Sp"] = Sp;
-var Src = (function () {
-    function Src() {
-    }
-    Src.ReadByte = function (path, urlLoaded, errorFunc) {
-        if (errorFunc === void 0) { errorFunc = null; }
-        // let loader: egret.URLLoader = new egret.URLLoader();
-        // loader.dataFormat = egret.URLLoaderDataFormat.BINARY;
-        // loader.addEventListener(egret.Event.COMPLETE, (ev: any) => {
-        //     urlLoaded(ev.target.data);
-        // }, this);
-        // if (errorFunc ) {
-        //     loader.addEventListener(egret.IOErrorEvent.IO_ERROR, errorFunc, this);
-        // }
-        // loader.load(new egret.URLRequest("resource/" + path));
-        var url = path;
-        if (!path.StartWith("http")) {
-            url = "resource/" + path;
-        }
-        var request = new egret.HttpRequest();
-        request.responseType = egret.HttpResponseType.ARRAY_BUFFER;
-        var respHandler = function (evt) {
-            switch (evt.type) {
-                case egret.Event.COMPLETE:
-                    var request_1 = evt.currentTarget;
-                    var ab = request_1.response;
-                    urlLoaded(ab);
-                    break;
-                case egret.IOErrorEvent.IO_ERROR:
-                    urlLoaded(null);
-                    break;
-            }
-        };
-        request.once(egret.Event.COMPLETE, respHandler, null);
-        request.once(egret.IOErrorEvent.IO_ERROR, respHandler, null);
-        request.open(url, egret.HttpMethod.GET);
-        request.send();
-    };
-    // public static readQueue: SingleQueue = new SingleQueue((item) => {
-    //     if (Js.showTrace) {
-    //         // ("ReadUrl:" + path).WriteLog();
-    //     }
-    //     let url = "resource/" + item.path;
-    //     let imageLoader = new egret.ImageLoader();
-    //     imageLoader.once(egret.Event.COMPLETE, onLoadComplete, null);
-    //     imageLoader.once(egret.IOErrorEvent.IO_ERROR, onError, null);
-    //     imageLoader.load(url);
-    //     function onError(event) {
-    //         item.urlLoaded(null);
-    //         Src.dataCacheList[item.path] = null;
-    //         Src.inreadingDataCacheList[item.path].forEach((fi) => {
-    //             fi(null);
-    //         });
-    //         Src.inreadingDataCacheList.Remove(item.path);
-    //         ("ReadErrorUrl:" + item.path).WriteLog();
-    //     }
-    //     function onLoadComplete(evt: egret.Event) {
-    //         let data = evt.currentTarget.data;
-    //         let texture = new egret.Texture();
-    //         texture._setBitmapData(data);
-    //         Src.dataCacheList[item.path] = texture;
-    //         Src.inreadingDataCacheList[item.path].forEach((fi) => {
-    //             fi(texture);
-    //         });
-    //         Src.inreadingDataCacheList.Remove(item.path);
-    //     }
-    // }, 800);
-    Src.Read = function (path, urlLoaded) {
-        if (path == null || path.IsEmpty()) {
-            urlLoaded(null);
-            return;
-        }
-        if (Src.dataCacheList.Exists(path)) {
-            if (Src.dataCacheList[path]) {
-                var texture = Src.dataCacheList[path];
-                // let texture = new egret.Texture();
-                // let data = Src.dataCacheList[path];
-                // Js.Trace(Src.dataCacheList[path]);
-                // texture._setBitmapData(Src.dataCacheList[path]);
-                //Form.LazyCall(() => {
-                urlLoaded(texture);
-                //});
-            }
-            else {
-                urlLoaded(null);
-            }
-            return;
-        }
-        if (Src.inreadingDataCacheList.Exists(path)) {
-            Src.inreadingDataCacheList[path].push(urlLoaded);
-            return;
-        }
-        Src.inreadingDataCacheList[path] = [];
-        Src.inreadingDataCacheList[path].push(urlLoaded);
-        //Src.readQueue.Push({ path: path, urlLoaded: urlLoaded, willCache: willCache });
-        // if (Js.showTrace) {
-        //     ("ReadUrl:" + path).WriteLog();
-        // }
-        var item = { path: path, urlLoaded: urlLoaded };
-        var url = item.path;
-        if (!item.path.StartWith("http")) {
-            url = "resource/" + item.path;
-        }
-        var imageLoader = new egret.ImageLoader();
-        imageLoader.once(egret.Event.COMPLETE, onLoadComplete, null);
-        imageLoader.once(egret.IOErrorEvent.IO_ERROR, onError, null);
-        imageLoader.load(url);
-        function onError(event) {
-            item.urlLoaded(null);
-            Src.dataCacheList[item.path] = null;
-            Src.inreadingDataCacheList[item.path].forEach(function (fi) {
-                fi(null);
-            });
-            Src.inreadingDataCacheList.Remove(item.path);
-            ("ReadErrorUrl:" + item.path).WriteLog();
-        }
-        function onLoadComplete(evt) {
-            var data = evt.currentTarget.data;
-            var texture = new egret.Texture();
-            texture._setBitmapData(data);
-            var texures = Textures.GetTextures(texture, item.path);
-            Src.dataCacheList[item.path] = texures;
-            Src.inreadingDataCacheList[item.path].forEach(function (fi) {
-                fi(texures);
-            });
-            Src.inreadingDataCacheList.Remove(item.path);
-        }
-    };
-    Src.ReadTxt = function (path, urlLoaded, willCache) {
-        if (willCache === void 0) { willCache = true; }
-        if (path == null || path.IsEmpty()) {
-            urlLoaded(null);
-            return;
-        }
-        if (willCache && Src.textCacheList.Exists(path)) {
-            urlLoaded(Src.textCacheList[path]);
-            return;
-        }
-        if (Src.inreadingDataCacheList.Exists(path)) {
-            Src.inreadingDataCacheList[path].push(urlLoaded);
-            return;
-        }
-        Src.inreadingDataCacheList[path] = [];
-        Src.inreadingDataCacheList[path].push(urlLoaded);
-        // if (Js.showTrace) {
-        //     ("ReadUrl:" + path).WriteLog();
-        // }
-        var url = path;
-        if (!path.StartWith("http")) {
-            url = "resource/" + path;
-        }
-        var request = new egret.HttpRequest();
-        var respHandler = function (evt) {
-            switch (evt.type) {
-                case egret.Event.COMPLETE:
-                    var request_2 = evt.currentTarget;
-                    Src.textCacheList[path] = request_2.response;
-                    Src.inreadingDataCacheList[path].forEach(function (fi) {
-                        fi(request_2.response);
-                    });
-                    Src.inreadingDataCacheList.Remove(path);
-                    break;
-                case egret.IOErrorEvent.IO_ERROR:
-                    Src.inreadingDataCacheList[path].forEach(function (fi) {
-                        fi("");
-                    });
-                    Src.inreadingDataCacheList.Remove(path);
-                    ("ReadErrorUrl:" + path).WriteLog();
-                    break;
-            }
-        };
-        // let progressHandler = function( evt:egret.ProgressEvent ):void{
-        //     console.log( "progress:", evt.bytesLoaded, evt.bytesTotal );
-        // }
-        request.once(egret.Event.COMPLETE, respHandler, null);
-        request.once(egret.IOErrorEvent.IO_ERROR, respHandler, null);
-        //request.once(egret.ProgressEvent.PROGRESS, progressHandler, null);
-        request.open(url, egret.HttpMethod.GET);
-        request.send();
-    };
-    Src.ReadXml = function (path, urlLoaded, willCache) {
-        if (willCache === void 0) { willCache = true; }
-        Src.ReadTxt(path, function (res) {
-            console.log(res);
-            if (res.IsEmpty()) {
-                urlLoaded(null);
-            }
-            else {
-                urlLoaded(new Xml(res));
-            }
-        }, willCache);
-    };
-    Src.Load = function (func) {
-        //if (Js.showTrace) {//这里最好能Config配置
-        var data = RES.getRes("ModelFlexAttribute_txt"); //增加载入速度
-        if (data) {
-            var buffer = Strx.Decompress(new Uint8Array(data));
-            var text = UTF8.decode(buffer);
-            Src.modelFlexList = Listx.Arr(text);
-            Src.modelFlexList.EachKey(function (fi) {
-                Js.Trace(fi + ":" + Src.modelFlexList[fi].length);
-            });
-        }
-        func();
-        // } else {
-        //     Src.ReadByte("Res/data/ModelFlexAttribute.txt", ((data: ArrayBuffer) => {//外网可能会需要热更
-        //         let buffer = Strx.Decompress(new Uint8Array(data));
-        //         let text = UTF8.decode(buffer);
-        //         Src.modelFlexList = Listx.Arr(text);
-        //         Src.modelFlexList.EachKey((fi) => {
-        //             Js.Trace(fi + ":" + Src.modelFlexList[fi].length);
-        //         });
-        //         func();
-        //     }));
-        // }
-    };
-    Src.dataCacheList = new Listx();
-    Src.inreadingDataCacheList = new Listx();
-    Src.textCacheList = new Listx();
-    return Src;
-}());
-__reflect(Src.prototype, "Src");
-window["Src"] = Src;
-var Config = (function () {
-    function Config() {
-    }
-    Object.defineProperty(Config, "shareIco", {
-        get: function () {
-            return Config.shareIcos[Strx.Rnd(Config.shareIcos.length)];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Config.LoadConfig = function (xml, func) {
-        console.log("Begin Load Config");
-        //Config.dic = new Listx();
-        var nodes = xml.nodes;
-        Config.dic = nodes[0];
-        var redirect = Config.dic["redirect"];
-        if (redirect) {
-            Src.ReadXml(redirect, function (xml1) {
-                if (xml1 == null) {
-                    NForm.SetTimeout(800, function () {
-                        Config.LoadConfig(xml, func);
-                    });
-                }
-                else {
-                    Config.LoadConfig(xml1, func);
-                }
-            });
-            return;
-        }
-        Config.showTrace = Config.dic["showTrace"];
-        Js.showTrace = (Config.showTrace == "1");
-        Config.test = Config.dic["test"];
-        Config.qq = Config.dic["qq"];
-        Config.qqq = Config.dic["qqq"]; //QQ群
-        Config.allShopGoods = Config.dic["allShopGoods"];
-        if (Config.dic["url"]) {
-            Config.urls = Config.dic["url"].split(",");
-            Config.urls = Config.urls.sort(function (a, b) {
-                return Strx.Rnd(10);
-            });
-        }
-        Config.gameUrl = Config.dic["gameUrl"];
-        Config.payUrl = Config.dic["payUrl"];
-        Config.shareUrl = Config.dic["shareUrl"];
-        Config.src = Config.dic["src"];
-        Config.version = Config.dic["version"];
-        Config.icoPath = Config.dic["icoPath"];
-        Config.srcPath = Config.dic["srcPath"];
-        Config.game = Config.dic["game"];
-        Config.isLW = Config.game == "Longwen";
-        Config.cardMode = Config.dic["cardMode"] == "1";
-        Config.app = Config.dic["app"];
-        Config.shareApp = Config.dic["shareApp"];
-        Config.serverIp = Config.dic["serverIp"];
-        Config.port = Config.dic["port"];
-        Config.portHttp = Config.dic["portHttp"];
-        Config.serverName = Config.dic["serverName"];
-        Config.serverBegin = Config.dic["serverBegin"];
-        Config.serverFrom = Config.dic["serverFrom"];
-        Config.ps = Config.dic["ps"] == "1";
-        Config.closeChat = Config.dic["closeChat"] == "1";
-        Config.serverId = Config.dic["serverId"];
-        Config.newServerMode = Config.dic["newServerMode"] == "1";
-        Config.wss = Config.dic["wss"];
-        Config.gonggao = Config.dic["gonggao"];
-        Config.isBattleCard = Config.dic["isBattleCard"] == "1";
-        Config.isStyleCard = Config.dic["isStyleCard"] == "1";
-        Config.btServer = Config.dic["btServer"] == "1";
-        if (Config.dic["mainCenter"]) {
-            Config.mainCenter = Config.dic["mainCenter"].ToInt();
-        }
-        if (Config.dic["gameType"]) {
-            Config.gameType = Config.dic["gameType"].ToInt();
-        }
-        Config.ads = Config.dic["ads"];
-        Config.banner = Config.dic["banner"];
-        Config.banner2 = Config.dic["banner2"];
-        if (Config.dic["bannery"]) {
-            Config.bannery = Config.dic["bannery"].ToInt();
-        }
-        Config.outAds = Config.dic["outAds"] == "1";
-        Config.openAds = Config.dic["openAds"] == "1";
-        Config.appMode = Config.dic["appMode"] == "1";
-        Config.inExam = Config.dic["inExam"] == "1";
-        Config.autoCreateRole = Config.dic["autoCreateRole"] == "1";
-        if (Config.dic["bbs"]) {
-            Config.bbs = Config.dic["bbs"];
-        }
-        if (Config.dic["alert"]) {
-            Config.alert = Config.dic["alert"];
-        }
-        if (Config.dic["alertOld"]) {
-            Config.alertOld = Config.dic["alertOld"];
-        }
-        var servers = Config.dic["servers"];
-        if (servers) {
-            var ss = servers.split(',');
-            var server = ss[Strx.Rnd(ss.length)];
-            var ss1 = server.split(':');
-            Config.serverIp = ss1[0];
-            Config.port = ss1[1].ToInt();
-        }
-        var serversTls13 = Config.dic["serversTls13"];
-        if (serversTls13) {
-            var ss = serversTls13.split(',');
-            var server = ss[Strx.Rnd(ss.length)];
-            var ss1 = serversTls13.split(':');
-            Config.serverIpTls13 = ss1[0];
-            Config.portTls13 = ss1[1].ToInt();
-        }
-        Config.share = Config.dic["share"];
-        if (!Config.share) {
-            Config.share = "我正在种菜，缺少辣椒，请求帮助！";
-        }
-        if (Config.dic["shareIco"]) {
-            Config.shareIcos = Config.dic["shareIco"].split(',');
-        }
-        else {
-            Config.shareIcos = ["share/shares.jpg"];
-        }
-        Config.tujian = Config.dic["tujian"];
-        var business = Config.dic["business"];
-        var business1 = Js.GetUrlParm("business");
-        if (business1 && business1 != "") {
-            business = business1;
-        }
-        Config.businessType = business;
-        console.log("End Load Config");
-        func();
-    };
-    Config.isLW = false;
-    Config.cardMode = false;
-    Config.outAds = false; //外部广告（跳转到其他小程序）
-    Config.alert = ""; //进入游戏的公告
-    Config.alertOld = ""; //进入游戏的公告
-    Config.appMode = false; //是不是app模式
-    Config.inExam = false;
-    Config.autoCreateRole = false;
-    Config.bbs = "";
-    return Config;
-}());
-__reflect(Config.prototype, "Config");
-window["Config"] = Config;
+//多线程排队类
+//比如多个命令，然后需要一个一个排队执行
+//代替SingleQueue
 var TaskQueue = (function () {
     function TaskQueue(timeout, onIdle) {
         if (timeout === void 0) { timeout = 100; }
@@ -7025,6 +6496,13 @@ var TaskQueue = (function () {
 }());
 __reflect(TaskQueue.prototype, "TaskQueue");
 window["TaskQueue"] = TaskQueue;
+//底层类
+//纹理管理
+//自动实现纹理资源GC
+//小游戏中需要载入以下代码
+// Msg.Listen("GC", (v) => {
+//     wx.triggerGC();
+// }, this);
 var Textures = (function () {
     function Textures(texture, path) {
         if (path === void 0) { path = ""; }
@@ -7173,6 +6651,7 @@ var Textures = (function () {
 }());
 __reflect(Textures.prototype, "Textures");
 window["Textures"] = Textures;
+//时间类
 var Time = (function () {
     function Time() {
     }
@@ -7218,6 +6697,7 @@ var Time = (function () {
 }());
 __reflect(Time.prototype, "Time");
 window["Time"] = Time;
+//时间间隔类
 var TimeSpan = (function () {
     function TimeSpan(tick) {
         this.tick = tick;
@@ -7267,6 +6747,10 @@ var TimeSpan = (function () {
 }());
 __reflect(TimeSpan.prototype, "TimeSpan");
 window["TimeSpan"] = TimeSpan;
+//UTF8编码类
+//使用方法：
+// let buffer = UTF8.encode("xxxxx");
+// let bufferText = egret.Base64Util.encode(buffer);
 var UTF8 = (function () {
     function UTF8() {
         this.EOF_byte = -1;
@@ -7459,38 +6943,6 @@ var UTF8 = (function () {
 }());
 __reflect(UTF8.prototype, "UTF8");
 window["UTF8"] = UTF8;
-var Caches = (function () {
-    function Caches() {
-    }
-    Caches.GetDic = function (key) {
-        if (!Caches.dic[key]) {
-            Caches.dic[key] = new Listx();
-        }
-        return Caches.dic[key];
-    };
-    Caches.GetListx = function (key) {
-        if (!Caches.dic[key]) {
-            Caches.dic[key] = new Listx();
-        }
-        return Caches.dic[key];
-    };
-    Caches.GetArr = function (key) {
-        if (!Caches.dic[key]) {
-            Caches.dic[key] = [];
-        }
-        return Caches.dic[key];
-    };
-    Caches.GetObj = function (key) {
-        return Caches.dic[key];
-    };
-    Caches.SetObj = function (key, obj) {
-        Caches.dic[key] = obj;
-    };
-    Caches.dic = new Listx();
-    return Caches;
-}());
-__reflect(Caches.prototype, "Caches");
-window["Caches"] = Caches;
 var Vector2Hash = (function () {
     function Vector2Hash(width, height, data) {
         if (data === void 0) { data = ""; }
@@ -7539,6 +6991,7 @@ var Vector2Hash = (function () {
 }());
 __reflect(Vector2Hash.prototype, "Vector2Hash");
 window["Vector2Hash"] = Vector2Hash;
+//高效的简易xml解析类
 var Xml = (function () {
     function Xml(text) {
         this.nodes = [];
@@ -7693,6 +7146,9 @@ var Xml = (function () {
 }());
 __reflect(Xml.prototype, "Xml");
 window["Xml"] = Xml;
+//Listx的集合类
+//一般可用于策划表载入后放置在这个类中
+//可与NGridList绑定使用，成为NGridList的数据源
 var XmlLinqT = (function (_super) {
     __extends(XmlLinqT, _super);
     function XmlLinqT() {
@@ -8326,6 +7782,10 @@ var XmlLinqT = (function (_super) {
 }(Observer));
 __reflect(XmlLinqT.prototype, "XmlLinqT");
 window["XmlLinqT"] = XmlLinqT;
+//资源载入类
+//游戏初始化的时候需要调用Assert.Load(null,()=>{
+//继续逻辑代码
+//});
 var Assert = (function () {
     function Assert() {
     }
@@ -8496,220 +7956,583 @@ var Assert = (function () {
 }());
 __reflect(Assert.prototype, "Assert");
 window["Assert"] = Assert;
-// class Caches extends egret.HashObject {
-//     public static dic: Dictionary = new Dictionary();
-//     public static GetDic(key: string): any {
-//         if(!Caches.dic.Get(key)) {
-//             Caches.dic.Set(key,new Dictionary());
-//         }
-//         return Caches.dic.Get(key);
-//     }
-//     public static GetListx(key: string): Listx {
-//         if(!Caches.dic.Get(key)) {
-//             Caches.dic.Set(key,new Listx());
-//         }
-//         return Caches.dic.Get(key);
-//     }
-//     public static GetArr(key: string): any {
-//         if(!Caches.dic.Get(key)) {
-//             Caches.dic.Set(key,[]);
-//         }
-//         return Caches.dic.Get(key);
-//     }
-//     public static GetObj(key: string): any {
-//         return Caches.dic.Get(key);
-//     }
-//     public static SetObj(key: string,obj: any) {
-//         Caches.dic.Set(key,obj);
-//     }
-// }
-///<reference path="LangType.ts" />
-if (!String.prototype.format) {
-    String.prototype.format = function (arr) {
-        var args = arr;
-        return this.replace(/{(\d+)}/g, function (match, number) {
-            return typeof args[number] != 'undefined'
-                ? args[number]
-                : match;
-        });
+if (!String.prototype.IsFull) {
+    String.prototype.IsFull = function () {
+        return Strx.IsFull(this);
     };
 }
-var Lang = (function () {
-    function Lang() {
+if (!String.prototype.IsEmpty) {
+    String.prototype.IsEmpty = function () {
+        return Strx.IsEmpty(this);
+    };
+}
+if (!String.prototype.ToInt) {
+    String.prototype.ToInt = function () {
+        if (this == null || this == "") {
+            return 0;
+        }
+        var rv = parseInt(this);
+        if (isNaN(rv)) {
+            return 0;
+        }
+        return rv;
+    };
+}
+if (!String.prototype.WriteLog) {
+    String.prototype.WriteLog = function () {
+        return Js.Trace(this);
+    };
+}
+if (!String.prototype.TrueLength) {
+    String.prototype.TrueLength = function () {
+        // var text: string = this;
+        // if (text.IsEmpty())
+        //     return 0;
+        // let rv = 0;
+        // for (let i = 0, len = text.length; i < len; i++) {
+        //     let num = text.charCodeAt(i);
+        //     if (num < 0 || num > 0x7f) {
+        //         rv += 2;
+        //     }
+        //     else {
+        //         rv++;
+        //     }
+        // }
+        // return rv;
+        return Strx.TrueLength(this);
+    };
+}
+if (!String.prototype.PaddingLeft) {
+    String.prototype.PaddingLeft = function (c, count) {
+        // let left = "";
+        // for (let i = 0, len = count - this.length; i < len; i++) {
+        //     left += c;
+        // }
+        // return left + this;
+        return Strx.PaddingLeft(this, count, c);
+    };
+}
+;
+if (!String.prototype.PaddingRight) {
+    String.prototype.PaddingRight = function (c, count) {
+        return Strx.PaddingRight(this, count, c);
+    };
+}
+;
+if (!String.prototype.Trim) {
+    String.prototype.Trim = function () {
+        return Strx.Trim(this);
+    };
+}
+;
+if (!String.prototype.StartWith) {
+    String.prototype.StartWith = function (c) {
+        if (this.length >= c.length && this.substr(0, c.length) == c) {
+            return true;
+        }
+        return false;
+    };
+}
+;
+var Strx = (function () {
+    function Strx() {
     }
-    Lang.Setup = function (att) {
-        Lang.list = att;
+    Strx.Setup = function () {
     };
-    // public static get Get(): any {
-    //     return Lang.list;
-    // }
-    Lang.Get = function (key) {
-        if (!Lang.list) {
-            return "";
-        }
-        if (Lang.list.hasOwnProperty(key)) {
-            var text = Lang.list[key];
-            if (text.indexOf("&lt;") > -1 && text.indexOf("&gt;") > -1) {
-                text = text.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-            }
-            if (text.indexOf(" ") > -1) {
-                text = text.replace(/ /g, " ");
-            }
-            return text;
-        }
-        return "";
+    Strx.Rnd = function (max) {
+        max = max;
+        return Math.floor(Math.random() * (max));
     };
-    Lang.Exists = function (key) {
-        return Lang.list.hasOwnProperty(key);
-    };
-    Lang.PT = function (val) {
-        if (val == null) {
-            val = "";
-        }
+    Strx.Int = function (text) {
+        var rv = 0;
         try {
-            var vals = val.split("|");
-            if (vals.length == 1) {
-                return Lang.GetLangText(val);
-            }
-            else {
-                var str = Lang.GetLangText(vals[0]);
-                vals.shift();
-                var text = str.format(vals);
-                //                var text: string =mx.utils.StringUtil.substitute.apply(null,vals);
-                return text;
-                //                return val;
-            }
+            rv = parseInt(text);
         }
         catch (ex) {
-            return val;
+            rv = 0;
+        }
+        return rv;
+    };
+    Strx.IsEmpty = function (text) {
+        if (text == null || text == undefined || text.length == 0) {
+            return true;
+        }
+        else {
+            return false;
         }
     };
-    Lang.GetLangText = function (val) {
-        if (Strx.IsEmpty(val)) {
-            return "";
+    Strx.IsFull = function (text) {
+        return !Strx.IsEmpty(text);
+    };
+    Strx.PaddingLeft = function (text, len, char) {
+        if (text.length >= len) {
+            return text.substr(0, len);
         }
-        if (Lang.Get == null) {
-            return val;
+        else {
+            var needLen = len - text.length;
+            for (var i = 0; i < needLen; i++) {
+                text = char + text;
+            }
         }
-        if (Lang.Get(val)) {
-            var val1 = Lang.Get(val);
-            if (Strx.IsFull(val1)) {
-                val = val1;
-                if (Js.showTrace) {
-                    //                    if(NColorText.willEmbedFontsFunc) {
-                    //                        Lang.AddTransList(val);
-                    //                        Lang.AddTransList(val + "：");
-                    //                        Lang.AddTransList("[" + val + "]");
-                    //                    }
-                }
+        return text;
+    };
+    Strx.PaddingRight = function (text, len, char) {
+        if (text.length >= len) {
+            return text.substr(0, len);
+        }
+        else {
+            var needLen = len - text.length;
+            for (var i = 0; i < needLen; i++) {
+                text = text + char;
+            }
+        }
+        return text;
+    };
+    Strx.Trim = function (str) {
+        while (str.substr(0, 1) == " ") {
+            str = str.substr(1);
+        }
+        while (str.substr(-1, 1) == " ") {
+            str = str.substr(0, str.length - 1);
+        }
+        return str;
+    };
+    Strx.GetSmaNum = function (val) {
+        var wanText = "";
+        if (Lang.type == LangType.Cht) {
+            wanText = "萬";
+        }
+        else {
+            wanText = "万";
+        }
+        if (val < 10000) {
+            return val.toString();
+        }
+        else {
+            var left = (val / 10000).ToInt();
+            var right = val - left * 10000;
+            if (right == 0) {
+                return left + wanText;
+            }
+            else {
+                return left + "." + right.toString().substring(0, 1) + wanText;
+            }
+        }
+    };
+    Strx.TrueLength = function (text) {
+        if (Strx.IsEmpty(text))
+            return 0;
+        var rv = 0;
+        for (var i = 0, len = text.length; i < len; i++) {
+            var num = text.charCodeAt(i);
+            if (num < 0 || num > 0x7f) {
+                rv += 2;
+            }
+            else {
+                rv++;
+            }
+        }
+        return rv;
+    };
+    Strx.Num2Str = function (d, decimal) {
+        if (decimal === void 0) { decimal = 1; }
+        var s = d.toString();
+        if (s.indexOf(".") > -1) {
+            var ss = s.split(".");
+            if (ss[1].length >= decimal) {
+                return ss[0] + "." + ss[1].substr(0, decimal);
+            }
+            else {
+                return ss[0] + "." + Strx.PaddingRight(ss[1], decimal, "0");
             }
         }
         else {
-            if (val.indexOf(">") > -1 && val.indexOf("<") > -1) {
-                var vals = val.split("<");
-                for (var j = 0, lenj = vals.length; j < lenj; j++) {
-                    var vals1 = vals[j].split(">");
-                    for (var i = 0, len = vals1.length; i < len; i++) {
-                        vals1[i] = Lang.GetLangText(vals1[i]);
-                    }
-                    vals[j] = vals1.join(">");
+            return s + "." + Strx.PaddingRight("", decimal, "0");
+        }
+    };
+    Strx.Decompress = function (buffer) {
+        var inflate = new Zlib.Inflate(buffer);
+        var inbuffer = inflate.decompress();
+        return inbuffer;
+    };
+    Strx.Encompress = function (buffer) {
+        var inflate = new Zlib.Deflate(buffer);
+        var inbuffer = inflate.compress();
+        return inbuffer;
+    };
+    Strx.CalulateXYAnagle = function (startx, starty, endx, endy) {
+        var tan = Math.atan(Math.abs((endy - starty) / (endx - startx))) * 180 / Math.PI;
+        if (endx >= startx && endy >= starty) {
+            return -tan;
+        }
+        else if (endx > startx && endy < starty) {
+            return tan;
+        }
+        else if (endx < startx && endy > starty) {
+            return tan - 180;
+        }
+        else {
+            return 180 - tan;
+        }
+        //return tan;
+    };
+    Strx.GetInnerText = function (text, begin, end, times) {
+        if (times === void 0) { times = 1; }
+        try {
+            var str = "";
+            if (end.IsFull()) {
+                for (var i = 1; i < times; i++) {
+                    var index = text.indexOf(begin);
+                    text = text.substr(index + begin.length, (text.length - index) - begin.length);
                 }
-                val = vals.join("<");
+                var str2 = text.substr(0, text.indexOf(begin) + begin.length);
+                var str3 = text.substr(str2.length, text.length - str2.length);
+                if (str3.indexOf(end) == -1) {
+                    return str3;
+                }
+                else if (text.indexOf(begin) == -1) {
+                    return str;
+                }
+                try {
+                    return str3.substr(0, str3.indexOf(end));
+                }
+                catch (ex) {
+                    return str3;
+                }
+            }
+            var str4 = text.substr(0, text.indexOf(begin) + begin.length);
+            return text.substr(str4.length, text.length - str4.length);
+        }
+        catch (ex) {
+            return "";
+        }
+    };
+    Strx.IsString = function (val) {
+        if (val == null) {
+            return false;
+        }
+        return egret.getQualifiedClassName(val) == "string";
+    };
+    Strx.NUMS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    Strx.CHARS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+    return Strx;
+}());
+__reflect(Strx.prototype, "Strx");
+window["Strx"] = Strx;
+//简易高效缓动类
+//一般直接调用Sx的方法
+//使用方法：
+//     let p = new Sx();
+//     this.Add(p); 
+//     p.To({ x: 100, y:100 }, time, () => {
+//         p.To({ alpha: 0 }, 500, () => {
+//             p.RemoveMe();
+//         });
+//     });
+var ActLite = (function () {
+    function ActLite() {
+    }
+    ActLite.To = function (sx, stateTo, time, onEndFunc, parseHandle) {
+        if (time === void 0) { time = 1000; }
+        if (onEndFunc === void 0) { onEndFunc = null; }
+        if (parseHandle === void 0) { parseHandle = null; }
+        var frameCount = time / 30;
+        var stateFrom = {};
+        for (var fi in stateTo) {
+            stateFrom[fi] = sx[fi];
+        }
+        var stateInterVal = {};
+        for (var fi in stateTo) {
+            stateInterVal[fi] = (stateTo[fi] - stateFrom[fi]) / frameCount;
+        }
+        var actId = Strx.Rnd(999999);
+        sx.actId = actId;
+        var index = 0;
+        var interval = function () {
+            if (sx.actId != actId) {
+                return true;
+            }
+            if (sx instanceof Sx) {
+                if (sx.disposed) {
+                    return true;
+                }
+            }
+            else if (sx instanceof Bx) {
+                if (sx.disposed) {
+                    return true;
+                }
+            }
+            for (var fi in stateTo) {
+                if (parseHandle) {
+                    sx[fi] = parseHandle(stateInterVal[fi] * index + stateFrom[fi], sx);
+                }
+                else {
+                    sx[fi] = stateInterVal[fi] * index + stateFrom[fi];
+                }
+            }
+            // if (onChangeHandle) {
+            //     onChangeHandle(sx);
+            // }
+            if (index >= frameCount) {
+                for (var fi in stateTo) {
+                    sx[fi] = stateTo[fi];
+                }
+                if (onEndFunc) {
+                    onEndFunc();
+                }
+                return true;
+            }
+            index++;
+            return false;
+        };
+        NForm.SetInterval(30, interval);
+    };
+    //可以向移动的目标移动
+    ActLite.ToTarget = function (sx, target, offsetx, offsety, time, onEndFunc) {
+        if (time === void 0) { time = 1000; }
+        if (onEndFunc === void 0) { onEndFunc = null; }
+        var frameCount = time / 30;
+        var stateFrom = {};
+        stateFrom["x"] = sx.x;
+        stateFrom["y"] = sx.y;
+        // let stateInterVal = {};
+        // for (let fi in stateTo) {
+        //     stateInterVal[fi] = (stateTo[fi] - stateFrom[fi]) / frameCount;
+        // }
+        var actId = Strx.Rnd(999999);
+        sx.SetTemp("actId", actId);
+        var index = 0;
+        var interval = function () {
+            if (sx.GetTemp("actId") != actId) {
+                return true;
+            }
+            if (sx instanceof Sx) {
+                if (sx.disposed) {
+                    return true;
+                }
+            }
+            else if (sx instanceof Bx) {
+                if (sx.disposed) {
+                    return true;
+                }
+            }
+            var frameCount1 = frameCount - index + 1;
+            if (frameCount1 <= 0) {
+                frameCount1 = 1;
+            }
+            sx.x = sx.x + (target.x + offsetx - sx.x) / frameCount1;
+            sx.y = sx.y + (target.y + offsety - sx.y) / frameCount1;
+            if (index >= frameCount) {
+                sx.x = target.x + offsetx;
+                sx.y = target.y + offsety;
+                if (onEndFunc) {
+                    onEndFunc();
+                }
+                return true;
+            }
+            index++;
+            return false;
+        };
+        NForm.SetInterval(30, interval);
+    };
+    return ActLite;
+}());
+__reflect(ActLite.prototype, "ActLite");
+window["ActLite"] = ActLite;
+//音乐播放类
+//使用方法：
+//Music.Bg("main");//播放背景音乐
+//Music.Play("taskfinish");//播放一次声音
+var Music = (function () {
+    function Music(id, loopTimes) {
+        if (loopTimes === void 0) { loopTimes = 1; }
+        this.disposed = false;
+        this.loopTimes = loopTimes;
+        try {
+            this.Load(id);
+        }
+        catch (ex) {
+            Js.Trace(ex);
+        }
+    }
+    Music.prototype.Load = function (id) {
+        this.id = id;
+        try {
+            var path = Config.icoPath + "music/" + id + ".mp3";
+            this.sound = new egret.Sound();
+            this.sound.once(egret.Event.COMPLETE, this.LoadComplete, this);
+            this.sound.once(egret.IOErrorEvent.IO_ERROR, this.LoadError, this);
+            this.sound.load(path);
+        }
+        catch (ex) {
+            Js.Trace(ex);
+        }
+    };
+    Music.prototype.LoadComplete = function () {
+        this.loaded = true;
+        if (!this.stoped) {
+            this.Play();
+        }
+    };
+    Music.prototype.Play = function () {
+        this.stoped = false;
+        if (this.loaded) {
+            this.channel = this.sound.play(0, this.loopTimes);
+            this.channel.once(egret.Event.SOUND_COMPLETE, this.PlayEnd, this);
+        }
+    };
+    Music.prototype.Stop = function () {
+        this.stoped = true;
+        if (this.channel) {
+            this.channel.stop();
+        }
+    };
+    Music.prototype.LoadError = function () {
+        Js.Trace("Sound Error: " + this.id);
+    };
+    Music.prototype.PlayEnd = function () {
+        //this.Dispose();
+    };
+    Music.Play = function (id) {
+        try {
+            if (!Music.musicOn) {
+                return;
+            }
+            if (Music.mList.Exists(id)) {
+                Music.mList[id].Play();
             }
             else {
-                if (Js.showTrace) {
-                    //                    if(NColorText.willEmbedFontsFunc) {
-                    //                        if(val.indexOf("/") == -1) {
-                    //                            if(!Lang.transList.Exists(val)) {
-                    //                                Lang.AddTransList(val);
-                    //                                if(val.length < 15) {
-                    //                                    if(val.length != Strx.TrueLength(val))
-                    //                                    { }
-                    //                                }
-                    //                            }
-                    //                        }
-                    //                    }
-                }
+                var m = new Music(id);
+                Music.mList[id] = m;
             }
         }
-        return val;
-    };
-    Lang.AddTransList = function (val) {
-        if (Js.showTrace) {
-            Lang.transList[val] = true;
+        catch (ex) {
+            Js.Trace(ex);
         }
     };
-    Lang.type = LangType.Chs;
-    return Lang;
-}());
-__reflect(Lang.prototype, "Lang");
-window["Lang"] = Lang;
-var Color = (function () {
-    function Color(argb) {
-        if (argb === void 0) { argb = 0; }
-        this.color = 0;
-        this.Set(argb);
-    }
-    Color.prototype.Set = function (color) {
-        if (color === void 0) { color = 0; }
-        this.color = color;
+    Music.Load = function (id) {
+        try {
+            if (!Music.musicOn) {
+                return;
+            }
+            if (!Music.mList.Exists(id)) {
+                var m = new Music(id);
+                Music.mList[id] = m;
+                m.stoped = true;
+            }
+        }
+        catch (ex) {
+            Js.Trace(ex);
+        }
     };
-    Object.defineProperty(Color.prototype, "a", {
-        get: function () {
-            return this.color >> 24 & 0xff;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Color.prototype, "r", {
-        get: function () {
-            return this.color >> 16 & 0xff;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Color.prototype, "g", {
-        get: function () {
-            return this.color >> 8 & 0xff;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Color.prototype, "b", {
-        get: function () {
-            return this.color & 0xff;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Color.prototype, "rgb", {
-        get: function () {
-            return "#" + Strx.PaddingRight(this.r.toString(16), 2, "0") + Strx.PaddingRight(this.g.toString(16), 2, "0") + Strx.PaddingRight(this.b.toString(16), 2, "0");
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Color, "Green", {
-        get: function () {
-            return 0x83fb1f;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Color, "GreenGame", {
-        get: function () {
-            return "#83fb1f";
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Color.Parse = function (color) {
-        return new Color(color.replace("#", "0x").ToInt());
+    Music.Bg = function (id) {
+        try {
+            Js.Trace("setBgMusic: " + id);
+            if (Music.bgId == id) {
+                return;
+            }
+            Music.preBgId = Music.bgId;
+            Music.bgId = id;
+            if (Music._bg) {
+                Music._bg.Stop();
+            }
+            if (!Music.musicBgOn) {
+                return;
+            }
+            if (id.IsFull()) {
+                if (Music.mList.Exists(id)) {
+                    Music.mList[id].Play();
+                }
+                else {
+                    var m = new Music(id, -1);
+                    Music.mList[id] = m;
+                    Music._bg = m;
+                }
+                Music._bg = Music.mList[id];
+            }
+        }
+        catch (ex) {
+            Js.Trace(ex);
+        }
+        return Music._bg;
     };
-    return Color;
+    Music.BgStop = function () {
+        if (Music._bg) {
+            Music._bg.Stop();
+        }
+    };
+    Object.defineProperty(Music, "musicBgOn", {
+        get: function () {
+            Music._musicBgOn = Server.GetIO("musicBgOff").IsFull() ? false : true;
+            return Music._musicBgOn;
+        },
+        set: function (val) {
+            if (Music._musicBgOn != val) {
+                Music._musicBgOn = val;
+                if (val) {
+                    Server.SetIO("musicBgOff", "");
+                }
+                else {
+                    Server.SetIO("musicBgOff", "1");
+                }
+                if (val) {
+                    var bgId = Music.bgId;
+                    Music.bgId = "";
+                    Music.Bg(bgId);
+                }
+                else {
+                    Music.BgStop();
+                }
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    ;
+    Object.defineProperty(Music, "musicOn", {
+        get: function () {
+            Music._musicOn = Server.GetIO("musicOff").IsFull() ? false : true;
+            return Music._musicOn;
+        },
+        set: function (val) {
+            if (Music._musicOn != val) {
+                Music._musicOn = val;
+                if (val) {
+                    Server.SetIO("musicOff", "");
+                }
+                else {
+                    Server.SetIO("musicOff", "1");
+                }
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    ;
+    Music.prototype.Dispose = function () {
+        var that = this;
+        if (!this.disposed) {
+            this.disposed = true;
+            if (this.channel) {
+                this.channel.stop();
+                this.channel.removeEventListener(egret.Event.SOUND_COMPLETE, this.PlayEnd, this);
+                this.channel = null;
+            }
+            if (this.sound) {
+                this.sound.removeEventListener(egret.Event.COMPLETE, this.LoadComplete, this);
+                this.sound.removeEventListener(egret.IOErrorEvent.IO_ERROR, this.LoadError, this);
+                this.sound.close();
+                this.sound = null;
+            }
+        }
+    };
+    Music.mList = new Listx();
+    return Music;
 }());
-__reflect(Color.prototype, "Color");
-window["Color"] = Color;
+__reflect(Music.prototype, "Music");
+window["Music"] = Music;
 var Parms = (function () {
     function Parms() {
     }
@@ -8772,6 +8595,12 @@ var BCenter = (function (_super) {
 }(Sx));
 __reflect(BCenter.prototype, "BCenter");
 window["BCenter"] = BCenter;
+//九宫格图片类
+//使用方法：
+// let bg = new N9("xxx");
+// bg.width = NForm.width;
+// bg.height = NForm.height;
+// this.Add(bg);
 var N9 = (function (_super) {
     __extends(N9, _super);
     function N9(val, rect) {
@@ -8819,191 +8648,150 @@ var N9 = (function (_super) {
 }(Sx));
 __reflect(N9.prototype, "N9");
 window["N9"] = N9;
-var ColorChange = (function () {
-    // initialization:
-    function ColorChange(p_matrix) {
-        if (p_matrix === void 0) { p_matrix = null; }
-        this.data = [];
-        //super();
-        p_matrix = this.fixMatrix(p_matrix);
-        this.copyMatrix(((p_matrix.length == ColorChange.LENGTH) ? p_matrix : ColorChange.IDENTITY_MATRIX));
+var Config = (function () {
+    function Config() {
     }
-    // public methods:
-    ColorChange.prototype.reset = function () {
-        for (var i = 0; i < ColorChange.LENGTH; i++) {
-            this.data[i] = ColorChange.IDENTITY_MATRIX[i];
-        }
-    };
-    ColorChange.prototype.adjustColor = function (p_brightness, p_contrast, p_saturation, p_hue) {
-        this.adjustHue(p_hue);
-        this.adjustContrast(p_contrast);
-        this.adjustBrightness(p_brightness);
-        this.adjustSaturation(p_saturation);
-    };
-    ColorChange.prototype.adjustBrightness = function (p_val) {
-        p_val = this.cleanValue(p_val, 100);
-        if (p_val == 0 || isNaN(p_val)) {
+    Object.defineProperty(Config, "shareIco", {
+        get: function () {
+            return Config.shareIcos[Strx.Rnd(Config.shareIcos.length)];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Config.LoadConfig = function (xml, func) {
+        console.log("Begin Load Config");
+        //Config.dic = new Listx();
+        var nodes = xml.nodes;
+        Config.dic = nodes[0];
+        var redirect = Config.dic["redirect"];
+        if (redirect) {
+            Src.ReadXml(redirect, function (xml1) {
+                if (xml1 == null) {
+                    NForm.SetTimeout(800, function () {
+                        Config.LoadConfig(xml, func);
+                    });
+                }
+                else {
+                    Config.LoadConfig(xml1, func);
+                }
+            });
             return;
         }
-        this.multiplyMatrix([
-            1, 0, 0, 0, p_val,
-            0, 1, 0, 0, p_val,
-            0, 0, 1, 0, p_val,
-            0, 0, 0, 1, 0,
-            0, 0, 0, 0, 1
-        ]);
-    };
-    ColorChange.prototype.adjustContrast = function (p_val) {
-        p_val = this.cleanValue(p_val, 100);
-        if (p_val == 0 || isNaN(p_val)) {
-            return;
+        Config.showTrace = Config.dic["showTrace"];
+        Js.showTrace = (Config.showTrace == "1");
+        Config.test = Config.dic["test"];
+        Config.qq = Config.dic["qq"];
+        Config.qqq = Config.dic["qqq"]; //QQ群
+        Config.allShopGoods = Config.dic["allShopGoods"];
+        if (Config.dic["url"]) {
+            Config.urls = Config.dic["url"].split(",");
+            Config.urls = Config.urls.sort(function (a, b) {
+                return Strx.Rnd(10);
+            });
         }
-        var x;
-        if (p_val < 0) {
-            x = 127 + p_val / 100 * 127;
+        Config.gameUrl = Config.dic["gameUrl"];
+        Config.payUrl = Config.dic["payUrl"];
+        Config.shareUrl = Config.dic["shareUrl"];
+        Config.src = Config.dic["src"];
+        Config.version = Config.dic["version"];
+        Config.icoPath = Config.dic["icoPath"];
+        Config.srcPath = Config.dic["srcPath"];
+        Config.game = Config.dic["game"];
+        Config.isLW = Config.game == "Longwen";
+        Config.cardMode = Config.dic["cardMode"] == "1";
+        Config.app = Config.dic["app"];
+        Config.shareApp = Config.dic["shareApp"];
+        Config.serverIp = Config.dic["serverIp"];
+        Config.port = Config.dic["port"];
+        Config.portHttp = Config.dic["portHttp"];
+        Config.serverName = Config.dic["serverName"];
+        Config.serverBegin = Config.dic["serverBegin"];
+        Config.serverFrom = Config.dic["serverFrom"];
+        Config.ps = Config.dic["ps"] == "1";
+        Config.closeChat = Config.dic["closeChat"] == "1";
+        Config.serverId = Config.dic["serverId"];
+        Config.newServerMode = Config.dic["newServerMode"] == "1";
+        Config.wss = Config.dic["wss"];
+        Config.gonggao = Config.dic["gonggao"];
+        Config.isBattleCard = Config.dic["isBattleCard"] == "1";
+        Config.isStyleCard = Config.dic["isStyleCard"] == "1";
+        Config.btServer = Config.dic["btServer"] == "1";
+        if (Config.dic["mainCenter"]) {
+            Config.mainCenter = Config.dic["mainCenter"].ToInt();
+        }
+        if (Config.dic["gameType"]) {
+            Config.gameType = Config.dic["gameType"].ToInt();
+        }
+        Config.ads = Config.dic["ads"];
+        Config.banner = Config.dic["banner"];
+        Config.banner2 = Config.dic["banner2"];
+        if (Config.dic["bannery"]) {
+            Config.bannery = Config.dic["bannery"].ToInt();
+        }
+        Config.outAds = Config.dic["outAds"] == "1";
+        Config.openAds = Config.dic["openAds"] == "1";
+        Config.appMode = Config.dic["appMode"] == "1";
+        Config.inExam = Config.dic["inExam"] == "1";
+        Config.autoCreateRole = Config.dic["autoCreateRole"] == "1";
+        if (Config.dic["bbs"]) {
+            Config.bbs = Config.dic["bbs"];
+        }
+        if (Config.dic["alert"]) {
+            Config.alert = Config.dic["alert"];
+        }
+        if (Config.dic["alertOld"]) {
+            Config.alertOld = Config.dic["alertOld"];
+        }
+        var servers = Config.dic["servers"];
+        if (servers) {
+            var ss = servers.split(',');
+            var server = ss[Strx.Rnd(ss.length)];
+            var ss1 = server.split(':');
+            Config.serverIp = ss1[0];
+            Config.port = ss1[1].ToInt();
+        }
+        var serversTls13 = Config.dic["serversTls13"];
+        if (serversTls13) {
+            var ss = serversTls13.split(',');
+            var server = ss[Strx.Rnd(ss.length)];
+            var ss1 = serversTls13.split(':');
+            Config.serverIpTls13 = ss1[0];
+            Config.portTls13 = ss1[1].ToInt();
+        }
+        Config.share = Config.dic["share"];
+        if (!Config.share) {
+            Config.share = "我正在种菜，缺少辣椒，请求帮助！";
+        }
+        if (Config.dic["shareIco"]) {
+            Config.shareIcos = Config.dic["shareIco"].split(',');
         }
         else {
-            x = p_val % 1;
-            if (x == 0) {
-                x = ColorChange.DELTA_INDEX[p_val];
-            }
-            else {
-                //x = DELTA_INDEX[(p_val<<0)]; // this is how the IDE does it.
-                x = ColorChange.DELTA_INDEX[(p_val << 0)] * (1 - x) + ColorChange.DELTA_INDEX[(p_val << 0) + 1] * x; // use linear interpolation for more granularity.
-            }
-            x = x * 127 + 127;
+            Config.shareIcos = ["share/shares.jpg"];
         }
-        this.multiplyMatrix([
-            x / 127, 0, 0, 0, 0.5 * (127 - x),
-            0, x / 127, 0, 0, 0.5 * (127 - x),
-            0, 0, x / 127, 0, 0.5 * (127 - x),
-            0, 0, 0, 1, 0,
-            0, 0, 0, 0, 1
-        ]);
-    };
-    ColorChange.prototype.adjustSaturation = function (p_val) {
-        p_val = this.cleanValue(p_val, 100);
-        if (p_val == 0 || isNaN(p_val)) {
-            return;
+        Config.tujian = Config.dic["tujian"];
+        var business = Config.dic["business"];
+        var business1 = Js.GetUrlParm("business");
+        if (business1 && business1 != "") {
+            business = business1;
         }
-        var x = 1 + ((p_val > 0) ? 3 * p_val / 100 : p_val / 100);
-        var lumR = 0.3086;
-        var lumG = 0.6094;
-        var lumB = 0.0820;
-        this.multiplyMatrix([
-            lumR * (1 - x) + x, lumG * (1 - x), lumB * (1 - x), 0, 0,
-            lumR * (1 - x), lumG * (1 - x) + x, lumB * (1 - x), 0, 0,
-            lumR * (1 - x), lumG * (1 - x), lumB * (1 - x) + x, 0, 0,
-            0, 0, 0, 1, 0,
-            0, 0, 0, 0, 1
-        ]);
+        Config.businessType = business;
+        console.log("End Load Config");
+        func();
     };
-    ColorChange.prototype.adjustHue = function (p_val) {
-        p_val = this.cleanValue(p_val, 180) / 180 * Math.PI;
-        if (p_val == 0 || isNaN(p_val)) {
-            return;
-        }
-        var cosVal = Math.cos(p_val);
-        var sinVal = Math.sin(p_val);
-        var lumR = 0.213;
-        var lumG = 0.715;
-        var lumB = 0.072;
-        this.multiplyMatrix([
-            lumR + cosVal * (1 - lumR) + sinVal * (-lumR), lumG + cosVal * (-lumG) + sinVal * (-lumG), lumB + cosVal * (-lumB) + sinVal * (1 - lumB), 0, 0,
-            lumR + cosVal * (-lumR) + sinVal * (0.143), lumG + cosVal * (1 - lumG) + sinVal * (0.140), lumB + cosVal * (-lumB) + sinVal * (-0.283), 0, 0,
-            lumR + cosVal * (-lumR) + sinVal * (-(1 - lumR)), lumG + cosVal * (-lumG) + sinVal * (lumG), lumB + cosVal * (1 - lumB) + sinVal * (lumB), 0, 0,
-            0, 0, 0, 1, 0,
-            0, 0, 0, 0, 1
-        ]);
-    };
-    ColorChange.prototype.concat = function (p_matrix) {
-        p_matrix = this.fixMatrix(p_matrix);
-        if (p_matrix.length != ColorChange.LENGTH) {
-            return;
-        }
-        this.multiplyMatrix(p_matrix);
-    };
-    // public clone(): ColorChange {
-    //     return new ColorChange(this);
-    // }
-    ColorChange.prototype.toString = function () {
-        return "ColorChange [ " + this.data.join(" , ") + " ]";
-    };
-    // return a length 20 array (5x4):
-    ColorChange.prototype.toArray = function () {
-        return this.data.slice(0, 20);
-    };
-    // private methods:
-    // copy the specified matrix's values to this matrix:
-    ColorChange.prototype.copyMatrix = function (p_matrix) {
-        var l = ColorChange.LENGTH;
-        for (var i = 0; i < l; i++) {
-            this.data[i] = p_matrix[i];
-        }
-    };
-    // multiplies one matrix against another:
-    ColorChange.prototype.multiplyMatrix = function (p_matrix) {
-        var col = [];
-        for (var i = 0; i < 5; i++) {
-            for (var j = 0; j < 5; j++) {
-                col[j] = this.data[j + i * 5];
-            }
-            for (var j = 0; j < 5; j++) {
-                var val = 0;
-                for (var k = 0; k < 5; k++) {
-                    val += p_matrix[j + k * 5] * col[k];
-                }
-                this.data[j + i * 5] = val;
-            }
-        }
-    };
-    // make sure values are within the specified range, hue has a limit of 180, others are 100:
-    ColorChange.prototype.cleanValue = function (p_val, p_limit) {
-        return Math.min(p_limit, Math.max(-p_limit, p_val));
-    };
-    // makes sure matrixes are 5x5 (25 long):
-    ColorChange.prototype.fixMatrix = function (p_matrix) {
-        if (p_matrix === void 0) { p_matrix = null; }
-        if (p_matrix == null) {
-            return ColorChange.IDENTITY_MATRIX;
-        }
-        if (p_matrix instanceof ColorChange) {
-            p_matrix = p_matrix.slice(0);
-        }
-        if (p_matrix.length < ColorChange.LENGTH) {
-            p_matrix = p_matrix.slice(0, p_matrix.length).concat(ColorChange.IDENTITY_MATRIX.slice(p_matrix.length, ColorChange.LENGTH));
-        }
-        else if (p_matrix.length > ColorChange.LENGTH) {
-            p_matrix = p_matrix.slice(0, ColorChange.LENGTH);
-        }
-        return p_matrix;
-    };
-    ColorChange.DELTA_INDEX = [
-        0, 0.01, 0.02, 0.04, 0.05, 0.06, 0.07, 0.08, 0.1, 0.11,
-        0.12, 0.14, 0.15, 0.16, 0.17, 0.18, 0.20, 0.21, 0.22, 0.24,
-        0.25, 0.27, 0.28, 0.30, 0.32, 0.34, 0.36, 0.38, 0.40, 0.42,
-        0.44, 0.46, 0.48, 0.5, 0.53, 0.56, 0.59, 0.62, 0.65, 0.68,
-        0.71, 0.74, 0.77, 0.80, 0.83, 0.86, 0.89, 0.92, 0.95, 0.98,
-        1.0, 1.06, 1.12, 1.18, 1.24, 1.30, 1.36, 1.42, 1.48, 1.54,
-        1.60, 1.66, 1.72, 1.78, 1.84, 1.90, 1.96, 2.0, 2.12, 2.25,
-        2.37, 2.50, 2.62, 2.75, 2.87, 3.0, 3.2, 3.4, 3.6, 3.8,
-        4.0, 4.3, 4.7, 4.9, 5.0, 5.5, 6.0, 6.5, 6.8, 7.0,
-        7.3, 7.5, 7.8, 8.0, 8.4, 8.7, 9.0, 9.4, 9.6, 9.8,
-        10.0
-    ];
-    // identity matrix constant:
-    ColorChange.IDENTITY_MATRIX = [
-        1, 0, 0, 0, 0,
-        0, 1, 0, 0, 0,
-        0, 0, 1, 0, 0,
-        0, 0, 0, 1, 0,
-        0, 0, 0, 0, 1
-    ];
-    ColorChange.LENGTH = ColorChange.IDENTITY_MATRIX.length;
-    return ColorChange;
+    Config.isLW = false;
+    Config.cardMode = false;
+    Config.outAds = false; //外部广告（跳转到其他小程序）
+    Config.alert = ""; //进入游戏的公告
+    Config.alertOld = ""; //进入游戏的公告
+    Config.appMode = false; //是不是app模式
+    Config.inExam = false;
+    Config.autoCreateRole = false;
+    Config.bbs = "";
+    return Config;
 }());
-__reflect(ColorChange.prototype, "ColorChange");
-window["ColorChange"] = ColorChange;
+__reflect(Config.prototype, "Config");
+window["Config"] = Config;
+//使用图片库进行帧动画
 var NAniBx = (function (_super) {
     __extends(NAniBx, _super);
     function NAniBx(imgs, overAndRemove, frameRate) {
@@ -9040,7 +8828,7 @@ var NAniBx = (function (_super) {
 }(NAniBase));
 __reflect(NAniBx.prototype, "NAniBx");
 window["NAniBx"] = NAniBx;
-//sdp coco格式
+//sdp格式解析的动画库
 var NAniSdp = (function (_super) {
     __extends(NAniSdp, _super);
     function NAniSdp(resPath, actPath, loaded, overAndRemove, frameRate) {
@@ -9168,7 +8956,7 @@ var NAniSdp = (function (_super) {
                             }
                         }
                     }
-                    var _loop_1 = function (i, len) {
+                    var _loop_2 = function (i, len) {
                         var skeletonSkin = _this.skeletonSkins[i];
                         if (skeletonSkin.oxs) {
                             for (var j = 0, lenj = skeletonSkin.oxs.length; j < lenj; j++) {
@@ -9239,7 +9027,7 @@ var NAniSdp = (function (_super) {
                         }
                     };
                     for (var i = 0, len = _this.skeletonSkins.length; i < len; i++) {
-                        _loop_1(i, len);
+                        _loop_2(i, len);
                     }
                     _this._frame++;
                 }
@@ -9378,6 +9166,7 @@ var NAniSx = (function (_super) {
 }(NAniBase));
 __reflect(NAniSx.prototype, "NAniSx");
 window["NAniSx"] = NAniSx;
+//外部单个TexturePacker打包的图片
 var NAniXml = (function (_super) {
     __extends(NAniXml, _super);
     function NAniXml(path, name, overAndRemove, frameRate) {
@@ -9728,229 +9517,495 @@ var NAniXml = (function (_super) {
 }(Sx));
 __reflect(NAniXml.prototype, "NAniXml");
 window["NAniXml"] = NAniXml;
-var Csv = (function () {
-    function Csv(text) {
-        var _this = this;
-        this.nodes = [];
-        this.keys = {};
-        this.keyArr = [];
-        if (text == null || text.IsEmpty()) {
-            return;
+//A星寻路类
+///<reference path="Vector2.ts" />
+var AStar = (function () {
+    function AStar() {
+    }
+    AStar.Init = function (dataList) {
+        AStar.blocks = dataList;
+        if (AStar.blocks) {
+            AStar._mapWalkDataMaxX = AStar.blocks.width - 1;
+            AStar._mapWalkDataMaxY = AStar.blocks.length - 1;
         }
-        var row = 0;
-        var vals = [];
-        var extra = false;
-        var extraD = false;
-        var cell = [];
-        var _loop_2 = function (i, len) {
-            var c = text.charAt(i);
-            if (c == ",") {
-                if (extra) {
-                    cell.push(c);
+        ;
+    };
+    AStar.Find = function (p_start, p_end, isOptimize) {
+        if (isOptimize === void 0) { isOptimize = true; }
+        if (AStar.blocks.ExistsPoint(p_end)) {
+            //找出最近点的end
+            var expert = 36;
+            var axingOffset = 2;
+            var newEnd = null;
+            for (var i = 1; i < expert * axingOffset; i += axingOffset) {
+                var p = new Vector2(p_end.x - i, p_end.y);
+                if (p.x > 0 && p.x < AStar.blocks.width && p.y > 0 && p.y < AStar.blocks.height && !AStar.blocks.Exists(p.x, p.y)) {
+                    newEnd = p;
+                    break;
                 }
-                else {
-                    var cellVal = cell.join("");
-                    vals.push(cellVal);
-                    cell.length = 0;
-                    extra = false;
+                p = new Vector2(p_end.x + i, p_end.y);
+                if (p.x > 0 && p.x < AStar.blocks.width && p.y > 0 && p.y < AStar.blocks.height && !AStar.blocks.Exists(p.x, p.y)) {
+                    newEnd = p;
+                    break;
+                }
+                //
+                p = new Vector2(p_end.x, p_end.y - i);
+                if (p.x > 0 && p.x < AStar.blocks.width && p.y > 0 && p.y < AStar.blocks.height && !AStar.blocks.Exists(p.x, p.y)) {
+                    newEnd = p;
+                    break;
+                }
+                p = new Vector2(p_end.x, p_end.y + i);
+                if (p.x > 0 && p.x < AStar.blocks.width && p.y > 0 && p.y < AStar.blocks.height && !AStar.blocks.Exists(p.x, p.y)) {
+                    newEnd = p;
+                    break;
+                }
+                //
+                p = new Vector2(p_end.x - i, p_end.y - i);
+                if (p.x > 0 && p.x < AStar.blocks.width && p.y > 0 && p.y < AStar.blocks.height && !AStar.blocks.Exists(p.x, p.y)) {
+                    newEnd = p;
+                    break;
+                }
+                p = new Vector2(p_end.x - i, p_end.y + i);
+                if (p.x > 0 && p.x < AStar.blocks.width && p.y > 0 && p.y < AStar.blocks.height && !AStar.blocks.Exists(p.x, p.y)) {
+                    newEnd = p;
+                    break;
+                }
+                //
+                p = new Vector2(p_end.x + i, p_end.y - i);
+                if (p.x > 0 && p.x < AStar.blocks.width && p.y > 0 && p.y < AStar.blocks.height && !AStar.blocks.Exists(p.x, p.y)) {
+                    newEnd = p;
+                    break;
+                }
+                p = new Vector2(p_end.x + i, p_end.y + i);
+                if (p.x > 0 && p.x < AStar.blocks.width && p.y > 0 && p.y < AStar.blocks.height && !AStar.blocks.Exists(p.x, p.y)) {
+                    newEnd = p;
+                    break;
                 }
             }
-            else if (c == "\n" || c == "\r") {
-                if (vals.length > 0) {
-                    var cellVal = cell.join("");
-                    vals.push(cellVal);
-                    cell.length = 0;
-                    extra = false;
-                    if (row == 0) {
-                        vals.forEach(function (fi) {
-                            _this.keyArr.push(fi);
-                            _this.keys[fi] = true;
-                        });
+            p_end = newEnd;
+            if (p_end == null) {
+                return null;
+            }
+        }
+        var aroundPoint;
+        var path;
+        var f1;
+        var f2;
+        var n;
+        var firstDataInOpen;
+        var curPoint;
+        if (AStar.blocks == null) {
+            return (null);
+        }
+        ;
+        AStar.InitLists();
+        AStar._openCount = 0;
+        AStar._openId = -1;
+        AStar.OpenNote(p_start, 0, 0, 0);
+        var tryNum;
+        while (AStar._openCount > 0) {
+            ++tryNum;
+            if (tryNum > AStar.maxTry) {
+                AStar.DestroyLists();
+                return (null);
+            }
+            ;
+            firstDataInOpen = AStar._openList[0];
+            AStar.CloseNote(firstDataInOpen);
+            curPoint = AStar._nodeList[firstDataInOpen];
+            if (p_end.Equals(curPoint)) {
+                path = AStar.GetPath(p_start, firstDataInOpen, isOptimize);
+                return (path);
+            }
+            ;
+            AStar.GetArounds(curPoint).forEach(function (aroundPoint) {
+                f1 = (AStar._movementCostList[firstDataInOpen] + ((aroundPoint.y == curPoint.y)) ? AStar.COST_STRAIGHT : AStar.COST_DIAGONAL);
+                f2 = (f1 + ((Math.abs((p_end.x - aroundPoint.x)) + Math.abs((p_end.y - aroundPoint.y))) * AStar.COST_STRAIGHT));
+                if (AStar.IsOpen(aroundPoint)) {
+                    n = AStar._noteMap[aroundPoint.y][aroundPoint.x][AStar.NOTE_ID];
+                    if (f1 < AStar._movementCostList[n]) {
+                        AStar._movementCostList[n] = f1;
+                        AStar._pathScoreList[n] = f2;
+                        AStar._fatherList[n] = firstDataInOpen;
+                        AStar.AheadNote((AStar._openList.indexOf(n) + 1));
                     }
-                    else {
-                        var obj_2 = {};
-                        var index_2 = 0;
-                        this_1.keyArr.forEach(function (fi) {
-                            obj_2[fi] = vals[index_2];
-                            index_2++;
-                        });
-                        this_1.nodes.push(obj_2);
-                    }
-                    vals.length = 0;
+                    ;
                 }
                 else {
-                    cell.length = 0;
-                    extra = false;
+                    AStar.OpenNote(aroundPoint, f2, f1, firstDataInOpen);
                 }
-                row++;
+                ;
+            });
+        }
+        ;
+        AStar.DestroyLists();
+        return (null);
+    };
+    AStar.IncisePath = function (path) {
+        var targetPoint;
+        var distance;
+        var pointIdx = 1;
+        var startPoint = path[0];
+        while (pointIdx < path.length) {
+            targetPoint = path[pointIdx];
+            distance = startPoint.Distance(targetPoint);
+            if (distance > 8) {
+                path.splice(pointIdx, (path.length - pointIdx));
+                return;
+            }
+            ;
+            pointIdx++;
+        }
+        ;
+    };
+    AStar.IsOpen = function (p) {
+        if (AStar._noteMap[p.y] == null) {
+            return (false);
+        }
+        ;
+        if (AStar._noteMap[p.y][p.x] == null) {
+            return (false);
+        }
+        ;
+        return (AStar._noteMap[p.y][p.x][AStar.NOTE_OPEN]);
+    };
+    AStar.AheadNote = function (index) {
+        var curIdx;
+        var n;
+        while (index > 1) {
+            curIdx = index / 2;
+            if (AStar.GetScore(index) < AStar.GetScore(curIdx)) {
+                n = AStar._openList[(index - 1)];
+                AStar._openList[(index - 1)] = AStar._openList[(curIdx - 1)];
+                AStar._openList[(curIdx - 1)] = n;
+                index = curIdx;
             }
             else {
-                if (cell.length == 0 && c == "\"") {
-                    extra = true;
-                }
-                else {
-                    if (extra) {
-                        if (!extraD && c == "\\") {
-                            extraD = true;
-                        }
-                        else {
-                            if (c == "\"") {
-                                extra = false;
-                            }
-                            else {
-                                cell.push(c);
-                            }
-                            extraD = false;
-                        }
-                    }
-                    else {
-                        cell.push(c);
-                    }
-                }
+                break;
             }
-        };
-        var this_1 = this;
-        for (var i = 0, len = text.length; i < len; i++) {
-            _loop_2(i, len);
+            ;
         }
-        //Js.Trace(row);
-    }
-    return Csv;
+        ;
+    };
+    AStar.OpenNote = function (p, score, cost, fatherId) {
+        AStar._openCount++;
+        AStar._openId++;
+        if (AStar._noteMap[p.y] == null) {
+            AStar._noteMap[p.y] = [];
+        }
+        ;
+        AStar._noteMap[p.y][p.x] = [];
+        AStar._noteMap[p.y][p.x][AStar.NOTE_OPEN] = true;
+        AStar._noteMap[p.y][p.x][AStar.NOTE_ID] = AStar._openId;
+        AStar._nodeList.push(p);
+        AStar._pathScoreList.push(score);
+        AStar._movementCostList.push(cost);
+        AStar._fatherList.push(fatherId);
+        AStar._openList.push(AStar._openId);
+        AStar.AheadNote(AStar._openCount);
+    };
+    AStar.Optimize = function (pointList, fromIndex) {
+        if (fromIndex === void 0) { fromIndex = 0; }
+        var curPoint;
+        var xx;
+        var yy;
+        var distance;
+        var vx;
+        var vy;
+        var mx;
+        var my;
+        var curDistance;
+        var canPassLine;
+        if (pointList == null) {
+            return;
+        }
+        ;
+        var pointCount = (pointList.length - 1);
+        if (pointCount < 2) {
+            return;
+        }
+        ;
+        var fromPoint = pointList[fromIndex];
+        var curIndex = pointCount;
+        while (curIndex > fromIndex) {
+            curPoint = pointList[curIndex];
+            xx = (curPoint.x - fromPoint.x);
+            yy = (curPoint.y - fromPoint.y);
+            distance = Math.round(Math.sqrt(((xx * xx) + (yy * yy))));
+            vx = (xx / distance);
+            vy = (yy / distance);
+            mx = vx;
+            my = vy;
+            curDistance = 1;
+            canPassLine = true;
+            while (curDistance < distance) {
+                if (AStar.CanPass(fromPoint.Move(Math.round(mx), Math.round(my))) == false) {
+                    canPassLine = false;
+                    break;
+                }
+                ;
+                mx = (mx + vx);
+                my = (my + vy);
+                curDistance++;
+            }
+            ;
+            if (canPassLine) {
+                pointList.splice((fromIndex + 1), ((curIndex - fromIndex) - 1));
+                break;
+            }
+            ;
+            curIndex--;
+        }
+        ;
+        fromIndex++;
+        if (fromIndex < (pointList.length - 1)) {
+            AStar.Optimize(pointList, fromIndex);
+        }
+        ;
+    };
+    AStar.Optimize2 = function (pointList, fromIndex) {
+        if (fromIndex === void 0) { fromIndex = 0; }
+        var curPoint;
+        var xx;
+        var yy;
+        var steps;
+        var canPassLine;
+        var i;
+        var dx;
+        var dy;
+        var mx;
+        var my;
+        if (pointList == null) {
+            return;
+        }
+        ;
+        var pointCount = (pointList.length - 1);
+        if (pointCount < 2) {
+            return;
+        }
+        ;
+        var fromPoint = pointList[fromIndex];
+        var curIndex = pointCount;
+        while (curIndex > fromIndex) {
+            curPoint = pointList[curIndex];
+            xx = Math.abs((curPoint.x - fromPoint.x));
+            yy = Math.abs((curPoint.y - fromPoint.y));
+            if (xx > yy) {
+                steps = xx;
+            }
+            else {
+                steps = yy;
+            }
+            ;
+            canPassLine = true;
+            i = 1;
+            while (i < steps) {
+                dx = (curPoint.x - fromPoint.x);
+                dy = (curPoint.y - fromPoint.y);
+                mx = Math.round(((Math.abs(dx) * i) / steps));
+                if (dx < 0) {
+                    mx = -(mx);
+                }
+                ;
+                my = Math.round(((Math.abs(dy) * i) / steps));
+                if (dy < 0) {
+                    my = -(my);
+                }
+                ;
+                if (AStar.CanPass(fromPoint.Move(mx, my)) == false) {
+                    canPassLine = false;
+                    break;
+                }
+                ;
+                i++;
+            }
+            ;
+            if (canPassLine) {
+                pointList.splice((fromIndex + 1), ((curIndex - fromIndex) - 1));
+                break;
+            }
+            ;
+            curIndex--;
+        }
+        ;
+        fromIndex++;
+        if (fromIndex < (pointList.length - 1)) {
+            AStar.Optimize2(pointList, fromIndex);
+        }
+        ;
+    };
+    AStar.CloseNote = function (id) {
+        AStar._openCount--;
+        var node = AStar._nodeList[id];
+        AStar._noteMap[node.y][node.x][AStar.NOTE_OPEN] = false;
+        AStar._noteMap[node.y][node.x][AStar.NOTE_CLOSED] = true;
+        if (AStar._openCount <= 0) {
+            AStar._openCount = 0;
+            AStar._openList.length = 0;
+            return;
+        }
+        ;
+        AStar._openList[0] = AStar._openList.pop();
+        AStar.BackNote();
+    };
+    AStar.GetScore = function (index) {
+        return (AStar._pathScoreList[AStar._openList[(index - 1)]]);
+    };
+    AStar.GetArounds = function (p) {
+        var nearPoint;
+        var point;
+        var aroundPointList = [];
+        AStar.AROUND_POINTS.forEach(function (point) {
+            nearPoint = p.Move(point.x, point.y);
+            if (AStar.CanPass(nearPoint)) {
+                if (!(AStar.IsClosed(nearPoint))) {
+                    aroundPointList.push(nearPoint);
+                }
+                ;
+            }
+            ;
+        });
+        return (aroundPointList);
+    };
+    AStar.CanPass = function (p) {
+        if ((((((((p.x < 0)) || ((p.x > AStar._mapWalkDataMaxX)))) || ((p.y < 0)))) || ((p.y > AStar._mapWalkDataMaxY)))) {
+            return (false);
+        }
+        ;
+        return !AStar.blocks.ExistsPoint(p);
+    };
+    AStar.GetPath = function (p_start, id, isOptimize) {
+        var pathNodeList = [];
+        var node = AStar._nodeList[id];
+        while (!(p_start.Equals(node))) {
+            pathNodeList.push(node);
+            id = AStar._fatherList[id];
+            node = AStar._nodeList[id];
+        }
+        ;
+        pathNodeList.push(p_start);
+        AStar.DestroyLists();
+        pathNodeList.reverse();
+        if (isOptimize) {
+            AStar.Optimize2(pathNodeList);
+        }
+        ;
+        return (pathNodeList);
+    };
+    AStar.InitLists = function () {
+        AStar._openList = [];
+        AStar._nodeList = [];
+        AStar._pathScoreList = [];
+        AStar._movementCostList = [];
+        AStar._fatherList = [];
+        AStar._noteMap = new Array();
+    };
+    AStar.IsClosed = function (p) {
+        if (AStar._noteMap[p.y] == null) {
+            return (false);
+        }
+        ;
+        if (AStar._noteMap[p.y][p.x] == null) {
+            return (false);
+        }
+        ;
+        return (AStar._noteMap[p.y][p.x][AStar.NOTE_CLOSED]);
+    };
+    AStar.DestroyLists = function () {
+        AStar._openList = null;
+        AStar._nodeList = null;
+        AStar._pathScoreList = null;
+        AStar._movementCostList = null;
+        AStar._fatherList = null;
+        AStar._noteMap = null;
+    };
+    AStar.BackNote = function () {
+        var temp;
+        var n1;
+        var n2 = 1;
+        while (true) {
+            n1 = n2;
+            if ((2 * n1) <= AStar._openCount) {
+                if (AStar.GetScore(n2) > AStar.GetScore((2 * n1))) {
+                    n2 = (2 * n1);
+                }
+                ;
+                if (((2 * n1) + 1) <= AStar._openCount) {
+                    if (AStar.GetScore(n2) > AStar.GetScore(((2 * n1) + 1))) {
+                        n2 = ((2 * n1) + 1);
+                    }
+                    ;
+                }
+                ;
+            }
+            ;
+            if (n1 == n2) {
+                break;
+            }
+            ;
+            temp = AStar._openList[(n1 - 1)];
+            AStar._openList[(n1 - 1)] = AStar._openList[(n2 - 1)];
+            AStar._openList[(n2 - 1)] = temp;
+        }
+        ;
+    };
+    AStar.BLOCK_WAY = 1;
+    AStar.AROUND_POINTS = [new Vector2(1, 0),
+        new Vector2(0, 1),
+        new Vector2(-1, 0),
+        new Vector2(0, -1),
+        new Vector2(1, 1),
+        new Vector2(-1, 1),
+        new Vector2(-1, -1),
+        new Vector2(1, -1)];
+    AStar.COST_DIAGONAL = 14;
+    AStar.COST_STRAIGHT = 10;
+    AStar.NOTE_OPEN = 1;
+    AStar.NOTE_ID = 0;
+    AStar.NOTE_CLOSED = 2;
+    AStar.maxTry = 5000;
+    return AStar;
 }());
-__reflect(Csv.prototype, "Csv");
-window["Csv"] = Csv;
-var DateTime = (function () {
-    function DateTime(d) {
-        if (d === void 0) { d = null; }
-        if (d == null) {
-            d = new Date();
-        }
-        else if (d instanceof Date) {
-            this.d = d;
-        }
-        else if (Strx.IsString(d)) {
-            this.d = Time.ParseTime(d.toString());
-        }
-        else {
-            d = new Date();
-        }
+__reflect(AStar.prototype, "AStar");
+window["AStar"] = AStar;
+//临时存储类
+//使用方法：
+//Caches.SetObj("test","1");
+//Caches.GetObj("test");
+///<reference path="Listx.ts" />
+var Caches = (function () {
+    function Caches() {
     }
-    Object.defineProperty(DateTime.prototype, "time", {
-        get: function () {
-            return this.d.getTime();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DateTime.prototype, "tick", {
-        get: function () {
-            return this.time;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DateTime.prototype, "Year", {
-        get: function () {
-            return this.d.getFullYear().ToInt();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DateTime.prototype, "Month", {
-        get: function () {
-            return this.d.getMonth().ToInt();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DateTime.prototype, "DayOfWeek", {
-        // public get DayOfYear(): number {
-        //     return this.Month * 31 + this.d.getDate().ToInt();
-        // }
-        get: function () {
-            return this.d.getDay().ToInt();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DateTime.prototype, "Day", {
-        get: function () {
-            return this.d.getDate().ToInt();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DateTime.prototype, "Hour", {
-        get: function () {
-            return this.d.getHours().ToInt();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DateTime.prototype, "Minute", {
-        get: function () {
-            return this.d.getMinutes().ToInt();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DateTime.prototype, "Second", {
-        get: function () {
-            return this.d.getSeconds().ToInt();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DateTime.prototype, "Millisecond", {
-        get: function () {
-            return this.d.getMilliseconds().ToInt();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    DateTime.prototype.Add = function (t) {
-        var dt = new DateTime(new Date(this.d.getTime()));
-        dt.d.setTime(dt.d.getTime() + t.TotalMilliseconds);
-        return dt;
-    };
-    DateTime.prototype.AddDays = function (val) {
-        var dt = new DateTime(new Date(this.d.getTime()));
-        dt.d.setTime(dt.d.getTime() + val * 24 * 60 * 60 * 1000);
-        return dt;
-    };
-    DateTime.prototype.AddHours = function (val) {
-        var dt = new DateTime(new Date(this.d.getTime()));
-        dt.d.setTime(dt.d.getTime() + val * 60 * 60 * 1000);
-        return dt;
-    };
-    DateTime.prototype.AddMinutes = function (val) {
-        var dt = new DateTime(new Date(this.d.getTime()));
-        dt.d.setTime(dt.d.getTime() + val * 60 * 1000);
-        return dt;
-    };
-    DateTime.prototype.AddSeconds = function (val) {
-        var dt = new DateTime(new Date(this.d.getTime()));
-        dt.d.setTime(dt.d.getTime() + val * 1000);
-        return dt;
-    };
-    DateTime.prototype.AddMilliseconds = function (val) {
-        var dt = new DateTime(new Date(this.d.getTime()));
-        dt.d.setTime(dt.d.getTime() + val);
-        return dt;
-    };
-    DateTime.prototype.toString = function (withMilliseconds) {
-        if (withMilliseconds === void 0) { withMilliseconds = false; }
-        if (withMilliseconds) {
-            return Time.ParseStringWithMilliseconds(this.d);
+    Caches.GetDic = function (key) {
+        if (!Caches.dic[key]) {
+            Caches.dic[key] = new Listx();
         }
-        else {
-            return Time.ParseString(this.d);
-        }
+        return Caches.dic[key];
     };
-    return DateTime;
+    Caches.GetListx = function (key) {
+        if (!Caches.dic[key]) {
+            Caches.dic[key] = new Listx();
+        }
+        return Caches.dic[key];
+    };
+    Caches.GetArr = function (key) {
+        if (!Caches.dic[key]) {
+            Caches.dic[key] = [];
+        }
+        return Caches.dic[key];
+    };
+    Caches.GetObj = function (key) {
+        return Caches.dic[key];
+    };
+    Caches.SetObj = function (key, obj) {
+        Caches.dic[key] = obj;
+    };
+    Caches.dic = new Listx();
+    return Caches;
 }());
-__reflect(DateTime.prototype, "DateTime");
-window["DateTime"] = DateTime;
+__reflect(Caches.prototype, "Caches");
+window["Caches"] = Caches;
+//由于egret无法使用图片背景文字渲染，所以暂时使用滤镜进行实现
 ///<reference path="NColorText.ts" />
 var NBColorText = (function (_super) {
     __extends(NBColorText, _super);
@@ -9973,7 +10028,14 @@ var NBColorText = (function (_super) {
 }(NColorText));
 __reflect(NBColorText.prototype, "NBColorText");
 window["NBColorText"] = NBColorText;
+//带有标头的文字绑定类
 ///<reference path="NLabel.ts" />
+//使用方法
+//let list = new Listx();
+//list["att"] = "1";
+//let l = new NBKLabel("攻击", list, "att", 17, 0x83fb1f);
+//this.Add(l);
+//list["att"] = "2";
 var NBKLabel = (function (_super) {
     __extends(NBKLabel, _super);
     function NBKLabel(key, item, bindKey, keyType, color, bold, size, act) {
@@ -10000,6 +10062,14 @@ var NBKLabel = (function (_super) {
 }(NLabel));
 __reflect(NBKLabel.prototype, "NBKLabel");
 window["NBKLabel"] = NBKLabel;
+//文字绑定类
+///<reference path="NLabel.ts" />
+//使用方法
+//let list = new Listx();
+//list["att"] = "1";
+//let l = new NBLabel(list, "att", 17, 0x83fb1f);
+//this.Add(l);
+//list["att"] = "2";
 ///<reference path="NLabel.ts" />
 var NBLabel = (function (_super) {
     __extends(NBLabel, _super);
@@ -10024,6 +10094,49 @@ var NBLabel = (function (_super) {
 }(NLabel));
 __reflect(NBLabel.prototype, "NBLabel");
 window["NBLabel"] = NBLabel;
+//普通按钮类
+//需要预先定义样式
+// public static Setup(): void {
+//     NButton.bgRender = (style: number) => {
+//         if (style < 0) {
+//             style = 0;
+//         }
+//         var b: any;
+//         if (style == 1) {
+//             b = new N9("buttonb4");
+//             b.width = 120;
+//             b.height = 52;
+//         }
+//         else {
+//             b = new N9("buttonb0", new Rectangle(32, 26, 1, 1));
+//             b.width = 120;
+//             b.height = 54;
+//         }
+//         return b;
+//     };
+//     NButton.bgOnRender = (style: number) => {
+//         return null;
+//     };
+//     NButton.lRender = (style: number, _val: string, width: number, height: number) => {
+//         if (style < 0) {
+//             style = 0;
+//         }
+//         var fontSize: number = 21;
+//         if (_val.length == 2) {
+//             _val = _val.substr(0, 1) + " " + _val.substr(1, 1);
+//         }
+//         var l = null;
+//             l = new NLabel(_val, 0xfff9e8, false, fontSize, 0.5, 0x222222);
+//             l.filters = Filters.glowFilter;
+//         l.align = 1;
+//         l.Pos(width / 2, (height - l.height) / 2);
+//         return l;
+//     };
+//     NButton.lOnRender = (style: number, _val: string, width: number, height: number) => {
+//         return null;
+//     };
+//     NSButton.musicBG = "click1";
+// }
 var NButton = (function (_super) {
     __extends(NButton, _super);
     function NButton(val, style, highLight, filterDoubleClickTime) {
@@ -10150,6 +10263,10 @@ var NButton = (function (_super) {
 }(Sx));
 __reflect(NButton.prototype, "NButton");
 window["NButton"] = NButton;
+//单选框类
+//使用方法：
+// let usec = new NCheck("使用体力", 80, 80, null);
+// this.Add(usec);
 var NCheck = (function (_super) {
     __extends(NCheck, _super);
     function NCheck(val, width, height, act, color) {
@@ -10217,6 +10334,13 @@ var NCheck = (function (_super) {
 }(Sx));
 __reflect(NCheck.prototype, "NCheck");
 window["NCheck"] = NCheck;
+//倒计时类
+//使用方法：
+// let time = new NCountDown(true, "", 15, 0xffff00, (val) => {
+//     return "剩余时间：" + val;
+// });
+// time.align = 1;//居中显示
+// this.Add(time, 480, 400);
 var NCountDown = (function (_super) {
     __extends(NCountDown, _super);
     function NCountDown(isTime, nnum, size, color, func) {
@@ -10361,6 +10485,8 @@ var NCountDown = (function (_super) {
 }(Sx));
 __reflect(NCountDown.prototype, "NCountDown");
 window["NCountDown"] = NCountDown;
+//龙骨类，如果需要的话将该类直接放到解除注释，拷贝到游戏中
+//需要引用白鹭龙骨底层
 // class NDragonBones extends Sx {
 //     private factory: dragonBones.EgretFactory;
 //     public ani: dragonBones.EgretArmatureDisplay;
@@ -10552,269 +10678,88 @@ window["NCountDown"] = NCountDown;
 //         super.Dispose();
 //     }
 // } 
-if (!String.prototype.IsFull) {
-    String.prototype.IsFull = function () {
-        return Strx.IsFull(this);
-    };
-}
-if (!String.prototype.IsEmpty) {
-    String.prototype.IsEmpty = function () {
-        return Strx.IsEmpty(this);
-    };
-}
-if (!String.prototype.ToInt) {
-    String.prototype.ToInt = function () {
-        if (this == null || this == "") {
-            return 0;
-        }
-        var rv = parseInt(this);
-        if (isNaN(rv)) {
-            return 0;
-        }
-        return rv;
-    };
-}
-if (!String.prototype.WriteLog) {
-    String.prototype.WriteLog = function () {
-        return Js.Trace(this);
-    };
-}
-if (!String.prototype.TrueLength) {
-    String.prototype.TrueLength = function () {
-        // var text: string = this;
-        // if (text.IsEmpty())
-        //     return 0;
-        // let rv = 0;
-        // for (let i = 0, len = text.length; i < len; i++) {
-        //     let num = text.charCodeAt(i);
-        //     if (num < 0 || num > 0x7f) {
-        //         rv += 2;
-        //     }
-        //     else {
-        //         rv++;
-        //     }
-        // }
-        // return rv;
-        return Strx.TrueLength(this);
-    };
-}
-if (!String.prototype.PaddingLeft) {
-    String.prototype.PaddingLeft = function (c, count) {
-        // let left = "";
-        // for (let i = 0, len = count - this.length; i < len; i++) {
-        //     left += c;
-        // }
-        // return left + this;
-        return Strx.PaddingLeft(this, count, c);
-    };
-}
-;
-if (!String.prototype.PaddingRight) {
-    String.prototype.PaddingRight = function (c, count) {
-        return Strx.PaddingRight(this, count, c);
-    };
-}
-;
-if (!String.prototype.Trim) {
-    String.prototype.Trim = function () {
-        return Strx.Trim(this);
-    };
-}
-;
-if (!String.prototype.StartWith) {
-    String.prototype.StartWith = function (c) {
-        if (this.length >= c.length && this.substr(0, c.length) == c) {
-            return true;
-        }
-        return false;
-    };
-}
-;
-var Strx = (function () {
-    function Strx() {
+//颜色转换器
+var Color = (function () {
+    function Color(argb) {
+        if (argb === void 0) { argb = 0; }
+        this.color = 0;
+        this.Set(argb);
     }
-    Strx.Setup = function () {
+    Color.prototype.Set = function (color) {
+        if (color === void 0) { color = 0; }
+        this.color = color;
     };
-    Strx.Rnd = function (max) {
-        max = max;
-        return Math.floor(Math.random() * (max));
+    Object.defineProperty(Color.prototype, "a", {
+        get: function () {
+            return this.color >> 24 & 0xff;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Color.prototype, "r", {
+        get: function () {
+            return this.color >> 16 & 0xff;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Color.prototype, "g", {
+        get: function () {
+            return this.color >> 8 & 0xff;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Color.prototype, "b", {
+        get: function () {
+            return this.color & 0xff;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Color.prototype, "rgb", {
+        get: function () {
+            return "#" + Strx.PaddingRight(this.r.toString(16), 2, "0") + Strx.PaddingRight(this.g.toString(16), 2, "0") + Strx.PaddingRight(this.b.toString(16), 2, "0");
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Color, "Green", {
+        get: function () {
+            return 0x83fb1f;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Color, "GreenGame", {
+        get: function () {
+            return "#83fb1f";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Color.Parse = function (color) {
+        return new Color(color.replace("#", "0x").ToInt());
     };
-    Strx.Int = function (text) {
-        var rv = 0;
-        try {
-            rv = parseInt(text);
-        }
-        catch (ex) {
-            rv = 0;
-        }
-        return rv;
-    };
-    Strx.IsEmpty = function (text) {
-        if (text == null || text == undefined || text.length == 0) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    };
-    Strx.IsFull = function (text) {
-        return !Strx.IsEmpty(text);
-    };
-    Strx.PaddingLeft = function (text, len, char) {
-        if (text.length >= len) {
-            return text.substr(0, len);
-        }
-        else {
-            var needLen = len - text.length;
-            for (var i = 0; i < needLen; i++) {
-                text = char + text;
-            }
-        }
-        return text;
-    };
-    Strx.PaddingRight = function (text, len, char) {
-        if (text.length >= len) {
-            return text.substr(0, len);
-        }
-        else {
-            var needLen = len - text.length;
-            for (var i = 0; i < needLen; i++) {
-                text = text + char;
-            }
-        }
-        return text;
-    };
-    Strx.Trim = function (str) {
-        while (str.substr(0, 1) == " ") {
-            str = str.substr(1);
-        }
-        while (str.substr(-1, 1) == " ") {
-            str = str.substr(0, str.length - 1);
-        }
-        return str;
-    };
-    Strx.GetSmaNum = function (val) {
-        var wanText = "";
-        if (Lang.type == LangType.Cht) {
-            wanText = "萬";
-        }
-        else {
-            wanText = "万";
-        }
-        if (val < 10000) {
-            return val.toString();
-        }
-        else {
-            var left = (val / 10000).ToInt();
-            var right = val - left * 10000;
-            if (right == 0) {
-                return left + wanText;
-            }
-            else {
-                return left + "." + right.toString().substring(0, 1) + wanText;
-            }
-        }
-    };
-    Strx.TrueLength = function (text) {
-        if (Strx.IsEmpty(text))
-            return 0;
-        var rv = 0;
-        for (var i = 0, len = text.length; i < len; i++) {
-            var num = text.charCodeAt(i);
-            if (num < 0 || num > 0x7f) {
-                rv += 2;
-            }
-            else {
-                rv++;
-            }
-        }
-        return rv;
-    };
-    Strx.Num2Str = function (d, decimal) {
-        if (decimal === void 0) { decimal = 1; }
-        var s = d.toString();
-        if (s.indexOf(".") > -1) {
-            var ss = s.split(".");
-            if (ss[1].length >= decimal) {
-                return ss[0] + "." + ss[1].substr(0, decimal);
-            }
-            else {
-                return ss[0] + "." + Strx.PaddingRight(ss[1], decimal, "0");
-            }
-        }
-        else {
-            return s + "." + Strx.PaddingRight("", decimal, "0");
-        }
-    };
-    Strx.Decompress = function (buffer) {
-        var inflate = new Zlib.Inflate(buffer);
-        var inbuffer = inflate.decompress();
-        return inbuffer;
-    };
-    Strx.Encompress = function (buffer) {
-        var inflate = new Zlib.Deflate(buffer);
-        var inbuffer = inflate.compress();
-        return inbuffer;
-    };
-    Strx.CalulateXYAnagle = function (startx, starty, endx, endy) {
-        var tan = Math.atan(Math.abs((endy - starty) / (endx - startx))) * 180 / Math.PI;
-        if (endx >= startx && endy >= starty) {
-            return -tan;
-        }
-        else if (endx > startx && endy < starty) {
-            return tan;
-        }
-        else if (endx < startx && endy > starty) {
-            return tan - 180;
-        }
-        else {
-            return 180 - tan;
-        }
-        //return tan;
-    };
-    Strx.GetInnerText = function (text, begin, end, times) {
-        if (times === void 0) { times = 1; }
-        try {
-            var str = "";
-            if (end.IsFull()) {
-                for (var i = 1; i < times; i++) {
-                    var index = text.indexOf(begin);
-                    text = text.substr(index + begin.length, (text.length - index) - begin.length);
-                }
-                var str2 = text.substr(0, text.indexOf(begin) + begin.length);
-                var str3 = text.substr(str2.length, text.length - str2.length);
-                if (str3.indexOf(end) == -1) {
-                    return str3;
-                }
-                else if (text.indexOf(begin) == -1) {
-                    return str;
-                }
-                try {
-                    return str3.substr(0, str3.indexOf(end));
-                }
-                catch (ex) {
-                    return str3;
-                }
-            }
-            var str4 = text.substr(0, text.indexOf(begin) + begin.length);
-            return text.substr(str4.length, text.length - str4.length);
-        }
-        catch (ex) {
-            return "";
-        }
-    };
-    Strx.IsString = function (val) {
-        if (val == null) {
-            return false;
-        }
-        return egret.getQualifiedClassName(val) == "string";
-    };
-    Strx.NUMS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-    Strx.CHARS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
-    return Strx;
+    return Color;
 }());
-__reflect(Strx.prototype, "Strx");
-window["Strx"] = Strx;
+__reflect(Color.prototype, "Color");
+window["Color"] = Color;
+//以XmllinqT为数据源的表格类
+//一般用于物品列表等等
+//使用方法：
+// this.g = new NGridList(this.w, this.h, 2);
+// let xqt = new XmlLinqT();
+// for(let i=0;i<25;i++){
+//     var list = new Listx();
+//     list["id"] = i.toString();
+//     list["index"] = i;
+//     xqt.Add(list);
+// }
+// this.g.SetData(xqt, this.h / xqt.length, (p, list) => {
+//     p.Add(new NLabel(list["index"]));
+// });
+// this.Add(this.g);
 ///<reference path="NScrollPanel.ts" />
 var NGridList = (function (_super) {
     __extends(NGridList, _super);
@@ -11272,39 +11217,7 @@ var NGridList = (function (_super) {
 }(NScrollPanel));
 __reflect(NGridList.prototype, "NGridList");
 window["NGridList"] = NGridList;
-// class NGridListLine extends Sx {
-//     public cellWidth: number;
-//     public cellHeight: number;
-//     public cellAct: Function;
-//     public data: XmlLinqT;
-//     public p: any;
-//     public sc: eui.Scroller;
-//     public constructor(cellWidth: number,cellHeight: number,data: XmlLinqT,cellAct: Function,line: number = 1,canSelect: boolean = false) {
-//         //canSelect TODO;
-//         super();
-//         this.data = data;
-//         this.cellAct = cellAct;
-//         this.cellWidth = cellWidth;
-//         this.cellHeight = cellHeight;
-//         this.width = cellWidth;
-//         this.height = cellHeight * line;
-//         if(canSelect) {
-//             this.p = new eui.List();
-//         } else {
-//             this.p = new eui.DataGroup();
-//         }
-//         this.p.itemRendererSkinName = null;
-//         this.p.useVirtualLayout = true;
-//         this.p.itemRenderer = NGridListRender;
-//         this.sc = new eui.Scroller();
-//         this.sc.width = cellWidth;
-//         this.sc.height = cellHeight * line;
-//         this.sc.viewport = this.p;
-//         this.sc.scrollPolicyH = eui.ScrollPolicy.OFF;
-//         this.Add(this.sc);
-//         this.p.dataProvider = this.data._names;
-//     }
-// } 
+//NGridList简易的左右翻页类
 var NGridListPageSide = (function (_super) {
     __extends(NGridListPageSide, _super);
     function NGridListPageSide(w, h, column, pageSize, emptyToCount) {
@@ -11402,43 +11315,10 @@ var NGridListPageSide = (function (_super) {
 }(Sx));
 __reflect(NGridListPageSide.prototype, "NGridListPageSide");
 window["NGridListPageSide"] = NGridListPageSide;
-// class NGridListRender extends eui.ItemRenderer {
-//     private bg: Sx;
-//     private p: Sx;
-//     public constructor() {
-//         super();
-//         this.bg = new Sx();
-//         this.addChild(this.bg);
-//         this.p = new Sx();
-//         this.addChild(this.p);
-//     }
-//     protected dataChanged(): void {
-//         this.p.RemoveAll();
-//         this.p.Add(new NLabel(this.data));
-//     }
-// } 
-// class NHardPanel extends Sx {
-//     public p: Sx;
-//     public sc: eui.Scroller;
-//     public constructor(width: number = 1,height: number = 1) {
-//         super();
-//         this.p = new Sx();
-//         this.sc = new eui.Scroller();
-//         this.sc.width = width;
-//         this.sc.height = height;
-//         this.sc.viewport = this.p;
-//         this.Add(this.sc);
-//     }
-//     public Add(s: any,x: number = 0,y: number = 0): boolean {
-//         var that=this;
-//         if(this.p == null || this.p == s || egret.is(s,"eui.Scroller")) {
-//             return super.Add(s,x,y);
-//         } else {
-//             this.p.Add(s,x,y);
-//         }
-//         return true;
-//     }
-// }
+//带标头的文字类
+//使用方法：
+// let l1 = new NKLabel("标题", "这是内容");
+// this.Add(l1, 80, 50);
 var NKLabel = (function (_super) {
     __extends(NKLabel, _super);
     function NKLabel(key, val, keyType, color, bold, size) {
@@ -11457,6 +11337,9 @@ var NKLabel = (function (_super) {
 }(NLabel));
 __reflect(NKLabel.prototype, "NKLabel");
 window["NKLabel"] = NKLabel;
+//鼠标拖尾类
+//需要tail.png置入图片库
+//一般不建议用
 var NMouseTail3 = (function (_super) {
     __extends(NMouseTail3, _super);
     function NMouseTail3() {
@@ -11584,6 +11467,10 @@ var NMouseTail3 = (function (_super) {
 __reflect(NMouseTail3.prototype, "NMouseTail3");
 window["NMouseTail3"] = NMouseTail3;
 //一个对象在一个视野里面移动，如：世界地图的拖动
+//使用方法：
+// this.drag = new NMovePanel(NForm.width, NForm.height);
+// this.Add(this.drag);
+// this.drag.Add(Assert.Img("xxxx"));
 var NMovePanel = (function (_super) {
     __extends(NMovePanel, _super);
     function NMovePanel(width, height, moveFunc, movedFunc, bgType, moveWidth, moveHeight) {
@@ -11747,6 +11634,10 @@ var NMovePanel = (function (_super) {
 }(NScrollPanel));
 __reflect(NMovePanel.prototype, "NMovePanel");
 window["NMovePanel"] = NMovePanel;
+//NGridList手动分页类
+//使用方法：
+// let pager = new NNoPage(this.g);
+// pager.Set(0, 100, ()=>{}));
 var NNoPage = (function () {
     function NNoPage(g) {
         var _this = this;
@@ -11832,6 +11723,11 @@ var NNoPage = (function () {
 }());
 __reflect(NNoPage.prototype, "NNoPage");
 window["NNoPage"] = NNoPage;
+//图片文字渲染类
+//使用方法：
+// var l: NNum = new NNum("123", "w");
+// l.align = 1;
+// this.Add(l, 48, 79);
 var NNum = (function (_super) {
     __extends(NNum, _super);
     function NNum(num, type, verification, offset) {
@@ -11936,6 +11832,24 @@ var NNum = (function (_super) {
 }(Sx));
 __reflect(NNum.prototype, "NNum");
 window["NNum"] = NNum;
+//普通Panel类，
+//可以带背景，需要载入的时候初始化
+//初始化：
+// public static Setup(): void {
+//     NPanel.bgFunc =  (bgType: number)=> {
+//         if (bgType <= -1) {
+//             return null;
+//         }
+//         var bg: any = new N9("winp" + bgType);
+//         if (bg instanceof N9) {
+//             bg.base = true;
+//         }
+//         return bg;
+//     };
+// }
+//使用方法：
+// let p = new NPanel(100, 100, 1);
+// this.Add(p);
 var NPanel = (function (_super) {
     __extends(NPanel, _super);
     function NPanel(width, height, bgType) {
@@ -12090,6 +12004,8 @@ var NPanel = (function (_super) {
 }(Sx));
 __reflect(NPanel.prototype, "NPanel");
 window["NPanel"] = NPanel;
+//粒子类，如果需要的话将该类直接放到解除注释，拷贝到游戏中
+//需要引用白鹭粒子底层
 // class NParticle extends Sx {
 //     public ani: particle.GravityParticleSystem;
 //     public playTimes: number;
@@ -12231,6 +12147,11 @@ window["NPanel"] = NPanel;
 //         super.Dispose();
 //     }
 // } 
+//进度条类
+//使用方法：
+// let process = new NProcess("panelpfg", "panelpbg", null, -1, true);
+// NForm.CenterExtra(process, 0, 30);//居中显示
+// this.Add(process);
 var NProcess = (function (_super) {
     __extends(NProcess, _super);
     function NProcess(fg, bg, l, width, scroll, processFunc, isheight) {
@@ -12458,88 +12379,28 @@ var NProcess = (function (_super) {
 }(Sx));
 __reflect(NProcess.prototype, "NProcess");
 window["NProcess"] = NProcess;
-var NPs = (function (_super) {
-    __extends(NPs, _super);
-    //private factory: egret.MovieClipDataFactory;
-    //public ani: egret.MovieClip;
-    //public playTimes: number;
-    //public overAndRemove: boolean;
-    //public playEndFunc: Function;
-    //public movieData: egret.MovieClipData
-    function NPs(path) {
-        return _super.call(this) || this;
-        //particle.
-        // var system: particle.ParticleSystem;
-        // var texture = RES.getRes("star");//粒子图片，这里选择星星
-        // var config = RES.getRes("fire_json");//粒子对应的json配置文件，这里选择火焰
-        // system = new particle.GravityParticleSystem(texture, config);
-        // system.emitterX = 200;
-        // system.emitterY = 200;
-        // this.addChild(system);
-        //system.start();
-    }
-    NPs.prototype.Play = function (name, playEndFunc) {
-        if (playEndFunc === void 0) { playEndFunc = null; }
-    };
-    NPs.prototype.Stop = function () {
-        // if (this.ani) {
-        //     this.ani.stop();
-        // }
-    };
-    NPs.prototype.StopAtEnd = function () {
-        // this.ani.removeEventListener(egret.Event.LOOP_COMPLETE, this.StopAtEndWhenPlayOnEnd, this);
-        // this.ani.addEventListener(egret.Event.LOOP_COMPLETE, this.StopAtEndWhenPlayOnEnd, this);
-    };
-    NPs.prototype.StopAtEndWhenPlayOnEnd = function () {
-        // if (this.ani) {
-        //     this.ani.gotoAndStop(this.ani.totalFrames - 1);
-        // }
-        // this.ani.removeEventListener(egret.Event.LOOP_COMPLETE, this.StopAtEndWhenPlayOnEnd, this);
-    };
-    NPs.prototype.Continue = function () {
-        // if (this.ani) {
-        //     this.ani.play();
-        // }
-    };
-    NPs.prototype.End = function (ev) {
-        // if (this.overAndRemove) {
-        //     this.Dispose();
-        // }
-    };
-    NPs.prototype.PlayOnEnd = function (ev) {
-        // if (this.playEndFunc) {
-        //     this.playEndFunc();
-        // }
-    };
-    // private _frameRate: number = -1;
-    // public get frameRate(): number {
-    //     if (this.ani == null) {
-    //         return 0;
-    //     }
-    //     return this.ani.frameRate;
-    // }
-    // public set frameRate(val: number) {
-    //     if (this.ani == null) {
-    //         return;
-    //     }
-    //     this._frameRate = val;
-    //     this.ani.frameRate = val;
-    // }
-    NPs.prototype.Dispose = function () {
-        if (!this.disposed) {
-            // this.ani.stop();
-            // this.ani.removeEventListener(egret.Event.LOOP_COMPLETE, this.PlayOnEnd, this);
-            // this.ani.removeEventListener(egret.Event.COMPLETE, this.End, this);
-            // this.ani.removeEventListener(egret.Event.LOOP_COMPLETE, this.StopAtEndWhenPlayOnEnd, this);
-            // this.ani.movieClipData = null;
-        }
-        //this.movieData = null;
-        _super.prototype.Dispose.call(this);
-    };
-    return NPs;
-}(Sx));
-__reflect(NPs.prototype, "NPs");
-window["NPs"] = NPs;
+//单选框类，可用于创角等
+//使用方法：
+//创角头像选择
+// let arr = [];
+// let sex = new NRadio(["1", "2"], 325, 120, function (p: NPanel, val: String): void {
+//     let img = AssertImg("Ico" + val);
+//     p.Add(img, 120, 310);
+//     arr.push(img);
+// }, function (index) {
+//     sex.selectItem.Add(mx, -10, 65);//选中特效
+//     if (index == 0) {
+//         arr[0].scaleX = arr[0].scaleY = 1;
+//         arr[1].scaleX = arr[1].scaleY = 0.7;
+//     } else {
+//         arr[1].scaleX = arr[1].scaleY = 1;
+//         arr[0].scaleX = arr[0].scaleY = 0.7;
+//     }
+// }, 9999);
+// NForm.Center(sex, -255, -220);
+// sex.mouseChildren = false;
+// sex.mouseEnabled = false;
+// this.Add(sex);
 var NRadio = (function (_super) {
     __extends(NRadio, _super);
     function NRadio(data, w, h, act, onChanged, columnCount, mode) {
@@ -12720,6 +12581,12 @@ var NRadio = (function (_super) {
 }(Sx));
 __reflect(NRadio.prototype, "NRadio");
 window["NRadio"] = NRadio;
+//图片按钮类
+//使用方法
+// let b = new NSButton("xxxx");//这里的参数可以使用图片索引，也可以是Sx精灵
+// this.Add(b, 100, 100);
+// b.Click(() => {
+// });
 var NSButton = (function (_super) {
     __extends(NSButton, _super);
     function NSButton(b, bOn, music, highLight, filterDoubleClickTime) {
@@ -12882,7 +12749,7 @@ var NSButton = (function (_super) {
 }(Sx));
 __reflect(NSButton.prototype, "NSButton");
 window["NSButton"] = NSButton;
-//手机上用NNoPage
+//改用NNoPage代替，不然分页按钮可能太小点不中
 // class NSimplePage extends Sx {
 //     public _val: number;
 //     private func: Function;
@@ -12964,6 +12831,8 @@ window["NSButton"] = NSButton;
 //         this.numNct.val = "第" + page + "页";
 //     }
 // }
+//外部图片
+//可以由Assert.Img("xxx/xxx.jpg");代替
 var NSprite = (function (_super) {
     __extends(NSprite, _super);
     function NSprite(path, width, height) {
@@ -13006,6 +12875,17 @@ var NSprite = (function (_super) {
 }(Bx));
 __reflect(NSprite.prototype, "NSprite");
 window["NSprite"] = NSprite;
+//选项卡类 
+//使用方法
+// let tab = new NTabPanel(750, 430, 31, null, 0, 35);
+// this.Add(tab, (NForm.width - tab.w - tab.tempButton.w + 20) / 2, 60);
+// this.tab.AddTabPro("选项卡1", (p: Sx) => {
+//     p.Add(new NLabel("选项卡1"));
+// }, null, 50, 1);
+// this.tab.AddTabPro("选项卡2", (p: Sx) => {
+//     p.Add(new NLabel("选项卡2"));
+// }, null, 50, 1);
+// this.tab.Select(0);
 var NTabPanel = (function (_super) {
     __extends(NTabPanel, _super);
     function NTabPanel(w, h, buttonStyle, OnTabChange, mode, panelType) {
@@ -13361,6 +13241,7 @@ var NText = (function (_super) {
 }(Sx));
 __reflect(NText.prototype, "NText");
 window["NText"] = NText;
+//高性能的瓷片图片，由很多小图拼合而成，一般用户大地图
 // class NTileMap extends Sx {
 //     private tileWidth: number = 200;
 //     private tileHeight: number = 200;
@@ -13462,6 +13343,7 @@ var SocketLocal = (function () {
 }());
 __reflect(SocketLocal.prototype, "SocketLocal");
 window["SocketLocal"] = SocketLocal;
+//Tcp长链接未实现
 var SocketTcp = (function () {
     function SocketTcp() {
     }
@@ -13469,6 +13351,11 @@ var SocketTcp = (function () {
 }());
 __reflect(SocketTcp.prototype, "SocketTcp");
 window["SocketTcp"] = SocketTcp;
+//WebSocket长链接
+//使用方法：
+// this.socket = new SocketWs(this.Handle.bind(this), Config.serverIp, Config.port);
+// private Handle(text: String): void {
+// ｝
 var SocketWs = (function (_super) {
     __extends(SocketWs, _super);
     function SocketWs(sender, ip, port) {

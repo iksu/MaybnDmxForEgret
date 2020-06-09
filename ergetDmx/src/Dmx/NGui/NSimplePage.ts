@@ -1,4 +1,4 @@
-//手机上用NNoPage
+//改用NNoPage代替，不然分页按钮可能太小点不中
 // class NSimplePage extends Sx {
 //     public _val: number;
 //     private func: Function;

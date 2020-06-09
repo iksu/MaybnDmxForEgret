@@ -1,28 +1,15 @@
+//服务器类
+//可保存、读取临时数据
 class Server {
     public static SetFile(path: string, val: string) {
-        // if (Config.business == "WX") {
-        //     try {
-        //         platform.setStorageSync(path, val);
-        //     } catch (ex) {
-        //         Js.Trace(ex);
-        //     }
-        // } else {
         try {
             egret.localStorage.setItem(path, val);
         } catch (ex) {
             Js.Trace(ex);
         }
-        //}
     }
 
     public static GetFile(path: string): string {
-        // if (Config.business == "WX") {
-        //     try {
-        //         platform.getStorageSync(path);
-        //     } catch (ex) {
-        //         Js.Trace(ex);
-        //     }
-        // } else {
         try {
             let rv = egret.localStorage.getItem(path);
             if (rv == null) {
@@ -32,7 +19,6 @@ class Server {
         } catch (ex) {
             Js.Trace(ex);
         }
-        //}
         return "";
     }
 
@@ -42,10 +28,6 @@ class Server {
 
     public static SetIO(path: string, val: string): void {
         Server.SetFile(path, val);
-    }
-
-    public static GC(): void {
-        //TODO;
     }
 
     public static CreateClass(c: any): any {

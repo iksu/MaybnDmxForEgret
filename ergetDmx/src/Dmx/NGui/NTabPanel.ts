@@ -1,3 +1,14 @@
+//选项卡类 
+//使用方法
+// let tab = new NTabPanel(750, 430, 31, null, 0, 35);
+// this.Add(tab, (NForm.width - tab.w - tab.tempButton.w + 20) / 2, 60);
+// this.tab.AddTabPro("选项卡1", (p: Sx) => {
+//     p.Add(new NLabel("选项卡1"));
+// }, null, 50, 1);
+// this.tab.AddTabPro("选项卡2", (p: Sx) => {
+//     p.Add(new NLabel("选项卡2"));
+// }, null, 50, 1);
+// this.tab.Select(0);
 class NTabPanel extends Sx {
     public static defaultPanelType: number = 11;
 

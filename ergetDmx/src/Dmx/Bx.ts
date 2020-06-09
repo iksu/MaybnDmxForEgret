@@ -1,3 +1,7 @@
+//图片底层库
+//使用方法：
+//Assert.Img("xxx")，直接得到库中的图片
+//Assert.Img("xx/xxx.png")，加载外部图片
 class Bx extends eui.Image implements Ix {
     public this = this;
     public base: boolean = false;

@@ -1,3 +1,7 @@
+//音乐播放类
+//使用方法：
+//Music.Bg("main");//播放背景音乐
+//Music.Play("taskfinish");//播放一次声音
 class Music {
     private id: string;
     private sound: egret.Sound;

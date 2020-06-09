@@ -1,3 +1,50 @@
+//普通按钮类
+//需要预先定义样式
+// public static Setup(): void {
+//     NButton.bgRender = (style: number) => {
+//         if (style < 0) {
+//             style = 0;
+//         }
+//         var b: any;
+//         if (style == 1) {
+//             b = new N9("buttonb4");
+//             b.width = 120;
+//             b.height = 52;
+//         }
+//         else {
+//             b = new N9("buttonb0", new Rectangle(32, 26, 1, 1));
+//             b.width = 120;
+//             b.height = 54;
+//         }
+//         return b;
+//     };
+
+//     NButton.bgOnRender = (style: number) => {
+//         return null;
+//     };
+
+//     NButton.lRender = (style: number, _val: string, width: number, height: number) => {
+//         if (style < 0) {
+//             style = 0;
+//         }
+//         var fontSize: number = 21;
+//         if (_val.length == 2) {
+//             _val = _val.substr(0, 1) + " " + _val.substr(1, 1);
+//         }
+//         var l = null;
+//             l = new NLabel(_val, 0xfff9e8, false, fontSize, 0.5, 0x222222);
+//             l.filters = Filters.glowFilter;
+//         l.align = 1;
+//         l.Pos(width / 2, (height - l.height) / 2);
+//         return l;
+//     };
+
+//     NButton.lOnRender = (style: number, _val: string, width: number, height: number) => {
+//         return null;
+//     };
+
+//     NSButton.musicBG = "click1";
+// }
 class NButton extends Sx {
     public static bgRender: Function;
     public static bgOnRender: Function;

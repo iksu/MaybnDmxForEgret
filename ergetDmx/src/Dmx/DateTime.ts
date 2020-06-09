@@ -1,3 +1,4 @@
+//日期时间管理类
 class DateTime {
     public d: Date;
     public constructor(d: any = null) {

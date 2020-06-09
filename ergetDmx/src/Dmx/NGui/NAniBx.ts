@@ -1,3 +1,4 @@
+//使用图片库进行帧动画
 class NAniBx extends NAniBase {
     public constructor(imgs: any, overAndRemove: boolean = true, frameRate: number = 6) {
         super(overAndRemove)

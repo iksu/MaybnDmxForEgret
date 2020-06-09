@@ -1,4 +1,5 @@
-﻿///<reference path="Js.ts" />
+﻿//精灵类
+///<reference path="Js.ts" />
 class Sx extends eui.Group implements Ix {//sx继承eui.group 作为ix接口实现
     public that = this;//设that = this
     public showTop50: boolean = false;//设置布尔型

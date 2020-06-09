@@ -1,3 +1,4 @@
+//颜色转换器
 class Color {
     public color: number = 0;
     public constructor(argb: number = 0) {

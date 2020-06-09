@@ -1,3 +1,18 @@
+//以XmllinqT为数据源的表格类
+//一般用于物品列表等等
+//使用方法：
+// this.g = new NGridList(this.w, this.h, 2);
+// let xqt = new XmlLinqT();
+// for(let i=0;i<25;i++){
+//     var list = new Listx();
+//     list["id"] = i.toString();
+//     list["index"] = i;
+//     xqt.Add(list);
+// }
+// this.g.SetData(xqt, this.h / xqt.length, (p, list) => {
+//     p.Add(new NLabel(list["index"]));
+// });
+// this.Add(this.g);
 ///<reference path="NScrollPanel.ts" />
 
 class NGridList extends NScrollPanel {

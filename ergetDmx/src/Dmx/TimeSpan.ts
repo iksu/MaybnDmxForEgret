@@ -1,3 +1,4 @@
+//时间间隔类
 class TimeSpan {
     private tick: number;
     public constructor(tick: number) {
